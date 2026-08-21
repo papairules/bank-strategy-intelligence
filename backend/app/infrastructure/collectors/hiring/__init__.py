@@ -1,7 +1,21 @@
+from backend.app.infrastructure.collectors.hiring.collector import PaginatedJobCollector
 from backend.app.infrastructure.collectors.hiring.contracts import (
     RawJobPage,
     RawJobRecord,
 )
-from backend.app.infrastructure.collectors.hiring.protocols import SourceAdapter
+from backend.app.infrastructure.collectors.hiring.protocols import (
+    JobRecordNormalizer,
+    RecordNormalizationError,
+    SourceAdapter,
+    SourceAdapterError,
+)
 
-__all__ = ["RawJobPage", "RawJobRecord", "SourceAdapter"]
+__all__ = [
+    "JobRecordNormalizer",
+    "PaginatedJobCollector",
+    "RawJobPage",
+    "RawJobRecord",
+    "RecordNormalizationError",
+    "SourceAdapter",
+    "SourceAdapterError",
+]
