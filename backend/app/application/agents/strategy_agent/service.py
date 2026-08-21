@@ -25,7 +25,10 @@ from backend.app.application.agents.strategy_agent.models import (
 )
 from backend.app.application.agents.strategy_agent.prompts import STRATEGY_AGENT_SYSTEM_POLICY
 from backend.app.application.agents.strategy_agent.provider import StrategyAgentProvider
-from backend.app.application.agents.strategy_agent.validation import contains_unsupported_intent_claim
+from backend.app.application.agents.strategy_agent.validation import (
+    contains_unsupported_intent_claim,
+    contains_unsupported_support_narrowing,
+)
 
 
 class StrategyToolBundle(Protocol):
@@ -218,6 +221,11 @@ class StrategyAgentService:
         output = response.output
         if contains_unsupported_intent_claim(output.executive_summary):
             raise StrategyAgentError(StrategyAgentFailureCode.CLAIM_VALIDATION, "Executive summary asserted unsupported corporate intent.")
+        if contains_unsupported_support_narrowing(output.executive_summary, []):
+            raise StrategyAgentError(
+                StrategyAgentFailureCode.CLAIM_VALIDATION,
+                "Executive summary narrowed intelligence beyond uncited application support.",
+            )
         trusted = {item.reference: item for item in references}
         findings: list[StrategyFinding] = []
         for item in output.findings:
@@ -231,6 +239,16 @@ class StrategyAgentService:
                 if reference not in seen:
                     seen.add(reference)
                     selected.append(trusted[reference])
+            if contains_unsupported_support_narrowing(item.statement, selected):
+                raise StrategyAgentError(
+                    StrategyAgentFailureCode.CLAIM_VALIDATION,
+                    "Finding narrowed trusted support beyond its established intelligence domain.",
+                )
+            if contains_unsupported_support_narrowing(item.title, selected):
+                raise StrategyAgentError(
+                    StrategyAgentFailureCode.CLAIM_VALIDATION,
+                    "Finding title narrowed trusted support beyond its established intelligence domain.",
+                )
             findings.append(StrategyFinding(title=item.title, statement=item.statement, support=selected))
         limitations = self._limitations(output.limitations, results)
         status = StrategyAgentStatus.ANSWERED if findings else StrategyAgentStatus.INSUFFICIENT_EVIDENCE

@@ -130,6 +130,7 @@ class EvidenceAgentService:
             )
         self._validate_answer(final.answer, request, catalog)
         reliability = self._reliability(final.answer, catalog, maximum_evidence)
+        limitations = self._result_limitations(final.answer, tool_results)
         return EvidenceAgentResult(
             status=final.answer.status,
             organization=request.organization,
@@ -139,11 +140,62 @@ class EvidenceAgentService:
             evidence_records_considered=len(catalog),
             tool_calls_used=len(tool_results),
             reliability=reliability,
-            limitations=final.answer.limitations,
+            limitations=limitations,
             provider=final.provider,
             model=final.model,
             agent_version=self.agent_version,
         )
+
+    @classmethod
+    def _result_limitations(
+        cls,
+        answer: EvidenceAgentAnswer,
+        tool_results: list[EvidenceAgentToolResult],
+    ) -> list[str]:
+        values = list(answer.limitations)
+        if answer.status == EvidenceAgentStatus.INSUFFICIENT_EVIDENCE:
+            values.extend(
+                (
+                    "Available evidence is derived from hiring and career-site records.",
+                    "Hiring evidence does not establish enterprise-wide technology adoption or production deployment.",
+                    "Available evidence may not represent organization-wide strategy.",
+                )
+            )
+            if cls._has_limited_observation_period(tool_results):
+                values.append("The current observation period is limited.")
+        deduplicated: dict[str, str] = {}
+        for value in values:
+            cleaned = value.strip()
+            if cleaned:
+                deduplicated.setdefault(cleaned.casefold(), cleaned)
+        return list(deduplicated.values())
+
+    @staticmethod
+    def _has_limited_observation_period(
+        tool_results: list[EvidenceAgentToolResult],
+    ) -> bool:
+        from datetime import date
+
+        periods: list[tuple[date, date]] = []
+
+        def visit(value: object) -> None:
+            if isinstance(value, dict):
+                start = value.get("observation_start")
+                end = value.get("observation_end")
+                if isinstance(start, str) and isinstance(end, str):
+                    try:
+                        periods.append((date.fromisoformat(start), date.fromisoformat(end)))
+                    except ValueError:
+                        pass
+                for child in value.values():
+                    visit(child)
+            elif isinstance(value, list):
+                for child in value:
+                    visit(child)
+
+        for result in tool_results:
+            visit(result.result)
+        return any((end - start).days < 28 for start, end in periods)
 
     async def _provider_response(
         self,

@@ -119,12 +119,16 @@ def citation(job, evidence, **overrides):
     return EvidenceAgentCitation(**values)
 
 
-def answered(citations, *, status=EvidenceAgentStatus.ANSWERED):
+def answered(citations, *, status=EvidenceAgentStatus.ANSWERED, limitations=None):
     return EvidenceAgentAnswer(
         status=status,
         answer="The supplied hiring evidence explicitly mentions Python and SQL.",
         citations=citations,
-        limitations=["Hiring evidence does not establish corporate intent."],
+        limitations=(
+            ["Hiring evidence does not establish corporate intent."]
+            if limitations is None
+            else limitations
+        ),
         model_confidence=0.95,
     )
 
@@ -194,6 +198,50 @@ def test_insufficient_and_zero_evidence_are_successful_outcomes(evidence_fixture
     ))
     assert result.status == EvidenceAgentStatus.INSUFFICIENT_EVIDENCE
     assert result.evidence_records_considered == 0 and result.reliability == 0
+    assert result.limitations == [
+        "Hiring evidence does not establish corporate intent.",
+        "Available evidence is derived from hiring and career-site records.",
+        "Hiring evidence does not establish enterprise-wide technology adoption or production deployment.",
+        "Available evidence may not represent organization-wide strategy.",
+    ]
+
+
+def test_insufficient_evidence_adds_deterministic_limitations_and_deduplicates(evidence_fixture):
+    tools, _ = evidence_fixture
+    duplicated = "Available evidence may not represent organization-wide strategy."
+    provider = FakeProvider([
+        provider_response(calls=[EvidenceAgentToolCall(call_id="1", name="evidence.get_summary", arguments={})]),
+        provider_response(answer=answered(
+            [],
+            status=EvidenceAgentStatus.INSUFFICIENT_EVIDENCE,
+            limitations=[duplicated, duplicated.upper()],
+        )),
+    ])
+    request = EvidenceAgentRequest(organization="Example Bank", question="What is established?")
+    result = asyncio.run(EvidenceAgentService(tools, provider, enabled=True).answer(request))
+    assert result.limitations.count(duplicated) == 1
+    assert "Available evidence is derived from hiring and career-site records." in result.limitations
+    assert "Hiring evidence does not establish enterprise-wide technology adoption or production deployment." in result.limitations
+    assert "The current observation period is limited." in result.limitations
+    assert all("Example Bank" not in item for item in result.limitations)
+
+
+def test_answered_result_limitations_remain_provider_compatible_and_deterministic(evidence_fixture):
+    tools, records = evidence_fixture
+    job, evidence = records[0]
+    request = EvidenceAgentRequest(organization="Example Bank", question="What is supported?")
+
+    def run_once():
+        provider = FakeProvider([
+            provider_response(calls=[EvidenceAgentToolCall(call_id="1", name="evidence.search", arguments={})]),
+            provider_response(answer=answered([citation(job, evidence)])),
+        ])
+        return asyncio.run(EvidenceAgentService(tools, provider, enabled=True).answer(request))
+
+    first = run_once()
+    second = run_once()
+    assert first.limitations == ["Hiring evidence does not establish corporate intent."]
+    assert second.limitations == first.limitations
 
 
 @pytest.mark.parametrize("mutation,code", [
