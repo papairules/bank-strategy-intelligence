@@ -7,6 +7,7 @@ from types import TracebackType
 from uuid import UUID
 
 from backend.app.application.hiring.observability import CollectionRun
+from backend.app.application.hiring.enrichment import HiringEnrichmentResult
 from backend.app.application.hiring.persistence import PersistenceError
 from backend.app.domain.hiring import EmploymentType, JobPosting
 from backend.app.domain.intelligence import Evidence
@@ -49,6 +50,45 @@ CREATE TABLE IF NOT EXISTS job_postings (
 
 CREATE INDEX IF NOT EXISTS idx_job_postings_evidence_id
     ON job_postings(evidence_id);
+
+CREATE TABLE IF NOT EXISTS hiring_enrichments (
+    job_id TEXT NOT NULL REFERENCES job_postings(job_id),
+    evidence_id TEXT NOT NULL REFERENCES evidence(evidence_id),
+    provider TEXT NOT NULL,
+    model TEXT NOT NULL,
+    prompt_schema_version TEXT NOT NULL,
+    enrichment_timestamp TEXT NOT NULL,
+    capability_classifications TEXT NOT NULL,
+    skills TEXT NOT NULL,
+    technologies TEXT NOT NULL,
+    seniority_level TEXT NOT NULL,
+    is_leadership INTEGER NOT NULL CHECK (is_leadership IN (0, 1)),
+    business_unit TEXT,
+    hiring_themes TEXT NOT NULL,
+    confidence REAL NOT NULL CHECK (confidence >= 0 AND confidence <= 1),
+    model_confidence REAL NOT NULL CHECK (
+        model_confidence >= 0 AND model_confidence <= 1
+    ),
+    field_confidences TEXT NOT NULL,
+    field_support TEXT NOT NULL,
+    limitations TEXT NOT NULL,
+    provider_request_id TEXT,
+    model_version TEXT,
+    usage_metadata TEXT NOT NULL,
+    PRIMARY KEY (
+        job_id,
+        evidence_id,
+        provider,
+        model,
+        prompt_schema_version
+    )
+);
+
+CREATE INDEX IF NOT EXISTS idx_hiring_enrichments_job_latest
+    ON hiring_enrichments(job_id, enrichment_timestamp DESC);
+
+CREATE INDEX IF NOT EXISTS idx_hiring_enrichments_evidence_id
+    ON hiring_enrichments(evidence_id);
 
 CREATE TABLE IF NOT EXISTS collection_runs (
     run_id TEXT PRIMARY KEY,
@@ -358,6 +398,149 @@ class SQLiteCollectionRunRepository:
         return [_collection_run_from_row(row) for row in rows]
 
 
+class SQLiteHiringEnrichmentRepository:
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self._connection = connection
+
+    def save(self, enrichment: HiringEnrichmentResult) -> None:
+        values = enrichment.model_dump(mode="json")
+        metadata = values["model_metadata"]
+        self._connection.execute(
+            """
+            INSERT INTO hiring_enrichments (
+                job_id, evidence_id, provider, model, prompt_schema_version,
+                enrichment_timestamp, capability_classifications, skills,
+                technologies, seniority_level, is_leadership, business_unit,
+                hiring_themes, confidence, model_confidence, field_confidences,
+                field_support, limitations, provider_request_id, model_version,
+                usage_metadata
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (
+                job_id, evidence_id, provider, model, prompt_schema_version
+            ) DO UPDATE SET
+                enrichment_timestamp = excluded.enrichment_timestamp,
+                capability_classifications = excluded.capability_classifications,
+                skills = excluded.skills,
+                technologies = excluded.technologies,
+                seniority_level = excluded.seniority_level,
+                is_leadership = excluded.is_leadership,
+                business_unit = excluded.business_unit,
+                hiring_themes = excluded.hiring_themes,
+                confidence = excluded.confidence,
+                model_confidence = excluded.model_confidence,
+                field_confidences = excluded.field_confidences,
+                field_support = excluded.field_support,
+                limitations = excluded.limitations,
+                provider_request_id = excluded.provider_request_id,
+                model_version = excluded.model_version,
+                usage_metadata = excluded.usage_metadata
+            """,
+            (
+                values["job_id"],
+                values["evidence_id"],
+                metadata["provider"],
+                metadata["model"],
+                metadata["prompt_schema_version"],
+                metadata["enrichment_timestamp"],
+                _dump_json(values["capability_classifications"]),
+                _dump_json(values["skills"]),
+                _dump_json(values["technologies"]),
+                values["seniority_level"],
+                int(values["is_leadership"]),
+                values["business_unit"],
+                _dump_json(values["hiring_themes"]),
+                values["confidence"],
+                metadata["model_confidence"],
+                _dump_json(values["field_confidences"]),
+                _dump_json(values["field_support"]),
+                _dump_json(values["limitations"]),
+                metadata["provider_request_id"],
+                metadata["model_version"],
+                _dump_json(metadata["usage_metadata"]),
+            ),
+        )
+
+    def get_exact(
+        self,
+        *,
+        job_id: UUID,
+        evidence_id: UUID,
+        provider: str,
+        model: str,
+        prompt_schema_version: str,
+    ) -> HiringEnrichmentResult | None:
+        row = self._connection.execute(
+            """
+            SELECT * FROM hiring_enrichments
+            WHERE job_id = ? AND evidence_id = ? AND provider = ?
+                AND model = ? AND prompt_schema_version = ?
+            """,
+            (
+                str(job_id),
+                str(evidence_id),
+                provider,
+                model,
+                prompt_schema_version,
+            ),
+        ).fetchone()
+        return _hiring_enrichment_from_row(row) if row is not None else None
+
+    def get_latest(self, job_id: UUID) -> HiringEnrichmentResult | None:
+        row = self._connection.execute(
+            """
+            SELECT * FROM hiring_enrichments
+            WHERE job_id = ?
+            ORDER BY enrichment_timestamp DESC, prompt_schema_version DESC,
+                provider DESC, model DESC
+            LIMIT 1
+            """,
+            (str(job_id),),
+        ).fetchone()
+        return _hiring_enrichment_from_row(row) if row is not None else None
+
+    def list_by_organization(
+        self,
+        organization: str,
+    ) -> list[HiringEnrichmentResult]:
+        rows = self._connection.execute(
+            """
+            SELECT enrichment.*
+            FROM hiring_enrichments AS enrichment
+            JOIN job_postings AS job ON job.job_id = enrichment.job_id
+            WHERE job.organization = ?
+            ORDER BY enrichment.enrichment_timestamp DESC,
+                enrichment.job_id, enrichment.prompt_schema_version DESC
+            """,
+            (organization,),
+        ).fetchall()
+        return [_hiring_enrichment_from_row(row) for row in rows]
+
+    def exists(
+        self,
+        *,
+        job_id: UUID,
+        evidence_id: UUID,
+        provider: str,
+        model: str,
+        prompt_schema_version: str,
+    ) -> bool:
+        row = self._connection.execute(
+            """
+            SELECT 1 FROM hiring_enrichments
+            WHERE job_id = ? AND evidence_id = ? AND provider = ?
+                AND model = ? AND prompt_schema_version = ?
+            LIMIT 1
+            """,
+            (
+                str(job_id),
+                str(evidence_id),
+                provider,
+                model,
+                prompt_schema_version,
+            ),
+        ).fetchone()
+        return row is not None
+
 class SQLiteHiringUnitOfWork:
     def __init__(self, database: SQLiteDatabase) -> None:
         self._database = database
@@ -381,6 +564,7 @@ class SQLiteHiringUnitOfWork:
         self.job_postings = SQLiteJobPostingRepository(self._connection)
         self.evidence = SQLiteEvidenceRepository(self._connection)
         self.collection_runs = SQLiteCollectionRunRepository(self._connection)
+        self.enrichments = SQLiteHiringEnrichmentRepository(self._connection)
         return self
 
     def __exit__(
@@ -487,5 +671,37 @@ def _job_posting_from_row(row: sqlite3.Row) -> JobPosting:
             "employment_type": row["employment_type"],
             "source_url": row["source_url"],
             "evidence_id": row["evidence_id"],
+        }
+    )
+
+
+def _hiring_enrichment_from_row(row: sqlite3.Row) -> HiringEnrichmentResult:
+    return HiringEnrichmentResult.model_validate(
+        {
+            "job_id": row["job_id"],
+            "evidence_id": row["evidence_id"],
+            "capability_classifications": json.loads(
+                row["capability_classifications"]
+            ),
+            "skills": json.loads(row["skills"]),
+            "technologies": json.loads(row["technologies"]),
+            "seniority_level": row["seniority_level"],
+            "is_leadership": bool(row["is_leadership"]),
+            "business_unit": row["business_unit"],
+            "hiring_themes": json.loads(row["hiring_themes"]),
+            "confidence": row["confidence"],
+            "field_confidences": json.loads(row["field_confidences"]),
+            "field_support": json.loads(row["field_support"]),
+            "limitations": json.loads(row["limitations"]),
+            "model_metadata": {
+                "provider": row["provider"],
+                "model": row["model"],
+                "prompt_schema_version": row["prompt_schema_version"],
+                "provider_request_id": row["provider_request_id"],
+                "model_version": row["model_version"],
+                "usage_metadata": json.loads(row["usage_metadata"]),
+                "enrichment_timestamp": row["enrichment_timestamp"],
+                "model_confidence": row["model_confidence"],
+            },
         }
     )

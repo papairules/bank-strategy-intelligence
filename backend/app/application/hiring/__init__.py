@@ -11,6 +11,8 @@ from backend.app.application.hiring.collection import (
 from backend.app.application.hiring.persistence import (
     CollectionRunRepository,
     EvidenceRepository,
+    HiringEnrichmentPersistenceService,
+    HiringEnrichmentRepository,
     HiringPersistenceService,
     HiringPersistenceUnitOfWork,
     JobPostingRepository,
@@ -89,6 +91,8 @@ __all__ = [
     "CollectionStatus",
     "JobCollector",
     "EvidenceRepository",
+    "HiringEnrichmentPersistenceService",
+    "HiringEnrichmentRepository",
     "HiringPersistenceService",
     "HiringPersistenceUnitOfWork",
     "JobPostingRepository",

@@ -3,6 +3,7 @@ from typing import Protocol, Self
 from uuid import UUID
 
 from backend.app.application.hiring.collection import CollectedJob, CollectionResult
+from backend.app.application.hiring.enrichment import HiringEnrichmentResult
 from backend.app.application.hiring.observability import CollectionRun
 from backend.app.domain.hiring import EmploymentType, JobPosting
 from backend.app.domain.intelligence import Evidence
@@ -69,10 +70,42 @@ class CollectionRunRepository(Protocol):
     ) -> list[CollectionRun]: ...
 
 
+class HiringEnrichmentRepository(Protocol):
+    def save(self, enrichment: HiringEnrichmentResult) -> None: ...
+
+    def get_exact(
+        self,
+        *,
+        job_id: UUID,
+        evidence_id: UUID,
+        provider: str,
+        model: str,
+        prompt_schema_version: str,
+    ) -> HiringEnrichmentResult | None: ...
+
+    def get_latest(self, job_id: UUID) -> HiringEnrichmentResult | None: ...
+
+    def list_by_organization(
+        self,
+        organization: str,
+    ) -> list[HiringEnrichmentResult]: ...
+
+    def exists(
+        self,
+        *,
+        job_id: UUID,
+        evidence_id: UUID,
+        provider: str,
+        model: str,
+        prompt_schema_version: str,
+    ) -> bool: ...
+
+
 class HiringPersistenceUnitOfWork(Protocol):
     job_postings: JobPostingRepository
     evidence: EvidenceRepository
     collection_runs: CollectionRunRepository
+    enrichments: HiringEnrichmentRepository
 
     def __enter__(self) -> Self: ...
 
@@ -131,3 +164,41 @@ class HiringPersistenceService:
         with self._unit_of_work_factory() as unit_of_work:
             unit_of_work.collection_runs.save(run)
             unit_of_work.commit()
+
+
+class HiringEnrichmentPersistenceService:
+    def __init__(
+        self,
+        unit_of_work_factory: Callable[[], HiringPersistenceUnitOfWork],
+    ) -> None:
+        self._unit_of_work_factory = unit_of_work_factory
+
+    def save(self, enrichment: HiringEnrichmentResult) -> None:
+        if any(
+            support.evidence_id != enrichment.evidence_id
+            for support in enrichment.field_support
+        ):
+            raise ValueError(
+                "enrichment support evidence_id must match enrichment evidence_id"
+            )
+        with self._unit_of_work_factory() as unit_of_work:
+            unit_of_work.enrichments.save(enrichment)
+            unit_of_work.commit()
+
+    def has_current(
+        self,
+        *,
+        job_id: UUID,
+        evidence_id: UUID,
+        provider: str,
+        model: str,
+        prompt_schema_version: str,
+    ) -> bool:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.enrichments.exists(
+                job_id=job_id,
+                evidence_id=evidence_id,
+                provider=provider,
+                model=model,
+                prompt_schema_version=prompt_schema_version,
+            )

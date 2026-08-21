@@ -3,6 +3,7 @@ from typing import Protocol
 from uuid import UUID
 
 from backend.app.application.hiring.observability import CollectionRun
+from backend.app.application.hiring.enrichment import HiringEnrichmentResult
 from backend.app.application.hiring.persistence import HiringPersistenceUnitOfWork
 from backend.app.domain.hiring import EmploymentType, JobPosting
 from backend.app.domain.intelligence import Evidence
@@ -33,6 +34,26 @@ class HiringReadServiceProtocol(Protocol):
     def get_run(self, run_id: UUID) -> CollectionRun | None: ...
 
     def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]: ...
+
+    def get_enrichment(
+        self,
+        *,
+        job_id: UUID,
+        evidence_id: UUID,
+        provider: str,
+        model: str,
+        prompt_schema_version: str,
+    ) -> HiringEnrichmentResult | None: ...
+
+    def get_latest_enrichment(
+        self,
+        job_id: UUID,
+    ) -> HiringEnrichmentResult | None: ...
+
+    def list_enrichments(
+        self,
+        organization: str,
+    ) -> list[HiringEnrichmentResult]: ...
 
 
 class HiringReadService:
@@ -89,3 +110,35 @@ class HiringReadService:
     def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.job_postings.list_by_organization(organization)
+
+    def get_enrichment(
+        self,
+        *,
+        job_id: UUID,
+        evidence_id: UUID,
+        provider: str,
+        model: str,
+        prompt_schema_version: str,
+    ) -> HiringEnrichmentResult | None:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.enrichments.get_exact(
+                job_id=job_id,
+                evidence_id=evidence_id,
+                provider=provider,
+                model=model,
+                prompt_schema_version=prompt_schema_version,
+            )
+
+    def get_latest_enrichment(
+        self,
+        job_id: UUID,
+    ) -> HiringEnrichmentResult | None:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.enrichments.get_latest(job_id)
+
+    def list_enrichments(
+        self,
+        organization: str,
+    ) -> list[HiringEnrichmentResult]:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.enrichments.list_by_organization(organization)
