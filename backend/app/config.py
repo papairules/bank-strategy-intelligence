@@ -21,6 +21,11 @@ class HiringSettings(BaseSettings):
     gemini_model: str = "gemini-2.5-flash"
     gemini_temperature: float = Field(default=0.1, ge=0, le=2)
     gemini_max_output_tokens: int = Field(default=4096, ge=1)
+    evidence_agent_enabled: bool = False
+    evidence_agent_provider: str = "vertex_gemini"
+    evidence_agent_model: str = "gemini-2.5-flash"
+    evidence_agent_max_tool_calls: int = Field(default=3, ge=1, le=5)
+    evidence_agent_max_evidence: int = Field(default=10, ge=1, le=20)
     cors_origins: list[str] = Field(
         default_factory=lambda: [
             "http://localhost:3000",
