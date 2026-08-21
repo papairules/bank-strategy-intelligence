@@ -17,6 +17,9 @@ export function HiringIntelligencePage() {
 
   const topCity = summary.data?.geographic.by_city[0];
   const topCapability = summary.data?.capability.capabilities[0];
+  const seniorityCoverage = summary.data && summary.data.total_observed_jobs > 0
+    ? (summary.data.seniority.jobs_with_seniority / summary.data.total_observed_jobs) * 100
+    : 0;
 
   return (
     <div className="page">
@@ -33,10 +36,11 @@ export function HiringIntelligencePage() {
           <div className="metrics-grid">
             <MetricCard icon="01" label="Observed jobs" value={formatNumber(summary.data.total_observed_jobs)} context="Persisted normalized roles" />
             <MetricCard icon="02" label="Enrichment coverage" value={formatPercent(summary.data.enrichment_coverage, 0)} context={`${summary.data.enriched_job_count} enriched records`} />
-            <MetricCard icon="03" label="Leadership hiring" value={formatNumber(summary.data.seniority.leadership_job_count)} context={`${formatPercent(summary.data.seniority.leadership_percentage, 1)} of observed jobs`} />
+            {summary.data.seniority.jobs_with_seniority > 0 ? <MetricCard icon="03" label="Leadership hiring" value={formatNumber(summary.data.seniority.leadership_job_count)} context={`${formatPercent(summary.data.seniority.leadership_percentage, 1)} of observed jobs`} /> : <MetricCard icon="03" label="Seniority coverage" value={formatPercent(seniorityCoverage, 0)} context="No normalized seniority classifications" />}
             {topCity && <MetricCard icon="04" label="Top hiring geography" value={topCity.value} context={`${topCity.job_count} jobs · ${formatPercent(topCity.percentage_of_total, 1)}`} />}
             {topCapability && <MetricCard icon="05" label="Top capability" value={topCapability.capability} context={`${formatPercent(topCapability.percentage_of_classified_jobs, 1)} of classified jobs`} />}
           </div>
+          {(summary.data.capability.classified_job_count === 0 || summary.data.seniority.jobs_with_seniority === 0) && <div className="data-notice"><strong>Classification coverage is limited.</strong><span>Capability and seniority views show only normalized classifications currently persisted; unavailable values are not inferred in the browser.</span></div>}
         </>
       )}
 
@@ -44,14 +48,15 @@ export function HiringIntelligencePage() {
       {analytics.error && <ErrorState message={analytics.error} />}
       {analytics.data && (
         <div className="analytics-grid">
-          <Panel title="Observed hiring cadence" eyebrow="Weekly posting volume" className="panel--wide" action={<span className="panel-note">No forecast applied</span>}><TrendChart buckets={analytics.data.weekly_trend.buckets} /></Panel>
-          <Panel title="Geographic concentration" eyebrow="Top cities"><RankedBars emptyMessage="No geographic hiring observations available." items={analytics.data.geographic.by_city.map((item) => ({ label: item.value, count: item.job_count, percentage: item.percentage_of_total }))} /></Panel>
+          <Panel title="Observed hiring cadence" eyebrow="Weekly posting volume" className="panel--wide" action={<span className="panel-note">{analytics.data.weekly_trend.buckets.length} observed buckets · no forecast</span>}><TrendChart buckets={analytics.data.weekly_trend.buckets} /></Panel>
+          <Panel title="Geographic concentration" eyebrow="Top cities"><RankedBars emptyMessage="No geographic hiring observations available." items={analytics.data.geographic.by_city.map((item) => ({ label: item.value, count: item.job_count, percentage: item.percentage_of_total }))} /><div className="coverage-note">Country coverage: {analytics.data.geographic.by_country.map((item) => `${item.value} ${formatPercent(item.percentage_of_total, 1)}`).join(" · ")}</div></Panel>
           <Panel title="Capability concentration" eyebrow={`${analytics.data.capability.classified_job_count} classified jobs`}><RankedBars emptyMessage="No capability classifications available." items={analytics.data.capability.capabilities.map((item) => ({ label: item.capability, count: item.job_count, percentage: item.percentage_of_classified_jobs }))} /></Panel>
-          <Panel title="Seniority and leadership" eyebrow="Classified distribution"><div className="seniority-summary"><div className="leadership-callout"><strong>{formatNumber(analytics.data.seniority.leadership_job_count)}</strong><span>Leadership roles</span><small>{formatPercent(analytics.data.seniority.leadership_percentage, 1)} of observed jobs</small></div><div className="seniority-list">{analytics.data.seniority.distribution.length ? analytics.data.seniority.distribution.map((item) => <div key={item.seniority_level}><span>{titleCase(item.seniority_level)}</span><strong>{item.job_count}</strong><div className="microbar"><i style={{ width: `${item.percentage_of_jobs_with_seniority}%` }} /></div></div>) : <div className="inline-empty">No seniority classifications available.</div>}</div></div><div className="coverage-note">Coverage: {analytics.data.seniority.jobs_with_seniority} of {analytics.data.seniority.total_jobs} observed jobs</div></Panel>
+          <Panel title="Seniority and leadership" eyebrow="Classified distribution"><div className="seniority-summary"><div className="leadership-callout"><strong>{analytics.data.seniority.jobs_with_seniority ? formatNumber(analytics.data.seniority.leadership_job_count) : "—"}</strong><span>Leadership roles</span><small>{analytics.data.seniority.jobs_with_seniority ? `${formatPercent(analytics.data.seniority.leadership_percentage, 1)} of observed jobs` : "Not available without classifications"}</small></div><div className="seniority-list">{analytics.data.seniority.distribution.length ? analytics.data.seniority.distribution.map((item) => <div key={item.seniority_level}><span>{titleCase(item.seniority_level)}</span><strong>{item.job_count}</strong><div className="microbar"><i style={{ width: `${item.percentage_of_jobs_with_seniority}%` }} /></div></div>) : <div className="inline-empty">No seniority classifications available.</div>}</div></div><div className="coverage-note">Coverage: {analytics.data.seniority.jobs_with_seniority} of {analytics.data.seniority.total_jobs} observed jobs</div></Panel>
         </div>
       )}
 
-      <Panel title="Strategic hiring signals" eyebrow="Deterministic intelligence" action={signals.data ? <span className="panel-note">{signals.data.returned_count} signals</span> : undefined}>
+      <Panel title="Strategic hiring signals" eyebrow="Observed hiring intelligence" action={signals.data ? <span className="panel-note">{signals.data.returned_count} signals</span> : undefined}>
+        <p className="panel-intro">Threshold-based observations generated from persisted hiring evidence. These signals do not confirm bank strategy or investment decisions.</p>
         {signals.loading && <LoadingState label="Generating deterministic signals…" />}
         {signals.error && <ErrorState message={signals.error} />}
         {signals.data?.items.length === 0 && <div className="inline-empty">No intelligence signals generated for the current observation period.</div>}

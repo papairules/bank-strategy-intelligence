@@ -1,7 +1,9 @@
 from collections.abc import Callable
 from datetime import datetime, timezone
 from enum import StrEnum
+import re
 from typing import Protocol, Self
+import unicodedata
 from uuid import UUID
 
 from pydantic import (
@@ -262,24 +264,21 @@ class HiringEnrichmentService:
         provider_value = await self._provider.enrich(request)
         try:
             provider_response = HiringProviderResponse.model_validate(provider_value)
-            self._validate_explicit_grounding(request, provider_response.output)
         except ValidationError as error:
             raise HiringEnrichmentError(
                 EnrichmentFailureCode.MALFORMED_STRUCTURED_OUTPUT,
                 "Provider returned malformed structured output.",
             ) from error
-        except ValueError as error:
-            raise HiringEnrichmentError(
-                EnrichmentFailureCode.VALIDATION_FAILURE,
-                str(error),
-            ) from error
-
-        output = provider_response.output
+        output, removed_values = self._filter_explicit_grounding(
+            request,
+            provider_response.output,
+        )
         supports = self._deterministic_support(request, output, evidence.evidence_id)
         confidence, field_confidences = self._adjust_confidence(
             request,
             output,
             supports,
+            removed_values,
         )
         return HiringEnrichmentResult(
             job_id=posting.job_id,
@@ -294,7 +293,7 @@ class HiringEnrichmentService:
             confidence=confidence,
             field_confidences=field_confidences,
             field_support=supports,
-            limitations=self._limitations(output),
+            limitations=self._limitations(output, removed_values),
             model_metadata=EnrichmentModelMetadata(
                 **provider_response.metadata.model_dump(),
                 enrichment_timestamp=self._clock(),
@@ -323,21 +322,37 @@ class HiringEnrichmentService:
         )
 
     @classmethod
-    def _validate_explicit_grounding(
+    def _filter_explicit_grounding(
         cls,
         request: HiringEnrichmentRequest,
         output: HiringProviderStructuredOutput,
-    ) -> None:
-        supplied_text = cls._supplied_text(request).casefold()
-        for field, values in (
-            (EnrichmentField.SKILLS, output.skills),
-            (EnrichmentField.TECHNOLOGIES, output.technologies),
-        ):
-            for value in values:
-                if value.strip().casefold() not in supplied_text:
-                    raise ValueError(
-                        f"{field.value} value is not explicitly present in supplied evidence"
-                    )
+    ) -> tuple[HiringProviderStructuredOutput, dict[EnrichmentField, int]]:
+        supplied_text = cls._supplied_text(request)
+        retained_skills = [
+            value
+            for value in output.skills
+            if cls._matching_excerpt(supplied_text, value) is not None
+        ]
+        retained_technologies = [
+            value
+            for value in output.technologies
+            if cls._matching_excerpt(supplied_text, value) is not None
+        ]
+        removed_values = {
+            EnrichmentField.SKILLS: len(output.skills) - len(retained_skills),
+            EnrichmentField.TECHNOLOGIES: (
+                len(output.technologies) - len(retained_technologies)
+            ),
+        }
+        return (
+            output.model_copy(
+                update={
+                    "skills": retained_skills,
+                    "technologies": retained_technologies,
+                }
+            ),
+            removed_values,
+        )
 
     @staticmethod
     def _extracted_values(
@@ -373,6 +388,7 @@ class HiringEnrichmentService:
         request: HiringEnrichmentRequest,
         output: HiringProviderStructuredOutput,
         supports: list[EnrichmentFieldSupport],
+        removed_values: dict[EnrichmentField, int],
     ) -> tuple[float, dict[EnrichmentField, float]]:
         evidence_availability = (
             1.0
@@ -400,6 +416,13 @@ class HiringEnrichmentService:
         confidence = cls._bounded(
             round((evidence_availability + support_coverage + completeness) / 3, 4)
         )
+        removed_count = sum(removed_values.values())
+        retained_count = len(output.skills) + len(output.technologies)
+        if removed_count:
+            retention = retained_count / (retained_count + removed_count)
+            confidence = cls._bounded(
+                round(confidence * (0.75 + 0.25 * retention), 4)
+            )
         field_confidences = {}
         for field in {field for field, _ in extracted}:
             field_confidences[field] = (
@@ -423,28 +446,66 @@ class HiringEnrichmentService:
         if output.seniority_level is not EnrichmentSeniority.UNKNOWN:
             values.append((EnrichmentField.SENIORITY_LEVEL, output.seniority_level.value))
         supports: list[EnrichmentFieldSupport] = []
-        folded_text = supplied_text.casefold()
         for field, value in values:
-            start = folded_text.find(value.casefold())
-            if start >= 0:
+            excerpt = cls._matching_excerpt(supplied_text, value)
+            if excerpt is not None:
                 supports.append(
                     EnrichmentFieldSupport(
                         field=field,
                         value=value,
-                        excerpt=supplied_text[start : start + len(value)],
+                        excerpt=excerpt,
                         evidence_id=evidence_id,
                     )
                 )
         return supports
 
     @staticmethod
-    def _limitations(output: HiringProviderStructuredOutput) -> list[str]:
+    def _limitations(
+        output: HiringProviderStructuredOutput,
+        removed_values: dict[EnrichmentField, int],
+    ) -> list[str]:
         limitations = ["Enrichment uses only the supplied job posting evidence."]
         if output.capability_classifications or output.hiring_themes:
             limitations.append(
                 "Capability and theme labels are semantic classifications, not strategic claims."
             )
+        removed_skills = removed_values[EnrichmentField.SKILLS]
+        removed_technologies = removed_values[EnrichmentField.TECHNOLOGIES]
+        if removed_skills or removed_technologies:
+            limitations.append(
+                "Unsupported provider extractions were excluded after deterministic "
+                f"grounding validation ({removed_skills} skills, "
+                f"{removed_technologies} technologies)."
+            )
         return limitations
+
+    @staticmethod
+    def _matching_excerpt(source_text: str, value: str) -> str | None:
+        normalized_source = unicodedata.normalize("NFKC", source_text)
+        normalized_value = unicodedata.normalize("NFKC", value)
+        source_tokens = HiringEnrichmentService._tokens_with_spans(normalized_source)
+        value_tokens = [
+            token
+            for token, _, _ in HiringEnrichmentService._tokens_with_spans(
+                normalized_value
+            )
+        ]
+        if not value_tokens:
+            return None
+        width = len(value_tokens)
+        for index in range(len(source_tokens) - width + 1):
+            candidate = source_tokens[index : index + width]
+            if [token for token, _, _ in candidate] == value_tokens:
+                return normalized_source[candidate[0][1] : candidate[-1][2]]
+        return None
+
+    @staticmethod
+    def _tokens_with_spans(value: str) -> list[tuple[str, int, int]]:
+        tokens: list[tuple[str, int, int]] = []
+        for match in re.finditer(r"[^\W_]+|[&+#]+", value, flags=re.UNICODE):
+            token = match.group().casefold()
+            tokens.append(("and" if token == "&" else token, *match.span()))
+        return tokens
 
     @staticmethod
     def _supplied_text(request: HiringEnrichmentRequest) -> str:

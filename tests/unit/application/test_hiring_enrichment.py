@@ -32,14 +32,14 @@ def run(coroutine):
     return asyncio.run(coroutine)
 
 
-def posting_and_evidence(*, empty_text: bool = False):
+def posting_and_evidence(*, empty_text: bool = False, description: str = DESCRIPTION):
     evidence_id = uuid4()
     posting = JobPosting(
         job_id=uuid4(),
         organization="Example Bank",
         source_job_id="R-1",
         title="Lead Cloud Engineer",
-        description=" " if empty_text else DESCRIPTION,
+        description=" " if empty_text else description,
         location="Charlotte, NC",
         country="US",
         posted_date=date(2026, 8, 1),
@@ -52,7 +52,7 @@ def posting_and_evidence(*, empty_text: bool = False):
         source_type=SourceType.CAREER_SITE,
         source_title=posting.title,
         retrieved_at=ENRICHED_AT,
-        source_excerpt=None if empty_text else DESCRIPTION,
+        source_excerpt=None if empty_text else description,
         raw_reference="synthetic:R-1",
         collector_identity="synthetic-test",
     )
@@ -168,7 +168,7 @@ def test_empty_unsupported_fields_are_valid_and_confidence_is_deterministic():
     assert first.model_dump(mode="json") == second.model_dump(mode="json")
 
 
-def test_malformed_provider_response_and_unsupported_explicit_value_are_typed_failures():
+def test_malformed_provider_response_is_a_typed_failure():
     posting, evidence = posting_and_evidence()
     malformed = HiringEnrichmentService(
         FakeHiringEnrichmentProvider({"unexpected": True}),
@@ -179,15 +179,114 @@ def test_malformed_provider_response_and_unsupported_explicit_value_are_typed_fa
         run(malformed.enrich(posting, evidence))
     assert malformed_error.value.code is EnrichmentFailureCode.MALFORMED_STRUCTURED_OUTPUT
 
-    output = valid_output()
-    output.skills = ["Unsupported skill"]
-    unsupported = HiringEnrichmentService(
+
+
+@pytest.mark.parametrize(
+    ("description", "extracted", "expected_excerpt"),
+    [
+        ("Python supports analytics.", "Python", "Python"),
+        ("PYTHON supports analytics.", "python", "PYTHON"),
+        ("Stakeholder   management is required.", "stakeholder management", "Stakeholder   management"),
+        ("Strong problem solving skills.", "problem-solving", "problem solving"),
+        ("Risk & Compliance experience.", "risk and compliance", "Risk & Compliance"),
+        ("SAS / SQL reporting.", "SAS SQL", "SAS / SQL"),
+    ],
+)
+def test_deterministic_grounding_normalizes_formatting_without_semantic_matching(
+    description,
+    extracted,
+    expected_excerpt,
+):
+    posting, evidence = posting_and_evidence(description=description)
+    output = HiringProviderStructuredOutput(
+        skills=[extracted],
+        model_confidence=0.8,
+    )
+    result = run(
+        HiringEnrichmentService(
+            FakeHiringEnrichmentProvider(provider_response(output)),
+            enabled=True,
+        ).enrich(posting, evidence)
+    )
+
+    assert result.skills == [extracted]
+    assert result.field_support[0].excerpt == expected_excerpt
+    assert result.field_support[0].evidence_id == evidence.evidence_id
+
+
+def test_unsupported_skill_and_technology_are_excluded_not_accepted():
+    posting, evidence = posting_and_evidence(description="Analytics experience.")
+    output = HiringProviderStructuredOutput(
+        skills=["Machine learning"],
+        technologies=["Python"],
+        model_confidence=0.8,
+    )
+
+    result = run(
+        HiringEnrichmentService(
+            FakeHiringEnrichmentProvider(provider_response(output)),
+            enabled=True,
+        ).enrich(posting, evidence)
+    )
+
+    assert result.skills == []
+    assert result.technologies == []
+    assert result.field_support == []
+    assert result.confidence == 0.5
+    assert result.limitations[-1].endswith("(1 skills, 1 technologies).")
+
+
+def test_mixed_supported_and_unsupported_values_keep_only_grounded_references():
+    posting, evidence = posting_and_evidence(
+        description="Use Python for portfolio analytics and problem solving."
+    )
+    output = HiringProviderStructuredOutput(
+        skills=["problem-solving", "Machine learning"],
+        technologies=["Python", "Snowflake"],
+        model_confidence=0.8,
+    )
+    service = HiringEnrichmentService(
         FakeHiringEnrichmentProvider(provider_response(output)),
         enabled=True,
+        clock=lambda: ENRICHED_AT,
     )
-    with pytest.raises(HiringEnrichmentError) as support_error:
-        run(unsupported.enrich(posting, evidence))
-    assert support_error.value.code is EnrichmentFailureCode.VALIDATION_FAILURE
+
+    first = run(service.enrich(posting, evidence))
+    second = run(service.enrich(posting, evidence))
+
+    assert first.skills == ["problem-solving"]
+    assert first.technologies == ["Python"]
+    assert {support.value for support in first.field_support} == {
+        "problem-solving",
+        "Python",
+    }
+    assert all(
+        support.evidence_id == evidence.evidence_id
+        for support in first.field_support
+    )
+    assert first.confidence < 1
+    assert "(1 skills, 1 technologies)" in first.limitations[-1]
+    assert first.model_dump(mode="json") == second.model_dump(mode="json")
+
+
+def test_python_does_not_match_unrelated_or_partial_token_evidence():
+    posting, evidence = posting_and_evidence(
+        description="Analytics work with Pythonic coding conventions."
+    )
+    output = HiringProviderStructuredOutput(
+        technologies=["Python"],
+        model_confidence=0.8,
+    )
+
+    result = run(
+        HiringEnrichmentService(
+            FakeHiringEnrichmentProvider(provider_response(output)),
+            enabled=True,
+        ).enrich(posting, evidence)
+    )
+
+    assert result.technologies == []
+    assert result.field_support == []
 
 
 def test_provider_output_cannot_inject_application_owned_identity_or_provenance():
