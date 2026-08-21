@@ -9,11 +9,13 @@ from backend.app.application.hiring.collection import (
     JobCollector,
 )
 from backend.app.application.hiring.persistence import (
+    CollectionRunRepository,
     EvidenceRepository,
     HiringPersistenceService,
     HiringPersistenceUnitOfWork,
     JobPostingRepository,
 )
+from backend.app.application.hiring.observability import CollectionRun
 
 __all__ = [
     "CollectedJob",
@@ -28,4 +30,6 @@ __all__ = [
     "HiringPersistenceService",
     "HiringPersistenceUnitOfWork",
     "JobPostingRepository",
+    "CollectionRun",
+    "CollectionRunRepository",
 ]

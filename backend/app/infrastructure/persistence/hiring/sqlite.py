@@ -6,6 +6,7 @@ from pathlib import Path
 from types import TracebackType
 from uuid import UUID
 
+from backend.app.application.hiring.observability import CollectionRun
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence
 
@@ -47,6 +48,30 @@ CREATE TABLE IF NOT EXISTS job_postings (
 
 CREATE INDEX IF NOT EXISTS idx_job_postings_evidence_id
     ON job_postings(evidence_id);
+
+CREATE TABLE IF NOT EXISTS collection_runs (
+    run_id TEXT PRIMARY KEY,
+    collector_id TEXT NOT NULL,
+    source_id TEXT NOT NULL,
+    organization TEXT NOT NULL,
+    started_at TEXT NOT NULL,
+    completed_at TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('completed', 'partial', 'failed')),
+    pages_attempted INTEGER NOT NULL CHECK (pages_attempted >= 0),
+    records_encountered INTEGER NOT NULL CHECK (records_encountered >= 0),
+    records_collected INTEGER NOT NULL CHECK (records_collected >= 0),
+    records_skipped INTEGER NOT NULL CHECK (records_skipped >= 0),
+    issue_count INTEGER NOT NULL CHECK (issue_count >= 0),
+    resume_cursor TEXT,
+    source_metadata TEXT NOT NULL,
+    CHECK (records_encountered = records_collected + records_skipped)
+);
+
+CREATE INDEX IF NOT EXISTS idx_collection_runs_completed_at
+    ON collection_runs(completed_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_collection_runs_organization_completed_at
+    ON collection_runs(organization, completed_at DESC);
 """
 
 
@@ -200,6 +225,90 @@ class SQLiteJobPostingRepository:
         return [_job_posting_from_row(row) for row in rows]
 
 
+class SQLiteCollectionRunRepository:
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self._connection = connection
+
+    def save(self, run: CollectionRun) -> None:
+        values = run.model_dump(mode="json")
+        self._connection.execute(
+            """
+            INSERT INTO collection_runs (
+                run_id, collector_id, source_id, organization, started_at,
+                completed_at, status, pages_attempted, records_encountered,
+                records_collected, records_skipped, issue_count, resume_cursor,
+                source_metadata
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(run_id) DO UPDATE SET
+                collector_id = excluded.collector_id,
+                source_id = excluded.source_id,
+                organization = excluded.organization,
+                started_at = excluded.started_at,
+                completed_at = excluded.completed_at,
+                status = excluded.status,
+                pages_attempted = excluded.pages_attempted,
+                records_encountered = excluded.records_encountered,
+                records_collected = excluded.records_collected,
+                records_skipped = excluded.records_skipped,
+                issue_count = excluded.issue_count,
+                resume_cursor = excluded.resume_cursor,
+                source_metadata = excluded.source_metadata
+            """,
+            (
+                values["run_id"],
+                values["collector_id"],
+                values["source_id"],
+                values["organization"],
+                values["started_at"],
+                values["completed_at"],
+                values["status"],
+                values["pages_attempted"],
+                values["records_encountered"],
+                values["records_collected"],
+                values["records_skipped"],
+                values["issue_count"],
+                values["resume_cursor"],
+                _dump_json(values["source_metadata"]),
+            ),
+        )
+
+    def get(self, run_id: UUID) -> CollectionRun | None:
+        row = self._connection.execute(
+            "SELECT * FROM collection_runs WHERE run_id = ?",
+            (str(run_id),),
+        ).fetchone()
+        return _collection_run_from_row(row) if row is not None else None
+
+    def list_recent(self, limit: int = 20) -> list[CollectionRun]:
+        _validate_limit(limit)
+        rows = self._connection.execute(
+            """
+            SELECT * FROM collection_runs
+            ORDER BY completed_at DESC, started_at DESC, run_id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return [_collection_run_from_row(row) for row in rows]
+
+    def list_by_organization(
+        self,
+        organization: str,
+        limit: int = 20,
+    ) -> list[CollectionRun]:
+        _validate_limit(limit)
+        rows = self._connection.execute(
+            """
+            SELECT * FROM collection_runs
+            WHERE organization = ?
+            ORDER BY completed_at DESC, started_at DESC, run_id DESC
+            LIMIT ?
+            """,
+            (organization, limit),
+        ).fetchall()
+        return [_collection_run_from_row(row) for row in rows]
+
+
 class SQLiteHiringUnitOfWork:
     def __init__(self, database: SQLiteDatabase) -> None:
         self._database = database
@@ -214,6 +323,7 @@ class SQLiteHiringUnitOfWork:
         self._committed = False
         self.job_postings = SQLiteJobPostingRepository(self._connection)
         self.evidence = SQLiteEvidenceRepository(self._connection)
+        self.collection_runs = SQLiteCollectionRunRepository(self._connection)
         return self
 
     def __exit__(
@@ -245,6 +355,32 @@ class SQLiteHiringUnitOfWork:
 
 def _dump_json(value: object) -> str:
     return json.dumps(value, separators=(",", ":"), sort_keys=True)
+
+
+def _validate_limit(limit: int) -> None:
+    if limit < 1:
+        raise ValueError("limit must be at least 1")
+
+
+def _collection_run_from_row(row: sqlite3.Row) -> CollectionRun:
+    return CollectionRun.model_validate(
+        {
+            "run_id": row["run_id"],
+            "collector_id": row["collector_id"],
+            "source_id": row["source_id"],
+            "organization": row["organization"],
+            "started_at": row["started_at"],
+            "completed_at": row["completed_at"],
+            "status": row["status"],
+            "pages_attempted": row["pages_attempted"],
+            "records_encountered": row["records_encountered"],
+            "records_collected": row["records_collected"],
+            "records_skipped": row["records_skipped"],
+            "issue_count": row["issue_count"],
+            "resume_cursor": row["resume_cursor"],
+            "source_metadata": json.loads(row["source_metadata"]),
+        }
+    )
 
 
 def _evidence_from_row(row: sqlite3.Row) -> Evidence:

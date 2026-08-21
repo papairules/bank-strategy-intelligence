@@ -107,7 +107,7 @@ def test_database_initialization_creates_required_schema(tmp_path):
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             )
         }
-    assert {"evidence", "job_postings"} <= tables
+    assert {"collection_runs", "evidence", "job_postings"} <= tables
 
 
 def test_save_and_retrieve_evidence(database):

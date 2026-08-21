@@ -3,6 +3,7 @@ from typing import Protocol, Self
 from uuid import UUID
 
 from backend.app.application.hiring.collection import CollectedJob, CollectionResult
+from backend.app.application.hiring.observability import CollectionRun
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence
 
@@ -29,9 +30,24 @@ class EvidenceRepository(Protocol):
     def list_all(self) -> list[Evidence]: ...
 
 
+class CollectionRunRepository(Protocol):
+    def save(self, run: CollectionRun) -> None: ...
+
+    def get(self, run_id: UUID) -> CollectionRun | None: ...
+
+    def list_recent(self, limit: int = 20) -> list[CollectionRun]: ...
+
+    def list_by_organization(
+        self,
+        organization: str,
+        limit: int = 20,
+    ) -> list[CollectionRun]: ...
+
+
 class HiringPersistenceUnitOfWork(Protocol):
     job_postings: JobPostingRepository
     evidence: EvidenceRepository
+    collection_runs: CollectionRunRepository
 
     def __enter__(self) -> Self: ...
 
@@ -67,4 +83,21 @@ class HiringPersistenceService:
         return saved
 
     def save_collection_result(self, result: CollectionResult) -> int:
-        return self.save_collected_jobs(result.jobs)
+        saved = 0
+        with self._unit_of_work_factory() as unit_of_work:
+            for collected_job in result.jobs:
+                if (
+                    collected_job.posting.evidence_id
+                    != collected_job.evidence.evidence_id
+                ):
+                    raise ValueError(
+                        "posting evidence_id must match evidence evidence_id"
+                    )
+                unit_of_work.evidence.save(collected_job.evidence)
+                unit_of_work.job_postings.save(collected_job.posting)
+                saved += 1
+            unit_of_work.collection_runs.save(
+                CollectionRun.from_collection_result(result)
+            )
+            unit_of_work.commit()
+        return saved
