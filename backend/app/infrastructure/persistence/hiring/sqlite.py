@@ -7,6 +7,7 @@ from types import TracebackType
 from uuid import UUID
 
 from backend.app.application.hiring.observability import CollectionRun
+from backend.app.application.hiring.persistence import PersistenceError
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence
 
@@ -318,8 +319,16 @@ class SQLiteHiringUnitOfWork:
     def __enter__(self) -> SQLiteHiringUnitOfWork:
         if self._connection is not None:
             raise RuntimeError("unit of work is already active")
-        self._connection = self._database.connect()
-        self._connection.execute("BEGIN")
+        try:
+            self._connection = self._database.connect()
+            self._connection.execute("BEGIN")
+        except sqlite3.Error as error:
+            self._connection = None
+            raise PersistenceError(
+                "SQLite transaction could not be started",
+                code="sqlite_transaction_start_failed",
+                metadata={"sqlite_error": type(error).__name__},
+            ) from error
         self._committed = False
         self.job_postings = SQLiteJobPostingRepository(self._connection)
         self.evidence = SQLiteEvidenceRepository(self._connection)
@@ -334,10 +343,18 @@ class SQLiteHiringUnitOfWork:
     ) -> None:
         if self._connection is None:
             return
-        if exc_type is not None or not self._committed:
-            self._connection.rollback()
-        self._connection.close()
-        self._connection = None
+        try:
+            if exc_type is not None or not self._committed:
+                self._connection.rollback()
+        finally:
+            self._connection.close()
+            self._connection = None
+        if exc is not None and isinstance(exc, sqlite3.Error):
+            raise PersistenceError(
+                "SQLite persistence operation failed",
+                code="sqlite_operation_failed",
+                metadata={"sqlite_error": type(exc).__name__},
+            ) from exc
 
     def commit(self) -> None:
         self._active_connection().commit()

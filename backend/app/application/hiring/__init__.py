@@ -14,8 +14,17 @@ from backend.app.application.hiring.persistence import (
     HiringPersistenceService,
     HiringPersistenceUnitOfWork,
     JobPostingRepository,
+    PersistenceError,
 )
 from backend.app.application.hiring.observability import CollectionRun
+from backend.app.application.hiring.execution import (
+    CollectedJobPersistence,
+    CollectionRunPersistence,
+    ExecutionFailure,
+    ExecutionFailurePhase,
+    HiringCollectionExecutionResult,
+    HiringCollectionExecutionService,
+)
 
 __all__ = [
     "CollectedJob",
@@ -32,4 +41,11 @@ __all__ = [
     "JobPostingRepository",
     "CollectionRun",
     "CollectionRunRepository",
+    "CollectedJobPersistence",
+    "CollectionRunPersistence",
+    "ExecutionFailure",
+    "ExecutionFailurePhase",
+    "HiringCollectionExecutionResult",
+    "HiringCollectionExecutionService",
+    "PersistenceError",
 ]

@@ -8,6 +8,19 @@ from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence
 
 
+class PersistenceError(Exception):
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "persistence_error",
+        metadata: dict[str, str | int | float | bool | None] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.code = code
+        self.metadata = metadata or {}
+
+
 class JobPostingRepository(Protocol):
     def save(self, posting: JobPosting) -> None: ...
 
@@ -101,3 +114,8 @@ class HiringPersistenceService:
             )
             unit_of_work.commit()
         return saved
+
+    def save_collection_run(self, run: CollectionRun) -> None:
+        with self._unit_of_work_factory() as unit_of_work:
+            unit_of_work.collection_runs.save(run)
+            unit_of_work.commit()
