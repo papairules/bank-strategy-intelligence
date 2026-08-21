@@ -5,6 +5,7 @@ from fastapi import Depends
 from backend.app.application.evidence import UnifiedEvidenceService
 from backend.app.application.hiring import HiringAnalyticsService, HiringSignalService
 from backend.app.application.hiring import HiringDashboardService, HiringReadService
+from backend.app.application.strategy import CrossDomainStrategicSignalService
 from backend.app.application.technology import (
     TechnologyAnalyticsService,
     TechnologyObservationService,
@@ -54,4 +55,22 @@ def get_unified_evidence_service(
         HiringSignalService(HiringAnalyticsService(read_service)),
         technology_analytics,
         technology_signals,
+    )
+
+
+def get_cross_domain_strategic_signal_service(
+    hiring: HiringDashboardService = Depends(get_hiring_dashboard_service),
+    technology_analytics: TechnologyAnalyticsService = Depends(
+        get_technology_analytics_service
+    ),
+    technology_signals: TechnologySignalService = Depends(
+        get_technology_signal_service
+    ),
+    evidence: UnifiedEvidenceService = Depends(get_unified_evidence_service),
+) -> CrossDomainStrategicSignalService:
+    return CrossDomainStrategicSignalService(
+        hiring,
+        technology_analytics,
+        technology_signals,
+        evidence,
     )

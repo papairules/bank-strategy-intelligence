@@ -105,6 +105,9 @@ class UnifiedEvidenceService:
         items = records[filters.offset : filters.offset + filters.limit]
         return UnifiedEvidencePage(items=items, total=total, limit=filters.limit, offset=filters.offset, returned_count=len(items))
 
+    def records_for_intelligence(self, organization: str) -> list[UnifiedEvidenceRecord]:
+        return self._records(organization)
+
     def get(self, evidence_id: UUID) -> UnifiedEvidenceDetail | None:
         job = next((item for item in self._read_service.list_all_jobs() if item.evidence_id == evidence_id), None)
         if job is None:

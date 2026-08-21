@@ -112,3 +112,18 @@ def test_unified_evidence_missing_pagination_and_openapi(client):
     assert "/api/v1/evidence/organizations/{organization}/summary" in paths
     assert "/api/v1/evidence/organizations/{organization}/records" in paths
     assert "/api/v1/evidence/{evidence_id}" in paths
+
+
+def test_cross_domain_strategy_api_returns_safe_suppression_context(client):
+    response = client.get("/api/v1/strategy/organizations/Wells%20Fargo/signals")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["generated_signal_count"] == 0
+    assert body["signals"] == []
+    assert body["coverage_context"]["total_jobs"] == 1
+    assert body["coverage_context"]["enriched_jobs"] == 1
+    assert body["limitations"]
+
+
+def test_openapi_contains_cross_domain_strategy_path(client):
+    assert "/api/v1/strategy/organizations/{organization}/signals" in client.get("/openapi.json").json()["paths"]
