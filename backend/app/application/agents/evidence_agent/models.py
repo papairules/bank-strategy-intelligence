@@ -27,6 +27,7 @@ class EvidenceAgentFailureCode(StrEnum):
     QUOTA = "quota"
     TIMEOUT = "timeout"
     MALFORMED_PROVIDER_OUTPUT = "malformed_provider_output"
+    INVALID_PROVIDER_REQUEST = "invalid_provider_request"
     INVALID_TOOL_REQUEST = "invalid_tool_request"
     TOOL_EXECUTION_LIMIT = "tool_execution_limit"
     CITATION_VALIDATION = "citation_validation"
