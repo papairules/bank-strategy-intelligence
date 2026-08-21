@@ -4,7 +4,7 @@ from uuid import UUID
 
 from backend.app.application.hiring.collection import CollectedJob, CollectionResult
 from backend.app.application.hiring.observability import CollectionRun
-from backend.app.domain.hiring import JobPosting
+from backend.app.domain.hiring import EmploymentType, JobPosting
 from backend.app.domain.intelligence import Evidence
 
 
@@ -33,6 +33,16 @@ class JobPostingRepository(Protocol):
     ) -> JobPosting | None: ...
 
     def list_all(self) -> list[JobPosting]: ...
+
+    def search(
+        self,
+        *,
+        organization: str | None,
+        country: str | None,
+        employment_type: EmploymentType | None,
+        limit: int,
+        offset: int,
+    ) -> list[JobPosting]: ...
 
 
 class EvidenceRepository(Protocol):

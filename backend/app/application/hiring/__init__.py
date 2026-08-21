@@ -32,6 +32,10 @@ from backend.app.application.hiring.scheduling import (
     ScheduledHiringJob,
     ScheduledJobOutcome,
 )
+from backend.app.application.hiring.queries import (
+    HiringReadService,
+    HiringReadServiceProtocol,
+)
 
 __all__ = [
     "CollectedJob",
@@ -60,4 +64,6 @@ __all__ = [
     "ScheduledExecutionTarget",
     "ScheduledHiringJob",
     "ScheduledJobOutcome",
+    "HiringReadService",
+    "HiringReadServiceProtocol",
 ]

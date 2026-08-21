@@ -8,7 +8,7 @@ from uuid import UUID
 
 from backend.app.application.hiring.observability import CollectionRun
 from backend.app.application.hiring.persistence import PersistenceError
-from backend.app.domain.hiring import JobPosting
+from backend.app.domain.hiring import EmploymentType, JobPosting
 from backend.app.domain.intelligence import Evidence
 
 
@@ -222,6 +222,43 @@ class SQLiteJobPostingRepository:
     def list_all(self) -> list[JobPosting]:
         rows = self._connection.execute(
             "SELECT * FROM job_postings ORDER BY organization, source_job_id"
+        ).fetchall()
+        return [_job_posting_from_row(row) for row in rows]
+
+    def search(
+        self,
+        *,
+        organization: str | None,
+        country: str | None,
+        employment_type: EmploymentType | None,
+        limit: int,
+        offset: int,
+    ) -> list[JobPosting]:
+        if limit < 1:
+            raise ValueError("limit must be at least 1")
+        if offset < 0:
+            raise ValueError("offset must be non-negative")
+        clauses: list[str] = []
+        parameters: list[str | int] = []
+        if organization is not None:
+            clauses.append("organization = ?")
+            parameters.append(organization)
+        if country is not None:
+            clauses.append("country = ?")
+            parameters.append(country)
+        if employment_type is not None:
+            clauses.append("employment_type = ?")
+            parameters.append(employment_type.value)
+        where_clause = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        parameters.extend([limit, offset])
+        rows = self._connection.execute(
+            f"""
+            SELECT * FROM job_postings
+            {where_clause}
+            ORDER BY posted_date DESC, organization, source_job_id
+            LIMIT ? OFFSET ?
+            """,
+            parameters,
         ).fetchall()
         return [_job_posting_from_row(row) for row in rows]
 
