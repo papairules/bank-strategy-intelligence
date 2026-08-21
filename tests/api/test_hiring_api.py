@@ -167,7 +167,10 @@ def persist_enrichment(
 
 
 def test_empty_jobs_list_has_pagination_metadata(client):
-    response = client.get("/api/v1/hiring/jobs")
+    response = client.get(
+        "/api/v1/hiring/jobs",
+        params={"organization": "Wells Fargo"},
+    )
 
     assert response.status_code == 200
     assert response.json() == {
@@ -188,23 +191,25 @@ def test_jobs_list_filters_and_does_not_expose_raw_payloads(client, database):
     ]
     persist_jobs(database, jobs)
 
-    all_response = client.get("/api/v1/hiring/jobs")
+    wells_fargo_response = client.get(
+        "/api/v1/hiring/jobs", params={"organization": "Wells Fargo"}
+    )
     organization_response = client.get(
         "/api/v1/hiring/jobs", params={"organization": "Example Bank"}
     )
     country_response = client.get(
-        "/api/v1/hiring/jobs", params={"country": "IN"}
+        "/api/v1/hiring/jobs", params={"organization": "Wells Fargo", "country": "IN"}
     )
     employment_response = client.get(
-        "/api/v1/hiring/jobs", params={"employment_type": "part_time"}
+        "/api/v1/hiring/jobs", params={"organization": "Wells Fargo", "employment_type": "part_time"}
     )
 
-    assert all_response.status_code == 200
-    assert all_response.json()["returned_count"] == 4
+    assert wells_fargo_response.status_code == 200
+    assert wells_fargo_response.json()["returned_count"] == 3
     assert organization_response.json()["items"][0]["source_job_id"] == "R-4"
     assert country_response.json()["items"][0]["source_job_id"] == "R-3"
     assert employment_response.json()["items"][0]["source_job_id"] == "R-2"
-    serialized = str(all_response.json())
+    serialized = str(wells_fargo_response.json())
     assert "search_summary" not in serialized
     assert "job_detail" not in serialized
     assert "source_payload" not in serialized
@@ -222,7 +227,7 @@ def test_jobs_limit_offset_and_validation(client, database):
 
     response = client.get(
         "/api/v1/hiring/jobs",
-        params={"limit": 1, "offset": 1},
+        params={"organization": "Wells Fargo", "limit": 1, "offset": 1},
     )
 
     assert response.status_code == 200
@@ -230,12 +235,13 @@ def test_jobs_limit_offset_and_validation(client, database):
     assert response.json()["offset"] == 1
     assert response.json()["returned_count"] == 1
     assert response.json()["items"][0]["source_job_id"] == "R-2"
-    assert client.get("/api/v1/hiring/jobs", params={"limit": 101}).status_code == 422
-    assert client.get("/api/v1/hiring/jobs", params={"offset": -1}).status_code == 422
+    assert client.get("/api/v1/hiring/jobs", params={"organization": "Wells Fargo", "limit": 101}).status_code == 422
+    assert client.get("/api/v1/hiring/jobs", params={"organization": "Wells Fargo", "offset": -1}).status_code == 422
+    assert client.get("/api/v1/hiring/jobs").status_code == 422
     assert (
         client.get(
             "/api/v1/hiring/jobs",
-            params={"employment_type": "invalid"},
+            params={"organization": "Wells Fargo", "employment_type": "invalid"},
         ).status_code
         == 422
     )
@@ -245,7 +251,10 @@ def test_job_detail_uuid_serialization_and_missing_404(client, database):
     collected = collected_job("R-1")
     persist_jobs(database, [collected])
 
-    response = client.get(f"/api/v1/hiring/jobs/{collected.posting.job_id}")
+    response = client.get(
+        f"/api/v1/hiring/jobs/{collected.posting.job_id}",
+        params={"organization": "Wells Fargo"},
+    )
 
     assert response.status_code == 200
     assert response.json()["job"]["job_id"] == str(collected.posting.job_id)
@@ -253,8 +262,9 @@ def test_job_detail_uuid_serialization_and_missing_404(client, database):
         collected.evidence.evidence_id
     )
     assert response.json()["enrichment"] is None
-    assert client.get(f"/api/v1/hiring/jobs/{uuid4()}").status_code == 404
-    assert client.get("/api/v1/hiring/jobs/not-a-uuid").status_code == 422
+    assert client.get(f"/api/v1/hiring/jobs/{uuid4()}", params={"organization": "Wells Fargo"}).status_code == 404
+    assert client.get("/api/v1/hiring/jobs/not-a-uuid", params={"organization": "Wells Fargo"}).status_code == 422
+    assert client.get(f"/api/v1/hiring/jobs/{collected.posting.job_id}", params={"organization": "Other Bank"}).status_code == 404
 
 
 def test_job_evidence_uses_persisted_linkage_and_serializes_datetime(client, database):
@@ -262,14 +272,15 @@ def test_job_evidence_uses_persisted_linkage_and_serializes_datetime(client, dat
     persist_jobs(database, [collected])
 
     response = client.get(
-        f"/api/v1/hiring/jobs/{collected.posting.job_id}/evidence"
+        f"/api/v1/hiring/jobs/{collected.posting.job_id}/evidence",
+        params={"organization": "Wells Fargo"},
     )
 
     assert response.status_code == 200
     assert response.json()["evidence_id"] == str(collected.posting.evidence_id)
     assert response.json()["retrieved_at"] == "2026-08-20T12:30:00Z"
     assert response.json()["raw_reference"] == "workday:wf:WellsFargoJobs:R-1"
-    assert client.get(f"/api/v1/hiring/jobs/{uuid4()}/evidence").status_code == 404
+    assert client.get(f"/api/v1/hiring/jobs/{uuid4()}/evidence", params={"organization": "Wells Fargo"}).status_code == 404
 
 
 def test_missing_linked_evidence_returns_404(client, database):
@@ -282,7 +293,8 @@ def test_missing_linked_evidence_returns_404(client, database):
         )
 
     response = client.get(
-        f"/api/v1/hiring/jobs/{collected.posting.job_id}/evidence"
+        f"/api/v1/hiring/jobs/{collected.posting.job_id}/evidence",
+        params={"organization": "Wells Fargo"},
     )
 
     assert response.status_code == 404
@@ -294,18 +306,24 @@ def test_runs_list_filter_detail_and_datetime_serialization(client, database):
     second = persist_run(database, organization="Example Bank", completed_offset=1)
     third = persist_run(database, organization="Wells Fargo", completed_offset=2)
 
-    response = client.get("/api/v1/hiring/runs", params={"limit": 2})
+    response = client.get(
+        "/api/v1/hiring/runs",
+        params={"organization": "Wells Fargo", "limit": 2},
+    )
     filtered = client.get(
         "/api/v1/hiring/runs",
         params={"organization": "Wells Fargo"},
     )
-    detail = client.get(f"/api/v1/hiring/runs/{second.run_id}")
+    detail = client.get(
+        f"/api/v1/hiring/runs/{second.run_id}",
+        params={"organization": "Example Bank"},
+    )
 
     assert response.status_code == 200
     assert response.json()["returned_count"] == 2
     assert [item["run_id"] for item in response.json()["items"]] == [
         str(third.run_id),
-        str(second.run_id),
+        str(first.run_id),
     ]
     assert [item["run_id"] for item in filtered.json()["items"]] == [
         str(third.run_id),
@@ -314,9 +332,10 @@ def test_runs_list_filter_detail_and_datetime_serialization(client, database):
     assert detail.status_code == 200
     assert detail.json()["run_id"] == str(second.run_id)
     assert detail.json()["started_at"] == "2026-08-20T13:30:00Z"
-    assert client.get(f"/api/v1/hiring/runs/{uuid4()}").status_code == 404
-    assert client.get("/api/v1/hiring/runs/not-a-uuid").status_code == 422
-    assert client.get("/api/v1/hiring/runs", params={"limit": 101}).status_code == 422
+    assert client.get(f"/api/v1/hiring/runs/{uuid4()}", params={"organization": "Wells Fargo"}).status_code == 404
+    assert client.get("/api/v1/hiring/runs/not-a-uuid", params={"organization": "Wells Fargo"}).status_code == 422
+    assert client.get("/api/v1/hiring/runs", params={"organization": "Wells Fargo", "limit": 101}).status_code == 422
+    assert client.get(f"/api/v1/hiring/runs/{second.run_id}", params={"organization": "Wells Fargo"}).status_code == 404
 
 
 def test_organization_summary_and_unknown_organization(client, database):
@@ -419,12 +438,14 @@ def test_job_detail_latest_enrichment_and_history(client, database):
         generated_at=BASE_TIME + timedelta(minutes=1),
     )
 
-    detail = client.get(f"/api/v1/hiring/jobs/{collected.posting.job_id}")
+    detail = client.get(f"/api/v1/hiring/jobs/{collected.posting.job_id}", params={"organization": "Wells Fargo"})
     latest = client.get(
-        f"/api/v1/hiring/jobs/{collected.posting.job_id}/enrichment"
+        f"/api/v1/hiring/jobs/{collected.posting.job_id}/enrichment",
+        params={"organization": "Wells Fargo"},
     )
     history = client.get(
-        f"/api/v1/hiring/jobs/{collected.posting.job_id}/enrichments"
+        f"/api/v1/hiring/jobs/{collected.posting.job_id}/enrichments",
+        params={"organization": "Wells Fargo"},
     )
 
     assert detail.status_code == 200
@@ -451,7 +472,8 @@ def test_missing_enrichment_returns_404_without_generation(client, database):
     persist_jobs(database, [collected])
 
     response = client.get(
-        f"/api/v1/hiring/jobs/{collected.posting.job_id}/enrichment"
+        f"/api/v1/hiring/jobs/{collected.posting.job_id}/enrichment",
+        params={"organization": "Wells Fargo"},
     )
 
     assert response.status_code == 404

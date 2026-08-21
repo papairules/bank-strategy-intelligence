@@ -85,6 +85,11 @@ export function buildJobsPath(
   return `${organizationPath(organization)}/jobs?${params.toString()}`;
 }
 
+export function buildJobDetailPath(organization: string, jobId: string): string {
+  const params = new URLSearchParams({ organization });
+  return `/api/v1/hiring/jobs/${encodeURIComponent(jobId)}?${params.toString()}`;
+}
+
 export const hiringApi = {
   summary: (organization: string, signal?: AbortSignal) =>
     getJson<OrganizationSummary>(`${organizationPath(organization)}/summary`, signal),
@@ -94,6 +99,6 @@ export const hiringApi = {
     getJson<SignalsResponse>(`${organizationPath(organization)}/signals`, signal),
   jobs: (organization: string, filters: JobFilters, signal?: AbortSignal) =>
     getJson<JobListResponse>(buildJobsPath(organization, filters), signal),
-  jobDetail: (jobId: string, signal?: AbortSignal) =>
-    getJson<JobDetail>(`/api/v1/hiring/jobs/${encodeURIComponent(jobId)}`, signal),
+  jobDetail: (organization: string, jobId: string, signal?: AbortSignal) =>
+    getJson<JobDetail>(buildJobDetailPath(organization, jobId), signal),
 };

@@ -67,7 +67,10 @@ class HiringAgentTools:
         )
 
     def get_job_intelligence(self, request: JobIdInput) -> AgentJobIntelligence:
-        job = self._read.get_job(request.job_id)
+        job = self._read.get_job_for_organization(
+            request.organization,
+            request.job_id,
+        )
         if job is None:
             return AgentJobIntelligence(
                 found=False,

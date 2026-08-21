@@ -293,3 +293,26 @@ def test_collection_result_rejects_inconsistent_counts():
             records_collected=1,
             records_skipped=0,
         )
+
+
+def test_collection_result_rejects_cross_organization_records():
+    collected = CollectedJob(
+        posting=make_posting().model_copy(update={"organization": "Goldman Sachs"}),
+        evidence=make_evidence(),
+    )
+    with pytest.raises(ValidationError, match="collection organization"):
+        CollectionResult(
+            run_id=RUN_ID,
+            collector_id="example-careers-v1",
+            source_id="example-careers",
+            organization="Wells Fargo",
+            started_at=datetime(2026, 8, 20, 12, 0, tzinfo=timezone.utc),
+            completed_at=datetime(2026, 8, 20, 12, 1, tzinfo=timezone.utc),
+            status=CollectionStatus.COMPLETED,
+            jobs=[collected],
+            issues=[],
+            pages_attempted=1,
+            records_encountered=1,
+            records_collected=1,
+            records_skipped=0,
+        )

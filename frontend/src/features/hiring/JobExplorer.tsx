@@ -65,7 +65,7 @@ export function JobExplorer({ organization }: { organization: string }) {
           </div>
         </>
       )}
-      {selectedJob && <JobDetailPanel jobId={selectedJob} onClose={() => setSelectedJob(null)} />}
+      {selectedJob && <JobDetailPanel organization={organization} jobId={selectedJob} onClose={() => setSelectedJob(null)} />}
     </section>
   );
 }

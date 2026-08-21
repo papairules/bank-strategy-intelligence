@@ -32,13 +32,11 @@ class OrganizationInput(BaseModel):
     organization: str = Field(min_length=1)
 
 
-class JobIdInput(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+class JobIdInput(OrganizationInput):
     job_id: UUID
 
 
-class EvidenceIdInput(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+class EvidenceIdInput(OrganizationInput):
     evidence_id: UUID
 
 

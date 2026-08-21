@@ -4,8 +4,8 @@ import { ErrorState, LoadingState } from "../../components/States";
 import { useApi } from "../../hooks/useApi";
 import { formatDate, formatPercent, titleCase } from "../../utils/format";
 
-export function EvidenceDetailPanel({ evidenceId, onClose, onViewJob }: { evidenceId: string; onClose: () => void; onViewJob?: (jobId: string) => void }) {
-  const detail = useApi((signal) => evidenceApi.detail(evidenceId, signal), [evidenceId]);
+export function EvidenceDetailPanel({ organization, evidenceId, onClose, onViewJob }: { organization: string; evidenceId: string; onClose: () => void; onViewJob?: (jobId: string) => void }) {
+  const detail = useApi((signal) => evidenceApi.detail(organization, evidenceId, signal), [organization, evidenceId]);
   useEffect(() => {
     const listener = (event: KeyboardEvent) => event.key === "Escape" && onClose();
     window.addEventListener("keydown", listener);

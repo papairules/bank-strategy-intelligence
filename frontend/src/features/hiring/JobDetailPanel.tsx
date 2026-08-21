@@ -5,10 +5,10 @@ import { useApi } from "../../hooks/useApi";
 import type { HiringEnrichment } from "../../types/hiring";
 import { formatDate, formatPercent, titleCase } from "../../utils/format";
 
-export function JobDetailPanel({ jobId, onClose }: { jobId: string; onClose: () => void }) {
+export function JobDetailPanel({ organization, jobId, onClose }: { organization: string; jobId: string; onClose: () => void }) {
   const { data, error, loading } = useApi(
-    (signal) => hiringApi.jobDetail(jobId, signal),
-    [jobId],
+    (signal) => hiringApi.jobDetail(organization, jobId, signal),
+    [organization, jobId],
   );
 
   useEffect(() => {

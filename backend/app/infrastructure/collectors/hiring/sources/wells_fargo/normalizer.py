@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from backend.app.domain.hiring.models import EmploymentType, JobPosting
 from backend.app.domain.intelligence.evidence import Evidence, SourceType
+from backend.app.domain.organization import OrganizationIdentity
 from backend.app.infrastructure.collectors.hiring.contracts import RawJobRecord
 from backend.app.infrastructure.collectors.hiring.protocols import RecordNormalizationError
 from backend.app.application.hiring.collection import CollectedJob, CollectionRequest
@@ -34,6 +35,8 @@ class _HtmlTextParser(HTMLParser):
 
 class WellsFargoJobNormalizer:
     collector_identity = "wells-fargo-workday-normalizer-v1"
+    organization = OrganizationIdentity(key="wells_fargo", display_name="Wells Fargo")
+    source_id = "wells-fargo-workday"
     _employment_types = {
         "full time": EmploymentType.FULL_TIME,
         "part time": EmploymentType.PART_TIME,
@@ -44,6 +47,11 @@ class WellsFargoJobNormalizer:
     }
 
     def normalize(self, record: RawJobRecord, request: CollectionRequest) -> CollectedJob:
+        if request.organization != self.organization.display_name:
+            raise RecordNormalizationError(
+                "collection organization does not match the Wells Fargo source",
+                code="organization_mismatch",
+            )
         try:
             payload = WellsFargoRawPayload.model_validate(record.payload)
         except ValidationError as exc:
@@ -72,11 +80,11 @@ class WellsFargoJobNormalizer:
             source_excerpt=description[:497].rstrip() + "..." if len(description) > 500 else description,
             raw_reference=raw_reference,
             collector_identity=self.collector_identity,
-            provenance_metadata={**record.provenance_metadata, "source_system": "Workday", "tenant": "wf", "site_id": "WellsFargoJobs", "source_record_id": record.source_record_id, "job_req_id": job_req_id, "run_id": str(request.run_id)},
+            provenance_metadata={**record.provenance_metadata, "organization_key": self.organization.key, "source_id": self.source_id, "source_system": "Workday", "tenant": "wf", "site_id": "WellsFargoJobs", "source_record_id": record.source_record_id, "job_req_id": job_req_id, "run_id": str(request.run_id)},
         )
         try:
             job = JobPosting(
-                job_id=job_id, organization="Wells Fargo", source_job_id=job_req_id, title=title,
+                job_id=job_id, organization=self.organization.display_name, source_job_id=job_req_id, title=title,
                 description=description, location=location, country=country,
                 posted_date=posted_date, closing_date=closing_date,
                 employment_type=self._employment_type(info.time_type), source_url=source_url,

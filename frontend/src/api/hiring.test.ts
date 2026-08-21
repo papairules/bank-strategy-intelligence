@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildJobsPath } from "./hiring";
+import { buildJobDetailPath, buildJobsPath } from "./hiring";
 
 describe("hiring API URL construction", () => {
   it("encodes organizations and server-side filters", () => {
@@ -16,5 +16,11 @@ describe("hiring API URL construction", () => {
     expect(path).toContain("location=New+York");
     expect(path).toContain("capability=Data+%26+Analytics");
     expect(path).toContain("seniority=senior");
+  });
+
+  it("scopes direct job detail reads to the organization", () => {
+    expect(buildJobDetailPath("Goldman Sachs", "job/123")).toBe(
+      "/api/v1/hiring/jobs/job%2F123?organization=Goldman+Sachs",
+    );
   });
 });

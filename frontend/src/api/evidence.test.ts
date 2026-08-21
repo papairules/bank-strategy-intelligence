@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildEvidenceRecordsPath } from "./evidence";
+import { buildEvidenceDetailPath, buildEvidenceRecordsPath } from "./evidence";
 
 describe("evidence API", () => {
   it("builds encoded evidence filters and pagination", () => {
@@ -9,5 +9,11 @@ describe("evidence API", () => {
     expect(path).toContain("technology=Power+BI");
     expect(path).toContain("capability=Data+%26+Analytics");
     expect(path).toContain("offset=40");
+  });
+
+  it("scopes direct evidence detail reads to the organization", () => {
+    expect(buildEvidenceDetailPath("BNY", "evidence/123")).toBe(
+      "/api/v1/evidence/evidence%2F123?organization=BNY",
+    );
   });
 });

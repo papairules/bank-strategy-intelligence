@@ -98,14 +98,17 @@ def test_unified_evidence_summary_records_detail_and_filters(client):
     assert records.status_code == 200
     assert records.json()["total"] == 1
     evidence_id = records.json()["items"][0]["evidence_id"]
-    detail = client.get(f"/api/v1/evidence/{evidence_id}")
+    detail = client.get(
+        f"/api/v1/evidence/{evidence_id}",
+        params={"organization": "Wells Fargo"},
+    )
     assert detail.status_code == 200
     assert detail.json()["enrichment_provider"] == "vertex_gemini"
     assert detail.json()["technology_observations"][0]["technology"] == "Python"
 
 
 def test_unified_evidence_missing_pagination_and_openapi(client):
-    assert client.get(f"/api/v1/evidence/{uuid4()}").status_code == 404
+    assert client.get(f"/api/v1/evidence/{uuid4()}", params={"organization": "Wells Fargo"}).status_code == 404
     assert client.get("/api/v1/evidence/organizations/Unknown/records").json()["items"] == []
     assert client.get("/api/v1/evidence/organizations/Wells%20Fargo/records?limit=101").status_code == 422
     paths = client.get("/openapi.json").json()["paths"]

@@ -45,6 +45,14 @@ class CollectionRequest(BaseModel):
     max_records: int | None = Field(default=None, ge=1)
     run_id: UUID = Field(default_factory=uuid4)
 
+    @field_validator("organization")
+    @classmethod
+    def normalize_organization(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("organization must not be blank")
+        return value
+
 
 class CollectedJob(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -110,6 +118,8 @@ class CollectionResult(BaseModel):
             raise ValueError(
                 "records_encountered must equal records_collected plus records_skipped"
             )
+        if any(job.posting.organization != self.organization for job in self.jobs):
+            raise ValueError("collected job organization must match collection organization")
         return self
 
 

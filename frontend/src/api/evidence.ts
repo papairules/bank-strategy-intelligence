@@ -24,11 +24,19 @@ export function buildEvidenceRecordsPath(
   return `${organizationPath(organization)}/records?${params.toString()}`;
 }
 
+export function buildEvidenceDetailPath(
+  organization: string,
+  evidenceId: string,
+): string {
+  const params = new URLSearchParams({ organization });
+  return `/api/v1/evidence/${encodeURIComponent(evidenceId)}?${params.toString()}`;
+}
+
 export const evidenceApi = {
   summary: (organization: string, signal?: AbortSignal) =>
     getJson<EvidenceSummary>(`${organizationPath(organization)}/summary`, signal),
   records: (organization: string, filters: EvidenceRecordFilters, signal?: AbortSignal) =>
     getJson<EvidenceRecordsResponse>(buildEvidenceRecordsPath(organization, filters), signal),
-  detail: (evidenceId: string, signal?: AbortSignal) =>
-    getJson<UnifiedEvidenceDetail>(`/api/v1/evidence/${encodeURIComponent(evidenceId)}`, signal),
+  detail: (organization: string, evidenceId: string, signal?: AbortSignal) =>
+    getJson<UnifiedEvidenceDetail>(buildEvidenceDetailPath(organization, evidenceId), signal),
 };

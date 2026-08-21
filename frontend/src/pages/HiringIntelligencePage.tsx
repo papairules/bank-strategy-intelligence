@@ -4,17 +4,16 @@ import { MetricCard } from "../components/MetricCard";
 import { Panel } from "../components/Panel";
 import { RankedBars } from "../components/RankedBars";
 import { ErrorState, LoadingState } from "../components/States";
+import { CURRENT_ORGANIZATION } from "../config/organization";
 import { TrendChart } from "../components/TrendChart";
 import { JobExplorer } from "../features/hiring/JobExplorer";
 import { useApi } from "../hooks/useApi";
 import { formatDate, formatNumber, formatPercent, titleCase } from "../utils/format";
 
-const ORGANIZATION = "Wells Fargo";
-
 export function HiringIntelligencePage() {
-  const summary = useApi((signal) => hiringApi.summary(ORGANIZATION, signal), [ORGANIZATION]);
-  const analytics = useApi((signal) => hiringApi.analytics(ORGANIZATION, signal), [ORGANIZATION]);
-  const signals = useApi((signal) => hiringApi.signals(ORGANIZATION, signal), [ORGANIZATION]);
+  const summary = useApi((signal) => hiringApi.summary(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
+  const analytics = useApi((signal) => hiringApi.analytics(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
+  const signals = useApi((signal) => hiringApi.signals(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
 
   const topCity = summary.data?.geographic.by_city[0];
   const topCapability = summary.data?.capability.capabilities[0];
@@ -26,7 +25,7 @@ export function HiringIntelligencePage() {
     <div className="page">
       <div className="page-heading">
         <div><span className="eyebrow">Hiring Intelligence</span><h1>Workforce demand and capability signals</h1><p>Evidence-backed view of observed public hiring activity. Concentrations indicate hiring demand—not confirmed strategic investment.</p></div>
-        <label className="organization-select"><span>Organization</span><select value={ORGANIZATION} disabled><option>Wells Fargo</option></select></label>
+        <label className="organization-select"><span>Organization</span><select value={CURRENT_ORGANIZATION} disabled><option>{CURRENT_ORGANIZATION}</option></select></label>
       </div>
 
       {summary.loading && <LoadingState label="Loading executive summary…" />}
@@ -64,7 +63,7 @@ export function HiringIntelligencePage() {
         {signals.data && signals.data.items.length > 0 && <div className="signals-list">{signals.data.items.map((item) => <article className="signal-card" key={item.signal.signal_id}><div className="signal-card__meta"><span>Deterministic signal · {titleCase(item.signal.signal_type)}</span><span>{formatPercent(item.score.confidence * 100)} confidence</span></div><h3>{item.title}</h3><p>{item.signal.summary}</p><div className="signal-score"><span>Strength</span><div><i style={{ width: `${item.score.strength * 100}%` }} /></div><strong>{formatPercent(item.score.strength * 100)}</strong></div><div className="technology-signal-metrics"><span>Evidence coverage <strong>{formatPercent(item.score.evidence_coverage * 100)}</strong></span><span>{item.signal.supporting_evidence_ids.length} evidence records</span></div><footer><span>{formatDate(item.signal.observation_period.start_date)} – {formatDate(item.signal.observation_period.end_date)}</span><Link to="/evidence">Trace supporting evidence</Link></footer>{item.signal.limitations.length > 0 && <details><summary>Limitations</summary><ul>{item.signal.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}</ul></details>}</article>)}</div>}
       </Panel>
 
-      <JobExplorer organization={ORGANIZATION} />
+      <JobExplorer organization={CURRENT_ORGANIZATION} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { CURRENT_ORGANIZATION } from "../config/organization";
 
 const navigation = [
   { label: "Overview", path: "/", mark: "OV", group: "Workspace" },
@@ -39,7 +40,7 @@ export function AppShell() {
       <main className="main-shell">
         <header className="topbar">
           <div><span className="topbar__label">Current workspace</span><strong>{current}</strong></div>
-          <div className="topbar__context"><span>Organization</span><strong>Wells Fargo</strong></div>
+          <div className="topbar__context"><span>Current data scope</span><strong>{CURRENT_ORGANIZATION}</strong></div>
         </header>
         <Outlet />
       </main>

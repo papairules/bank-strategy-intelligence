@@ -94,6 +94,10 @@ from backend.app.application.hiring.batch_enrichment import (
     HiringBatchEnrichmentService,
     HiringBatchJobOutcome,
 )
+from backend.app.application.hiring.imports import (
+    CanonicalJobIdentity,
+    CanonicalJobImport,
+)
 
 __all__ = [
     "CollectedJob",
@@ -172,4 +176,6 @@ __all__ = [
     "HiringBatchEnrichmentResult",
     "HiringBatchEnrichmentService",
     "HiringBatchJobOutcome",
+    "CanonicalJobIdentity",
+    "CanonicalJobImport",
 ]

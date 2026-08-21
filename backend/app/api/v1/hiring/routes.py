@@ -37,7 +37,7 @@ DashboardService = Annotated[
 @router.get("/jobs", response_model=JobPostingListResponse)
 def list_jobs(
     read_service: ReadService,
-    organization: str | None = None,
+    organization: str,
     country: str | None = None,
     employment_type: EmploymentType | None = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 25,
@@ -164,8 +164,12 @@ def list_organization_collection_runs(
 
 
 @router.get("/jobs/{job_id}", response_model=JobDetailResponse)
-def get_job(job_id: UUID, read_service: ReadService) -> JobDetailResponse:
-    job = _require_job(job_id, read_service)
+def get_job(
+    job_id: UUID,
+    organization: str,
+    read_service: ReadService,
+) -> JobDetailResponse:
+    job = _require_job(organization, job_id, read_service)
     evidence = read_service.get_evidence(job.evidence_id)
     if evidence is None:
         raise HTTPException(
@@ -180,8 +184,12 @@ def get_job(job_id: UUID, read_service: ReadService) -> JobDetailResponse:
 
 
 @router.get("/jobs/{job_id}/evidence", response_model=EvidenceResponse)
-def get_job_evidence(job_id: UUID, read_service: ReadService) -> EvidenceResponse:
-    job = _require_job(job_id, read_service)
+def get_job_evidence(
+    job_id: UUID,
+    organization: str,
+    read_service: ReadService,
+) -> EvidenceResponse:
+    job = _require_job(organization, job_id, read_service)
     evidence = read_service.get_evidence(job.evidence_id)
     if evidence is None:
         raise HTTPException(
@@ -192,8 +200,12 @@ def get_job_evidence(job_id: UUID, read_service: ReadService) -> EvidenceRespons
 
 
 @router.get("/jobs/{job_id}/enrichment", response_model=EnrichmentResponse)
-def get_job_enrichment(job_id: UUID, read_service: ReadService) -> EnrichmentResponse:
-    _require_job(job_id, read_service)
+def get_job_enrichment(
+    job_id: UUID,
+    organization: str,
+    read_service: ReadService,
+) -> EnrichmentResponse:
+    _require_job(organization, job_id, read_service)
     enrichment = read_service.get_latest_enrichment(job_id)
     if enrichment is None:
         raise HTTPException(
@@ -209,9 +221,10 @@ def get_job_enrichment(job_id: UUID, read_service: ReadService) -> EnrichmentRes
 )
 def list_job_enrichments(
     job_id: UUID,
+    organization: str,
     read_service: ReadService,
 ) -> EnrichmentHistoryResponse:
-    _require_job(job_id, read_service)
+    _require_job(organization, job_id, read_service)
     enrichments = read_service.list_job_enrichments(job_id)
     return EnrichmentHistoryResponse(
         items=enrichments,
@@ -222,7 +235,7 @@ def list_job_enrichments(
 @router.get("/runs", response_model=CollectionRunListResponse)
 def list_runs(
     read_service: ReadService,
-    organization: str | None = None,
+    organization: str,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ) -> CollectionRunListResponse:
     runs = read_service.list_runs(organization=organization, limit=limit)
@@ -234,8 +247,12 @@ def list_runs(
 
 
 @router.get("/runs/{run_id}", response_model=CollectionRun)
-def get_run(run_id: UUID, read_service: ReadService) -> CollectionRun:
-    collection_run = read_service.get_run(run_id)
+def get_run(
+    run_id: UUID,
+    organization: str,
+    read_service: ReadService,
+) -> CollectionRun:
+    collection_run = read_service.get_run_for_organization(organization, run_id)
     if collection_run is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -244,8 +261,12 @@ def get_run(run_id: UUID, read_service: ReadService) -> CollectionRun:
     return collection_run
 
 
-def _require_job(job_id: UUID, read_service: HiringReadServiceProtocol):
-    job = read_service.get_job(job_id)
+def _require_job(
+    organization: str,
+    job_id: UUID,
+    read_service: HiringReadServiceProtocol,
+):
+    job = read_service.get_job_for_organization(organization, job_id)
     if job is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

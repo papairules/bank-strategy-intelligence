@@ -94,3 +94,15 @@ def test_intelligence_fields_remain_unpopulated():
     assert posting.technologies == []
     assert posting.seniority_level is None
     assert posting.is_leadership is False
+
+
+def test_rejects_a_request_for_another_organization():
+    request = CollectionRequest(organization="Goldman Sachs", run_id=RUN_ID)
+
+    with pytest.raises(RecordNormalizationError) as caught:
+        WellsFargoJobNormalizer().normalize(
+            raw_record(standard_us_full_time()),
+            request,
+        )
+
+    assert caught.value.code == "organization_mismatch"

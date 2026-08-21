@@ -25,6 +25,12 @@ class HiringReadServiceProtocol(Protocol):
 
     def get_job(self, job_id: UUID) -> JobPosting | None: ...
 
+    def get_job_for_organization(
+        self,
+        organization: str,
+        job_id: UUID,
+    ) -> JobPosting | None: ...
+
     def get_evidence(self, evidence_id: UUID) -> Evidence | None: ...
 
     def list_runs(
@@ -35,6 +41,12 @@ class HiringReadServiceProtocol(Protocol):
     ) -> list[CollectionRun]: ...
 
     def get_run(self, run_id: UUID) -> CollectionRun | None: ...
+
+    def get_run_for_organization(
+        self,
+        organization: str,
+        run_id: UUID,
+    ) -> CollectionRun | None: ...
 
     def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]: ...
 
@@ -112,6 +124,14 @@ class HiringReadService:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.job_postings.get(job_id)
 
+    def get_job_for_organization(
+        self,
+        organization: str,
+        job_id: UUID,
+    ) -> JobPosting | None:
+        job = self.get_job(job_id)
+        return job if job is not None and job.organization == organization else None
+
     def get_evidence(self, evidence_id: UUID) -> Evidence | None:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.evidence.get(evidence_id)
@@ -133,6 +153,14 @@ class HiringReadService:
     def get_run(self, run_id: UUID) -> CollectionRun | None:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.collection_runs.get(run_id)
+
+    def get_run_for_organization(
+        self,
+        organization: str,
+        run_id: UUID,
+    ) -> CollectionRun | None:
+        run = self.get_run(run_id)
+        return run if run is not None and run.organization == organization else None
 
     def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]:
         with self._unit_of_work_factory() as unit_of_work:

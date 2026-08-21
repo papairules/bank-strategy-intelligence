@@ -276,3 +276,14 @@ def test_support_references_must_match_original_evidence(database):
     assert HiringReadService(database.unit_of_work).get_latest_enrichment(
         posting.job_id
     ) is None
+
+
+def test_enrichment_cannot_link_a_job_to_another_organizations_evidence(database):
+    posting, _ = persist_source_records(database, organization="Wells Fargo")
+    _, other_evidence = persist_source_records(database, organization="Goldman Sachs")
+    mismatched = make_enrichment(posting, other_evidence)
+
+    with pytest.raises(ValueError, match="source job evidence_id"):
+        HiringEnrichmentPersistenceService(database.unit_of_work).save(mismatched)
+
+    assert HiringReadService(database.unit_of_work).get_latest_enrichment(posting.job_id) is None

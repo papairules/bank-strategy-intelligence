@@ -92,7 +92,7 @@ def test_records_separate_source_enrichment_and_derived_relationships():
 
 def test_detail_is_traceable_and_deduplicates_signal_relationships():
     value, enriched, _ = service()
-    detail = value.get(enriched[1].evidence_id)
+    detail = value.get("Wells Fargo", enriched[1].evidence_id)
     assert detail.job_id == enriched[0].job_id
     assert detail.raw_reference == "source:R-1"
     assert detail.enrichment_limitations == ["Hiring evidence only."]
@@ -112,4 +112,5 @@ def test_filters_pagination_ordering_and_organization_isolation():
     assert page.returned_count == 1 and page.total == 2
     assert value.list_records("Other Bank", EvidenceRecordFilters()).total == 1
     assert value.list_records("Unknown", EvidenceRecordFilters()).items == []
-    assert value.get(uuid4()) is None
+    assert value.get("Wells Fargo", uuid4()) is None
+    assert value.get("Other Bank", enriched[1].evidence_id) is None

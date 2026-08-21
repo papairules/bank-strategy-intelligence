@@ -64,9 +64,10 @@ def list_evidence_records(
 @router.get("/{evidence_id}", response_model=EvidenceDetailResponse)
 def get_evidence_detail(
     evidence_id: UUID,
+    organization: str,
     service: EvidenceService,
 ) -> EvidenceDetailResponse:
-    detail = service.get(evidence_id)
+    detail = service.get(organization, evidence_id)
     if detail is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

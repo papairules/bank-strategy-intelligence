@@ -69,10 +69,10 @@ def test_hiring_tools_summary_search_job_signals_and_collection(tool_fixture):
     assert summary.total_observed_jobs == 1
     search = tools.hiring.search_jobs(JobSearchInput(organization="Example Bank", location="Charlotte", limit=1))
     assert search.total == 1 and search.items[0].job_id == records[0][0].job_id
-    intelligence = tools.hiring.get_job_intelligence(JobIdInput(job_id=records[0][0].job_id))
+    intelligence = tools.hiring.get_job_intelligence(JobIdInput(organization="Example Bank", job_id=records[0][0].job_id))
     assert intelligence.found and intelligence.enrichment.available
     assert intelligence.enrichment.technologies == ["Python", "SQL"]
-    assert tools.hiring.get_job_intelligence(JobIdInput(job_id=uuid4())).found is False
+    assert tools.hiring.get_job_intelligence(JobIdInput(organization="Example Bank", job_id=uuid4())).found is False
     assert tools.hiring.get_signals(organization).signals == []
     context = tools.hiring.get_collection_context(CollectionContextInput(organization="Example Bank"))
     assert context.returned_count == 1 and context.latest_status == "completed"
@@ -100,13 +100,13 @@ def test_evidence_tools_summary_search_detail_and_trace(tool_fixture):
     search = tools.evidence.search(EvidenceSearchInput(organization="Example Bank", enriched=True, technology="Python"))
     assert search.total == 1
     evidence_id = records[0][1].evidence_id
-    detail = tools.evidence.get(EvidenceIdInput(evidence_id=evidence_id))
+    detail = tools.evidence.get(EvidenceIdInput(organization="Example Bank", evidence_id=evidence_id))
     assert detail.found and detail.detail.enrichment_present
-    trace = tools.evidence.trace(EvidenceIdInput(evidence_id=evidence_id))
+    trace = tools.evidence.trace(EvidenceIdInput(organization="Example Bank", evidence_id=evidence_id))
     assert trace.found and trace.job_id == records[0][0].job_id
     assert trace.technology_observations == ["Python", "SQL"]
     assert trace.cross_domain_signal_ids == []
-    assert tools.evidence.trace(EvidenceIdInput(evidence_id=uuid4())).found is False
+    assert tools.evidence.trace(EvidenceIdInput(organization="Example Bank", evidence_id=uuid4())).found is False
 
 
 def test_strategy_tools_return_context_and_explicit_suppression(tool_fixture):

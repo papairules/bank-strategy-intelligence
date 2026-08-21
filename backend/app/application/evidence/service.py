@@ -108,8 +108,19 @@ class UnifiedEvidenceService:
     def records_for_intelligence(self, organization: str) -> list[UnifiedEvidenceRecord]:
         return self._records(organization)
 
-    def get(self, evidence_id: UUID) -> UnifiedEvidenceDetail | None:
-        job = next((item for item in self._read_service.list_all_jobs() if item.evidence_id == evidence_id), None)
+    def get(
+        self,
+        organization: str,
+        evidence_id: UUID,
+    ) -> UnifiedEvidenceDetail | None:
+        job = next(
+            (
+                item
+                for item in self._read_service.list_jobs_for_analytics(organization)
+                if item.evidence_id == evidence_id
+            ),
+            None,
+        )
         if job is None:
             return None
         evidence = self._read_service.get_evidence(evidence_id)

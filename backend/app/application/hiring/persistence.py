@@ -198,6 +198,14 @@ class HiringEnrichmentPersistenceService:
                 "enrichment support evidence_id must match enrichment evidence_id"
             )
         with self._unit_of_work_factory() as unit_of_work:
+            posting = unit_of_work.job_postings.get(enrichment.job_id)
+            evidence = unit_of_work.evidence.get(enrichment.evidence_id)
+            if posting is None or evidence is None:
+                raise ValueError("enrichment source job and evidence must exist")
+            if posting.evidence_id != enrichment.evidence_id:
+                raise ValueError(
+                    "enrichment evidence_id must match the source job evidence_id"
+                )
             unit_of_work.enrichments.save(enrichment)
             unit_of_work.commit()
 

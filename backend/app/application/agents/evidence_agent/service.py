@@ -249,12 +249,22 @@ class EvidenceAgentService:
             else:
                 evidence_id = self._validated_evidence_id(call, request)
                 if call.name == "evidence.get":
-                    result = self._tools.get(EvidenceIdInput(evidence_id=evidence_id))
+                    result = self._tools.get(
+                        EvidenceIdInput(
+                            organization=request.organization,
+                            evidence_id=evidence_id,
+                        )
+                    )
                     result = self._scope_detail(result, request.organization)
                     if result.found and result.detail is not None:
                         self._catalog_record(result.detail, catalog)
                 else:
-                    result = self._tools.trace(EvidenceIdInput(evidence_id=evidence_id))
+                    result = self._tools.trace(
+                        EvidenceIdInput(
+                            organization=request.organization,
+                            evidence_id=evidence_id,
+                        )
+                    )
                     result = self._scope_trace(result, request.organization)
                     if result.found and result.job_id is not None:
                         self._catalog_trace(result, catalog)

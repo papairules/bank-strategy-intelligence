@@ -19,7 +19,7 @@ from backend.app.application.strategy import StrategicSignalGenerationResult
 class EvidenceBoundary(Protocol):
     def summary(self, organization: str) -> EvidenceSummary: ...
     def list_records(self, organization: str, filters: EvidenceRecordFilters) -> UnifiedEvidencePage: ...
-    def get(self, evidence_id): ...
+    def get(self, organization: str, evidence_id): ...
 
 
 class StrategyBoundary(Protocol):
@@ -51,11 +51,14 @@ class EvidenceAgentTools:
         )
 
     def get(self, request: EvidenceIdInput) -> AgentEvidenceDetailResult:
-        detail = self._evidence.get(request.evidence_id)
+        detail = self._evidence.get(request.organization, request.evidence_id)
         return AgentEvidenceDetailResult(found=detail is not None, detail=detail)
 
     def trace(self, request: EvidenceIdInput) -> EvidenceTrace:
-        detail: UnifiedEvidenceDetail | None = self._evidence.get(request.evidence_id)
+        detail: UnifiedEvidenceDetail | None = self._evidence.get(
+            request.organization,
+            request.evidence_id,
+        )
         if detail is None:
             return EvidenceTrace(
                 found=False,
