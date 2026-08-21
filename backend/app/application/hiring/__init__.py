@@ -80,6 +80,12 @@ from backend.app.application.hiring.enrichment import (
     ProviderFieldSupport,
     ProviderModelMetadata,
 )
+from backend.app.application.hiring.dashboard import (
+    HiringAnalyticsResult,
+    HiringDashboardQuery,
+    HiringDashboardService,
+    HiringOrganizationSummary,
+)
 
 __all__ = [
     "CollectedJob",
@@ -148,4 +154,8 @@ __all__ = [
     "HiringTheme",
     "ProviderFieldSupport",
     "ProviderModelMetadata",
+    "HiringAnalyticsResult",
+    "HiringDashboardQuery",
+    "HiringDashboardService",
+    "HiringOrganizationSummary",
 ]

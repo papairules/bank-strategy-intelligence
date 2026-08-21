@@ -1,15 +1,19 @@
 from functools import lru_cache
 
-from backend.app.application.hiring import HiringReadService
-from backend.app.config import HiringSettings
-from backend.app.infrastructure.persistence.hiring import SQLiteDatabase
+from fastapi import Depends
+
+from backend.app.application.hiring import HiringDashboardService, HiringReadService
+from backend.app.infrastructure.composition.hiring_read import (
+    create_hiring_read_service,
+)
 
 
 @lru_cache
 def get_hiring_read_service() -> HiringReadService:
-    settings = HiringSettings()
-    database_path = settings.sqlite_database_path
-    database_path.parent.mkdir(parents=True, exist_ok=True)
-    database = SQLiteDatabase(database_path)
-    database.initialize()
-    return HiringReadService(database.unit_of_work)
+    return create_hiring_read_service()
+
+
+def get_hiring_dashboard_service(
+    read_service: HiringReadService = Depends(get_hiring_read_service),
+) -> HiringDashboardService:
+    return HiringDashboardService(read_service)

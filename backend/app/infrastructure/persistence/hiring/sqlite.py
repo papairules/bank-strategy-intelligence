@@ -282,6 +282,9 @@ class SQLiteJobPostingRepository:
         organization: str | None,
         country: str | None,
         employment_type: EmploymentType | None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
         limit: int,
         offset: int,
     ) -> list[JobPosting]:
@@ -289,17 +292,14 @@ class SQLiteJobPostingRepository:
             raise ValueError("limit must be at least 1")
         if offset < 0:
             raise ValueError("offset must be non-negative")
-        clauses: list[str] = []
-        parameters: list[str | int] = []
-        if organization is not None:
-            clauses.append("organization = ?")
-            parameters.append(organization)
-        if country is not None:
-            clauses.append("country = ?")
-            parameters.append(country)
-        if employment_type is not None:
-            clauses.append("employment_type = ?")
-            parameters.append(employment_type.value)
+        clauses, parameters = self._filters(
+            organization=organization,
+            country=country,
+            employment_type=employment_type,
+            location=location,
+            capability=capability,
+            seniority=seniority,
+        )
         where_clause = f"WHERE {' AND '.join(clauses)}" if clauses else ""
         parameters.extend([limit, offset])
         rows = self._connection.execute(
@@ -312,6 +312,66 @@ class SQLiteJobPostingRepository:
             parameters,
         ).fetchall()
         return [_job_posting_from_row(row) for row in rows]
+
+    def count(
+        self,
+        *,
+        organization: str | None,
+        country: str | None = None,
+        employment_type: EmploymentType | None = None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
+    ) -> int:
+        clauses, parameters = self._filters(
+            organization=organization,
+            country=country,
+            employment_type=employment_type,
+            location=location,
+            capability=capability,
+            seniority=seniority,
+        )
+        where_clause = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        row = self._connection.execute(
+            f"SELECT COUNT(*) AS count FROM job_postings {where_clause}",
+            parameters,
+        ).fetchone()
+        return int(row["count"])
+
+    @staticmethod
+    def _filters(
+        *,
+        organization: str | None,
+        country: str | None,
+        employment_type: EmploymentType | None,
+        location: str | None,
+        capability: str | None,
+        seniority: str | None,
+    ) -> tuple[list[str], list[str]]:
+        clauses: list[str] = []
+        parameters: list[str] = []
+        if organization is not None:
+            clauses.append("organization = ?")
+            parameters.append(organization)
+        if country is not None:
+            clauses.append("country = ?")
+            parameters.append(country)
+        if employment_type is not None:
+            clauses.append("employment_type = ?")
+            parameters.append(employment_type.value)
+        if location is not None:
+            clauses.append("LOWER(location) LIKE LOWER(?)")
+            parameters.append(f"%{location}%")
+        if capability is not None:
+            clauses.append(
+                "EXISTS (SELECT 1 FROM json_each(capability_classifications) "
+                "WHERE LOWER(json_each.value) = LOWER(?))"
+            )
+            parameters.append(capability)
+        if seniority is not None:
+            clauses.append("seniority_level = ?")
+            parameters.append(seniority)
+        return clauses, parameters
 
 
 class SQLiteCollectionRunRepository:
@@ -497,6 +557,18 @@ class SQLiteHiringEnrichmentRepository:
             (str(job_id),),
         ).fetchone()
         return _hiring_enrichment_from_row(row) if row is not None else None
+
+    def list_by_job(self, job_id: UUID) -> list[HiringEnrichmentResult]:
+        rows = self._connection.execute(
+            """
+            SELECT * FROM hiring_enrichments
+            WHERE job_id = ?
+            ORDER BY enrichment_timestamp DESC, prompt_schema_version DESC,
+                provider DESC, model DESC
+            """,
+            (str(job_id),),
+        ).fetchall()
+        return [_hiring_enrichment_from_row(row) for row in rows]
 
     def list_by_organization(
         self,

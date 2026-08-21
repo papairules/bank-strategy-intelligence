@@ -43,9 +43,23 @@ class JobPostingRepository(Protocol):
         organization: str | None,
         country: str | None,
         employment_type: EmploymentType | None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
         limit: int,
         offset: int,
     ) -> list[JobPosting]: ...
+
+    def count(
+        self,
+        *,
+        organization: str | None,
+        country: str | None = None,
+        employment_type: EmploymentType | None = None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
+    ) -> int: ...
 
 
 class EvidenceRepository(Protocol):
@@ -84,6 +98,8 @@ class HiringEnrichmentRepository(Protocol):
     ) -> HiringEnrichmentResult | None: ...
 
     def get_latest(self, job_id: UUID) -> HiringEnrichmentResult | None: ...
+
+    def list_by_job(self, job_id: UUID) -> list[HiringEnrichmentResult]: ...
 
     def list_by_organization(
         self,

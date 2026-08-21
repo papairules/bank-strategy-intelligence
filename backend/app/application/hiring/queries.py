@@ -16,6 +16,9 @@ class HiringReadServiceProtocol(Protocol):
         organization: str | None,
         country: str | None,
         employment_type: EmploymentType | None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
         limit: int,
         offset: int,
     ) -> list[JobPosting]: ...
@@ -55,6 +58,22 @@ class HiringReadServiceProtocol(Protocol):
         organization: str,
     ) -> list[HiringEnrichmentResult]: ...
 
+    def list_job_enrichments(
+        self,
+        job_id: UUID,
+    ) -> list[HiringEnrichmentResult]: ...
+
+    def count_jobs(
+        self,
+        *,
+        organization: str | None,
+        country: str | None = None,
+        employment_type: EmploymentType | None = None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
+    ) -> int: ...
+
 
 class HiringReadService:
     def __init__(
@@ -69,6 +88,9 @@ class HiringReadService:
         organization: str | None,
         country: str | None,
         employment_type: EmploymentType | None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
         limit: int,
         offset: int,
     ) -> list[JobPosting]:
@@ -77,6 +99,9 @@ class HiringReadService:
                 organization=organization,
                 country=country,
                 employment_type=employment_type,
+                location=location,
+                capability=capability,
+                seniority=seniority,
                 limit=limit,
                 offset=offset,
             )
@@ -142,3 +167,30 @@ class HiringReadService:
     ) -> list[HiringEnrichmentResult]:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.enrichments.list_by_organization(organization)
+
+    def list_job_enrichments(
+        self,
+        job_id: UUID,
+    ) -> list[HiringEnrichmentResult]:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.enrichments.list_by_job(job_id)
+
+    def count_jobs(
+        self,
+        *,
+        organization: str | None,
+        country: str | None = None,
+        employment_type: EmploymentType | None = None,
+        location: str | None = None,
+        capability: str | None = None,
+        seniority: str | None = None,
+    ) -> int:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.job_postings.count(
+                organization=organization,
+                country=country,
+                employment_type=employment_type,
+                location=location,
+                capability=capability,
+                seniority=seniority,
+            )

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,3 +21,16 @@ class HiringSettings(BaseSettings):
     gemini_model: str = "gemini-2.5-flash"
     gemini_temperature: float = Field(default=0.1, ge=0, le=2)
     gemini_max_output_tokens: int = Field(default=4096, ge=1)
+    cors_origins: list[str] = Field(
+        default_factory=lambda: [
+            "http://localhost:3000",
+            "http://localhost:5173",
+        ]
+    )
+
+    @field_validator("cors_origins")
+    @classmethod
+    def reject_wildcard_cors_with_credentials(cls, value: list[str]) -> list[str]:
+        if "*" in value:
+            raise ValueError("cors_origins must not contain a wildcard")
+        return value
