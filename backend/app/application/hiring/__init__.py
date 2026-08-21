@@ -51,6 +51,14 @@ from backend.app.application.hiring.analytics import (
     SeniorityHiringGroup,
     SeniorityHiringSummary,
 )
+from backend.app.application.hiring.signal_generation import (
+    GeneratedHiringSignal,
+    HiringSignalGenerationResult,
+    HiringSignalScore,
+    HiringSignalService,
+    HiringSignalThresholds,
+    HiringSignalType,
+)
 
 __all__ = [
     "CollectedJob",
@@ -94,4 +102,10 @@ __all__ = [
     "HiringTrendSummary",
     "SeniorityHiringGroup",
     "SeniorityHiringSummary",
+    "GeneratedHiringSignal",
+    "HiringSignalGenerationResult",
+    "HiringSignalScore",
+    "HiringSignalService",
+    "HiringSignalThresholds",
+    "HiringSignalType",
 ]
