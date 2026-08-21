@@ -3,6 +3,7 @@ from datetime import date, datetime, timezone
 from uuid import uuid4
 
 import pytest
+from pydantic import ValidationError
 
 from backend.app.application.hiring import (
     EnrichmentFailureCode,
@@ -14,7 +15,6 @@ from backend.app.application.hiring import (
     HiringProviderResponse,
     HiringProviderStructuredOutput,
     HiringTheme,
-    ProviderFieldSupport,
     ProviderModelMetadata,
 )
 from backend.app.domain.hiring import JobPosting
@@ -62,70 +62,13 @@ def posting_and_evidence(*, empty_text: bool = False):
 def valid_output() -> HiringProviderStructuredOutput:
     return HiringProviderStructuredOutput(
         capability_classifications=[HiringCapability.CLOUD_INFRASTRUCTURE],
-        skills=["Cloud migration", "Team management"],
+        skills=["Cloud migration"],
         technologies=["Python", "Google Cloud"],
         seniority_level=EnrichmentSeniority.LEAD,
         is_leadership=True,
         business_unit="Risk Technology",
         hiring_themes=[HiringTheme.CLOUD_MODERNIZATION],
         model_confidence=0.42,
-        field_confidences={
-            EnrichmentField.CAPABILITY_CLASSIFICATIONS: 0.9,
-            EnrichmentField.SKILLS: 0.8,
-            EnrichmentField.TECHNOLOGIES: 0.85,
-            EnrichmentField.SENIORITY_LEVEL: 0.8,
-            EnrichmentField.IS_LEADERSHIP: 0.75,
-            EnrichmentField.BUSINESS_UNIT: 0.7,
-            EnrichmentField.HIRING_THEMES: 0.8,
-        },
-        field_support=[
-            ProviderFieldSupport(
-                field=EnrichmentField.CAPABILITY_CLASSIFICATIONS,
-                value=HiringCapability.CLOUD_INFRASTRUCTURE.value,
-                excerpt="cloud migration",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.SKILLS,
-                value="Cloud migration",
-                excerpt="cloud migration",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.SKILLS,
-                value="Team management",
-                excerpt="Manage an engineering team",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.TECHNOLOGIES,
-                value="Python",
-                excerpt="Python",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.TECHNOLOGIES,
-                value="Google Cloud",
-                excerpt="Google Cloud",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.SENIORITY_LEVEL,
-                value="lead",
-                excerpt="Lead cloud migration",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.IS_LEADERSHIP,
-                value="true",
-                excerpt="Manage an engineering team",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.BUSINESS_UNIT,
-                value="Risk Technology",
-                excerpt="Risk Technology",
-            ),
-            ProviderFieldSupport(
-                field=EnrichmentField.HIRING_THEMES,
-                value=HiringTheme.CLOUD_MODERNIZATION.value,
-                excerpt="cloud migration",
-            ),
-        ],
-        limitations=["Classification is limited to the supplied posting."],
     )
 
 
@@ -171,13 +114,26 @@ def test_valid_enrichment_preserves_fields_ids_support_and_provenance():
     assert result.capability_classifications == [
         HiringCapability.CLOUD_INFRASTRUCTURE
     ]
-    assert result.skills == ["Cloud migration", "Team management"]
+    assert result.skills == ["Cloud migration"]
     assert result.technologies == ["Python", "Google Cloud"]
     assert result.seniority_level is EnrichmentSeniority.LEAD
     assert result.is_leadership is True
     assert result.business_unit == "Risk Technology"
     assert result.hiring_themes == [HiringTheme.CLOUD_MODERNIZATION]
     assert all(item.evidence_id == evidence.evidence_id for item in result.field_support)
+    assert {item.field for item in result.field_support} == {
+        EnrichmentField.SKILLS,
+        EnrichmentField.TECHNOLOGIES,
+        EnrichmentField.SENIORITY_LEVEL,
+        EnrichmentField.BUSINESS_UNIT,
+    }
+    assert result.field_confidences[EnrichmentField.SKILLS] == 1.0
+    assert result.field_confidences[EnrichmentField.CAPABILITY_CLASSIFICATIONS] == 0.65
+    assert result.confidence == 1.0
+    assert result.limitations == [
+        "Enrichment uses only the supplied job posting evidence.",
+        "Capability and theme labels are semantic classifications, not strategic claims.",
+    ]
     assert result.model_metadata.provider == "fake"
     assert result.model_metadata.model == "fake-model"
     assert result.model_metadata.prompt_schema_version == "test-v1"
@@ -190,7 +146,6 @@ def test_empty_unsupported_fields_are_valid_and_confidence_is_deterministic():
     posting, evidence = posting_and_evidence()
     output = HiringProviderStructuredOutput(
         model_confidence=0.99,
-        limitations=["No enrichment fields were sufficiently supported."],
     )
     service = HiringEnrichmentService(
         FakeHiringEnrichmentProvider(provider_response(output)),
@@ -213,7 +168,7 @@ def test_empty_unsupported_fields_are_valid_and_confidence_is_deterministic():
     assert first.model_dump(mode="json") == second.model_dump(mode="json")
 
 
-def test_malformed_provider_response_and_unsupported_excerpt_are_typed_failures():
+def test_malformed_provider_response_and_unsupported_explicit_value_are_typed_failures():
     posting, evidence = posting_and_evidence()
     malformed = HiringEnrichmentService(
         FakeHiringEnrichmentProvider({"unexpected": True}),
@@ -225,11 +180,7 @@ def test_malformed_provider_response_and_unsupported_excerpt_are_typed_failures(
     assert malformed_error.value.code is EnrichmentFailureCode.MALFORMED_STRUCTURED_OUTPUT
 
     output = valid_output()
-    output.field_support[0] = ProviderFieldSupport(
-        field=EnrichmentField.CAPABILITY_CLASSIFICATIONS,
-        value=HiringCapability.CLOUD_INFRASTRUCTURE.value,
-        excerpt="not present in supplied evidence",
-    )
+    output.skills = ["Unsupported skill"]
     unsupported = HiringEnrichmentService(
         FakeHiringEnrichmentProvider(provider_response(output)),
         enabled=True,
@@ -237,6 +188,21 @@ def test_malformed_provider_response_and_unsupported_excerpt_are_typed_failures(
     with pytest.raises(HiringEnrichmentError) as support_error:
         run(unsupported.enrich(posting, evidence))
     assert support_error.value.code is EnrichmentFailureCode.VALIDATION_FAILURE
+
+
+def test_provider_output_cannot_inject_application_owned_identity_or_provenance():
+    values = valid_output().model_dump(mode="json")
+    values.update(
+        {
+            "job_id": str(uuid4()),
+            "evidence_id": str(uuid4()),
+            "provider": "injected",
+            "prompt_schema_version": "injected",
+        }
+    )
+
+    with pytest.raises(ValidationError):
+        HiringProviderStructuredOutput.model_validate(values)
 
 
 def test_provider_failure_propagates_as_typed_failure():

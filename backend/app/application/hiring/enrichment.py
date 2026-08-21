@@ -113,24 +113,23 @@ class EnrichmentFieldSupport(ProviderFieldSupport):
 class HiringProviderStructuredOutput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    capability_classifications: list[HiringCapability] = Field(default_factory=list)
-    skills: list[str] = Field(default_factory=list)
-    technologies: list[str] = Field(default_factory=list)
+    capability_classifications: list[HiringCapability] = Field(
+        default_factory=list,
+        max_length=5,
+    )
+    skills: list[str] = Field(default_factory=list, max_length=10)
+    technologies: list[str] = Field(default_factory=list, max_length=10)
     seniority_level: EnrichmentSeniority = EnrichmentSeniority.UNKNOWN
     is_leadership: bool = False
-    business_unit: str | None = None
-    hiring_themes: list[HiringTheme] = Field(default_factory=list)
+    business_unit: str | None = Field(default=None, max_length=100)
+    hiring_themes: list[HiringTheme] = Field(default_factory=list, max_length=5)
     model_confidence: float = Field(ge=0, le=1)
-    field_confidences: dict[EnrichmentField, float] = Field(default_factory=dict)
-    field_support: list[ProviderFieldSupport] = Field(default_factory=list)
-    limitations: list[str] = Field(default_factory=list)
 
     @field_validator(
         "capability_classifications",
         "skills",
         "technologies",
         "hiring_themes",
-        "limitations",
     )
     @classmethod
     def require_unique_list_values(cls, values: list) -> list:
@@ -138,23 +137,12 @@ class HiringProviderStructuredOutput(BaseModel):
             raise ValueError("list values must be unique")
         return values
 
-    @field_validator("skills", "technologies", "limitations")
+    @field_validator("skills", "technologies")
     @classmethod
     def reject_blank_strings(cls, values: list[str]) -> list[str]:
         if any(not value.strip() for value in values):
             raise ValueError("list values must not be blank")
         return values
-
-    @field_validator("field_confidences")
-    @classmethod
-    def validate_field_confidences(
-        cls,
-        values: dict[EnrichmentField, float],
-    ) -> dict[EnrichmentField, float]:
-        if any(value < 0 or value > 1 for value in values.values()):
-            raise ValueError("field confidence must be between 0 and 1")
-        return values
-
 
 class ProviderModelMetadata(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -210,6 +198,10 @@ class EnrichmentFailureCode(StrEnum):
     EMPTY_EVIDENCE = "empty_evidence"
     PROVIDER_UNAVAILABLE = "provider_unavailable"
     AUTHENTICATION_CONFIGURATION = "authentication_configuration"
+    PERMISSION_DENIED = "permission_denied"
+    BILLING_QUOTA = "billing_quota"
+    MODEL_LOCATION = "model_location"
+    INVALID_REQUEST = "invalid_request"
     TIMEOUT = "timeout"
     MALFORMED_STRUCTURED_OUTPUT = "malformed_structured_output"
     VALIDATION_FAILURE = "validation_failure"
@@ -270,7 +262,7 @@ class HiringEnrichmentService:
         provider_value = await self._provider.enrich(request)
         try:
             provider_response = HiringProviderResponse.model_validate(provider_value)
-            self._validate_support(request, provider_response.output)
+            self._validate_explicit_grounding(request, provider_response.output)
         except ValidationError as error:
             raise HiringEnrichmentError(
                 EnrichmentFailureCode.MALFORMED_STRUCTURED_OUTPUT,
@@ -283,14 +275,12 @@ class HiringEnrichmentService:
             ) from error
 
         output = provider_response.output
-        confidence, field_confidences = self._adjust_confidence(request, output)
-        supports = [
-            EnrichmentFieldSupport(
-                **support.model_dump(),
-                evidence_id=evidence.evidence_id,
-            )
-            for support in output.field_support
-        ]
+        supports = self._deterministic_support(request, output, evidence.evidence_id)
+        confidence, field_confidences = self._adjust_confidence(
+            request,
+            output,
+            supports,
+        )
         return HiringEnrichmentResult(
             job_id=posting.job_id,
             evidence_id=evidence.evidence_id,
@@ -304,7 +294,7 @@ class HiringEnrichmentService:
             confidence=confidence,
             field_confidences=field_confidences,
             field_support=supports,
-            limitations=output.limitations,
+            limitations=self._limitations(output),
             model_metadata=EnrichmentModelMetadata(
                 **provider_response.metadata.model_dump(),
                 enrichment_timestamp=self._clock(),
@@ -333,27 +323,21 @@ class HiringEnrichmentService:
         )
 
     @classmethod
-    def _validate_support(
+    def _validate_explicit_grounding(
         cls,
         request: HiringEnrichmentRequest,
         output: HiringProviderStructuredOutput,
     ) -> None:
-        supplied_text = "\n".join(
-            value
-            for value in (request.description, request.evidence_excerpt)
-            if value
-        ).casefold()
-        for support in output.field_support:
-            if support.excerpt.strip().casefold() not in supplied_text:
-                raise ValueError("field support excerpt is not present in supplied evidence")
-        expected = cls._extracted_values(output)
-        supported = {
-            (support.field, support.value.strip().casefold())
-            for support in output.field_support
-        }
-        missing = expected - supported
-        if missing:
-            raise ValueError("extracted fields are missing evidence support")
+        supplied_text = cls._supplied_text(request).casefold()
+        for field, values in (
+            (EnrichmentField.SKILLS, output.skills),
+            (EnrichmentField.TECHNOLOGIES, output.technologies),
+        ):
+            for value in values:
+                if value.strip().casefold() not in supplied_text:
+                    raise ValueError(
+                        f"{field.value} value is not explicitly present in supplied evidence"
+                    )
 
     @staticmethod
     def _extracted_values(
@@ -388,6 +372,7 @@ class HiringEnrichmentService:
         cls,
         request: HiringEnrichmentRequest,
         output: HiringProviderStructuredOutput,
+        supports: list[EnrichmentFieldSupport],
     ) -> tuple[float, dict[EnrichmentField, float]]:
         evidence_availability = (
             1.0
@@ -397,24 +382,81 @@ class HiringEnrichmentService:
         extracted = cls._extracted_values(output)
         supported = {
             (support.field, support.value.strip().casefold())
-            for support in output.field_support
+            for support in supports
         }
-        support_coverage = len(extracted & supported) / len(extracted) if extracted else 1.0
+        explicit_values = {
+            value for value in extracted if value[0] in {
+                EnrichmentField.SKILLS,
+                EnrichmentField.TECHNOLOGIES,
+            }
+        }
+        support_coverage = (
+            len(explicit_values & supported) / len(explicit_values)
+            if explicit_values
+            else 1.0
+        )
         populated_categories = len({field for field, _ in extracted})
         completeness = populated_categories / len(EnrichmentField)
         confidence = cls._bounded(
             round((evidence_availability + support_coverage + completeness) / 3, 4)
         )
-        field_confidences = {
-            field: cls._bounded(
-                min(
-                    model_confidence,
-                    1.0 if any(item[0] is field for item in supported) else 0.0,
-                )
+        field_confidences = {}
+        for field in {field for field, _ in extracted}:
+            field_confidences[field] = (
+                1.0 if any(item[0] is field for item in supported) else 0.65
             )
-            for field, model_confidence in output.field_confidences.items()
-        }
         return confidence, field_confidences
+
+    @classmethod
+    def _deterministic_support(
+        cls,
+        request: HiringEnrichmentRequest,
+        output: HiringProviderStructuredOutput,
+        evidence_id: UUID,
+    ) -> list[EnrichmentFieldSupport]:
+        supplied_text = cls._supplied_text(request)
+        values: list[tuple[EnrichmentField, str]] = []
+        values.extend((EnrichmentField.SKILLS, item) for item in output.skills)
+        values.extend((EnrichmentField.TECHNOLOGIES, item) for item in output.technologies)
+        if output.business_unit:
+            values.append((EnrichmentField.BUSINESS_UNIT, output.business_unit))
+        if output.seniority_level is not EnrichmentSeniority.UNKNOWN:
+            values.append((EnrichmentField.SENIORITY_LEVEL, output.seniority_level.value))
+        supports: list[EnrichmentFieldSupport] = []
+        folded_text = supplied_text.casefold()
+        for field, value in values:
+            start = folded_text.find(value.casefold())
+            if start >= 0:
+                supports.append(
+                    EnrichmentFieldSupport(
+                        field=field,
+                        value=value,
+                        excerpt=supplied_text[start : start + len(value)],
+                        evidence_id=evidence_id,
+                    )
+                )
+        return supports
+
+    @staticmethod
+    def _limitations(output: HiringProviderStructuredOutput) -> list[str]:
+        limitations = ["Enrichment uses only the supplied job posting evidence."]
+        if output.capability_classifications or output.hiring_themes:
+            limitations.append(
+                "Capability and theme labels are semantic classifications, not strategic claims."
+            )
+        return limitations
+
+    @staticmethod
+    def _supplied_text(request: HiringEnrichmentRequest) -> str:
+        return "\n".join(
+            value
+            for value in (
+                request.title,
+                request.description,
+                request.evidence_excerpt,
+            )
+            if value
+        )
 
     @staticmethod
     def _bounded(value: float) -> float:

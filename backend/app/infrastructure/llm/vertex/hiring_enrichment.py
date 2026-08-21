@@ -1,15 +1,19 @@
 import json
+import re
 from collections.abc import Callable
 from typing import Any
 
-from pydantic import ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError, field_validator, model_validator
 
 from backend.app.application.hiring.enrichment import (
     EnrichmentFailureCode,
+    EnrichmentSeniority,
+    HiringCapability,
     HiringEnrichmentError,
     HiringEnrichmentRequest,
     HiringProviderResponse,
     HiringProviderStructuredOutput,
+    HiringTheme,
     ProviderModelMetadata,
 )
 
@@ -22,8 +26,9 @@ Grounding rules:
 - Do not use outside knowledge about the organization.
 - Do not manufacture skills, technologies, capabilities, business units, or themes.
 - Return empty lists, null, false, or unknown whenever evidence is insufficient.
-- Every extracted non-empty value must include a short verbatim supporting excerpt.
-- Distinguish explicit evidence from interpretation and report limitations.
+- Return at most 5 capabilities, 10 skills, 10 technologies, and 5 hiring themes.
+- Skills and technologies must be concise names explicitly present in the supplied text.
+- Use concise normalized labels and no prose commentary outside the schema.
 - Do not make investment claims, strategic certainty claims, consulting recommendations,
   or opportunity recommendations.
 - Leadership may be true only when the supplied text sufficiently supports leadership scope.
@@ -31,9 +36,60 @@ Grounding rules:
 """.strip()
 
 
+class VertexHiringEnrichmentOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    capability_classifications: list[HiringCapability]
+    skills: list[str]
+    technologies: list[str]
+    seniority_level: EnrichmentSeniority
+    is_leadership: bool
+    business_unit: str | None
+    hiring_themes: list[HiringTheme]
+    model_confidence: float
+
+    @field_validator(
+        "capability_classifications",
+        "skills",
+        "technologies",
+        "hiring_themes",
+    )
+    @classmethod
+    def require_unique_values(cls, values: list) -> list:
+        if len(values) != len(set(values)):
+            raise ValueError("provider output list values must be unique")
+        return values
+
+    @model_validator(mode="after")
+    def validate_local_limits(self):
+        limits = {
+            "capability_classifications": 5,
+            "skills": 10,
+            "technologies": 10,
+            "hiring_themes": 5,
+        }
+        for field, limit in limits.items():
+            if len(getattr(self, field)) > limit:
+                raise ValueError(f"{field} must contain at most {limit} values")
+        if not 0 <= self.model_confidence <= 1:
+            raise ValueError("model_confidence must be between 0 and 1")
+        for field in ("skills", "technologies"):
+            values = getattr(self, field)
+            if any(not value.strip() or len(value) > 100 for value in values):
+                raise ValueError(f"{field} values must be concise non-empty labels")
+        if self.business_unit is not None and (
+            not self.business_unit.strip() or len(self.business_unit) > 100
+        ):
+            raise ValueError("business_unit must be a concise non-empty label")
+        return self
+
+    def to_application_output(self) -> HiringProviderStructuredOutput:
+        return HiringProviderStructuredOutput.model_validate(self.model_dump())
+
+
 class VertexGeminiHiringEnrichmentProvider:
     provider_name = "vertex_gemini"
-    prompt_schema_version = "hiring-enrichment-v1"
+    prompt_schema_version = "hiring-enrichment-v3"
 
     def __init__(
         self,
@@ -60,7 +116,8 @@ class VertexGeminiHiringEnrichmentProvider:
             "temperature": self._temperature,
             "max_output_tokens": self._max_output_tokens,
             "response_mime_type": "application/json",
-            "response_json_schema": HiringProviderStructuredOutput.model_json_schema(),
+            "response_schema": VertexHiringEnrichmentOutput,
+            "automatic_function_calling": {"disable": True},
         }
         contents = (
             "Enrich this normalized job posting using only the supplied fields.\n"
@@ -80,29 +137,44 @@ class VertexGeminiHiringEnrichmentProvider:
         except HiringEnrichmentError:
             raise
         except Exception as error:
-            code = (
-                EnrichmentFailureCode.AUTHENTICATION_CONFIGURATION
-                if self._is_authentication_error(error)
-                else EnrichmentFailureCode.PROVIDER_UNAVAILABLE
-            )
+            code, metadata = self._classify_provider_error(error)
             raise HiringEnrichmentError(
                 code,
                 "Vertex Gemini enrichment request failed.",
-                metadata={"exception_type": type(error).__name__},
+                metadata=metadata,
             ) from error
 
+        parsed = getattr(response, "parsed", None)
+        text_present: bool | None = None
+        transport_validation_attempted = False
         try:
-            parsed = getattr(response, "parsed", None)
-            if parsed is None:
+            if isinstance(parsed, VertexHiringEnrichmentOutput):
+                transport_output = parsed
+            elif parsed is not None:
+                transport_validation_attempted = True
+                transport_output = VertexHiringEnrichmentOutput.model_validate(parsed)
+            else:
                 text = getattr(response, "text", None)
-                if not isinstance(text, str) or not text.strip():
+                text_present = isinstance(text, str) and bool(text.strip())
+                if not text_present:
                     raise ValueError("Vertex Gemini returned no structured response")
-                parsed = json.loads(text)
-            output = HiringProviderStructuredOutput.model_validate(parsed)
+                transport_validation_attempted = True
+                transport_output = VertexHiringEnrichmentOutput.model_validate(
+                    json.loads(text)
+                )
+            output = transport_output.to_application_output()
         except (json.JSONDecodeError, TypeError, ValueError, ValidationError) as error:
+            diagnostics = self._response_diagnostics(
+                response,
+                parsed=parsed,
+                text_present=text_present,
+                transport_validation_attempted=transport_validation_attempted,
+            )
+            diagnostics.update(self._validation_summary(error))
             raise HiringEnrichmentError(
                 EnrichmentFailureCode.MALFORMED_STRUCTURED_OUTPUT,
                 "Vertex Gemini returned invalid structured output.",
+                metadata=diagnostics,
             ) from error
 
         return HiringProviderResponse(
@@ -175,6 +247,90 @@ class VertexGeminiHiringEnrichmentProvider:
             )
         )
 
+    @classmethod
+    def _classify_provider_error(
+        cls,
+        error: Exception,
+    ) -> tuple[EnrichmentFailureCode, dict[str, Any]]:
+        code = getattr(error, "code", None)
+        status = getattr(error, "status", None)
+        message = cls._sanitize_error_message(getattr(error, "message", None))
+        reason = cls._safe_error_reason(getattr(error, "details", None))
+        metadata: dict[str, Any] = {"exception_type": type(error).__name__}
+        if isinstance(code, int):
+            metadata["http_status_code"] = code
+        if isinstance(status, str) and status:
+            metadata["error_status"] = status[:100]
+        if message:
+            metadata["error_message"] = message
+        if reason:
+            metadata["error_reason"] = reason
+
+        searchable = " ".join(
+            value.casefold()
+            for value in (status, message, reason)
+            if isinstance(value, str)
+        )
+        if code == 401 or cls._is_authentication_error(error):
+            failure = EnrichmentFailureCode.AUTHENTICATION_CONFIGURATION
+        elif code == 403:
+            failure = (
+                EnrichmentFailureCode.BILLING_QUOTA
+                if any(value in searchable for value in ("billing", "quota"))
+                else EnrichmentFailureCode.PERMISSION_DENIED
+            )
+        elif code == 429:
+            failure = EnrichmentFailureCode.BILLING_QUOTA
+        elif code in {400, 404} and any(
+            value in searchable
+            for value in ("model", "location", "publisher", "not found")
+        ):
+            failure = EnrichmentFailureCode.MODEL_LOCATION
+        elif code == 400:
+            failure = EnrichmentFailureCode.INVALID_REQUEST
+        else:
+            failure = EnrichmentFailureCode.PROVIDER_UNAVAILABLE
+        return failure, metadata
+
+    @staticmethod
+    def _sanitize_error_message(value: Any) -> str | None:
+        if not isinstance(value, str) or not value.strip():
+            return None
+        sanitized = " ".join(value.split())
+        sanitized = re.sub(
+            r"(?i)\bbearer\s+\S+",
+            "Bearer [REDACTED]",
+            sanitized,
+        )
+        sanitized = re.sub(
+            r"(?i)\b(access[_ -]?token|api[_ -]?key)\s*[:=]\s*\S+",
+            r"\1 [REDACTED]",
+            sanitized,
+        )
+        sanitized = re.sub(
+            r"(?i)\bauthorization\s*:\s*\S+(?:\s+\S+)?",
+            "Authorization [REDACTED]",
+            sanitized,
+        )
+        return sanitized[:300]
+
+    @classmethod
+    def _safe_error_reason(cls, details: Any) -> str | None:
+        if isinstance(details, dict):
+            reason = details.get("reason")
+            if isinstance(reason, str) and reason:
+                return cls._sanitize_error_message(reason)[:100]
+            for key in ("error", "details"):
+                nested = cls._safe_error_reason(details.get(key))
+                if nested:
+                    return nested
+        elif isinstance(details, list):
+            for item in details:
+                nested = cls._safe_error_reason(item)
+                if nested:
+                    return nested
+        return None
+
     @staticmethod
     def _optional_string(value: Any, attribute: str) -> str | None:
         item = getattr(value, attribute, None)
@@ -191,3 +347,56 @@ class VertexGeminiHiringEnrichmentProvider:
         if model_dump is not None:
             return model_dump(mode="json")
         return {}
+
+    @staticmethod
+    def _validation_summary(error: Exception) -> dict[str, Any]:
+        if isinstance(error, ValidationError):
+            errors = error.errors(
+                include_url=False,
+                include_context=False,
+                include_input=False,
+            )
+            return {
+                "error_type": "schema_validation",
+                "error_count": len(errors),
+                "validation_errors": [
+                    {
+                        "location": ".".join(str(item) for item in value["loc"]),
+                        "type": value["type"],
+                    }
+                    for value in errors
+                ],
+            }
+        if isinstance(error, json.JSONDecodeError):
+            return {"error_type": "invalid_json"}
+        return {"error_type": type(error).__name__}
+
+    @classmethod
+    def _response_diagnostics(
+        cls,
+        response: Any,
+        *,
+        parsed: Any,
+        text_present: bool | None,
+        transport_validation_attempted: bool,
+    ) -> dict[str, Any]:
+        return {
+            "parsed_present": parsed is not None,
+            "parsed_type": type(parsed).__name__ if parsed is not None else None,
+            "text_present": text_present,
+            "finish_reason": cls._finish_reason(response),
+            "transport_validation_attempted": transport_validation_attempted,
+        }
+
+    @staticmethod
+    def _finish_reason(response: Any) -> str | None:
+        candidates = getattr(response, "candidates", None)
+        if not candidates:
+            return None
+        value = getattr(candidates[0], "finish_reason", None)
+        if value is None:
+            return None
+        enum_value = getattr(value, "value", None)
+        if isinstance(enum_value, str):
+            return enum_value
+        return str(value)

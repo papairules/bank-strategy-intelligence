@@ -20,4 +20,4 @@ class HiringSettings(BaseSettings):
     gcp_location: str = "global"
     gemini_model: str = "gemini-2.5-flash"
     gemini_temperature: float = Field(default=0.1, ge=0, le=2)
-    gemini_max_output_tokens: int = Field(default=2048, ge=1)
+    gemini_max_output_tokens: int = Field(default=4096, ge=1)
