@@ -37,3 +37,9 @@ data/
 *.db
 *.sqlite
 *.sqlite3
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/*.tsbuildinfo

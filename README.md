@@ -95,6 +95,32 @@ Useful local URLs:
 
 Importing or starting the FastAPI application does not start the scheduler, execute collection, or make network requests.
 
+## Run the Frontend Locally
+
+The initial dashboard uses React, TypeScript, and Vite. It reads the versioned
+FastAPI endpoints and does not trigger collection or LLM enrichment.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The Vite development server runs at <http://localhost:5173>. The API defaults to
+<http://localhost:8000>; override it when needed:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8000 npm run dev
+```
+
+Frontend validation commands:
+
+```bash
+npm run build
+npm run lint
+npm test
+```
+
 ## Read API
 
 All V1 Hiring Intelligence routes are read-only:
