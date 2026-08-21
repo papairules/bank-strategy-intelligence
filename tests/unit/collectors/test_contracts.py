@@ -15,7 +15,12 @@ from backend.app.application.hiring import (
 )
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence, SourceType
-from backend.app.infrastructure.collectors.hiring import RawJobPage, RawJobRecord
+from backend.app.infrastructure.collectors.hiring import (
+    RawJobPage,
+    RawJobRecord,
+    SourceIssueStage,
+    SourceRecordIssue,
+)
 
 
 RUN_ID = UUID("00000000-0000-0000-0000-000000000001")
@@ -128,9 +133,61 @@ def test_raw_job_record_and_page_serialize_opaque_source_data():
                 "provenance_metadata": {"http_status": 200},
             }
         ],
+        "source_issues": [],
         "next_cursor": "cursor-2",
         "page_metadata": {"page": 1, "endpoint": "/jobs/search"},
     }
+
+
+def test_raw_job_page_source_issues_serialize_and_validate():
+    issue = SourceRecordIssue(
+        stage=SourceIssueStage.FETCH,
+        code="detail_unavailable",
+        message="The source detail could not be retrieved.",
+        recoverable=True,
+        source_record_id="JOB-456",
+        record_position=3,
+        exception_type="TimeoutError",
+        metadata={"http_status": 504},
+    )
+    page = RawJobPage(
+        source_issues=[issue],
+        next_cursor="cursor-2",
+        page_metadata={"page": 1},
+    )
+
+    assert page.model_dump(mode="json") == {
+        "records": [],
+        "source_issues": [
+            {
+                "stage": "fetch",
+                "code": "detail_unavailable",
+                "message": "The source detail could not be retrieved.",
+                "recoverable": True,
+                "source_record_id": "JOB-456",
+                "record_position": 3,
+                "exception_type": "TimeoutError",
+                "metadata": {"http_status": 504},
+            }
+        ],
+        "next_cursor": "cursor-2",
+        "page_metadata": {"page": 1},
+    }
+
+    with pytest.raises(ValidationError):
+        SourceRecordIssue(
+            stage=SourceIssueStage.PARSE,
+            code="invalid_detail",
+            message="The source detail was malformed.",
+        )
+
+    with pytest.raises(ValidationError):
+        SourceRecordIssue(
+            stage=SourceIssueStage.PARSE,
+            code="invalid_detail",
+            message="The source detail was malformed.",
+            record_position=-1,
+        )
 
 
 def test_raw_job_record_requires_aware_timestamp_and_json_payload():
@@ -163,6 +220,7 @@ def test_collection_issue_and_status_enums_serialize():
         "message": "The posting date could not be parsed.",
         "recoverable": True,
         "source_record_id": "JOB-456",
+        "record_position": None,
         "page_cursor": "cursor-2",
         "exception_type": "ValidationError",
         "metadata": {"field": "postedDate"},

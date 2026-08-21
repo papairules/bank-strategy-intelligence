@@ -1,4 +1,6 @@
 from datetime import datetime
+from enum import StrEnum
+from typing import Self
 
 from pydantic import (
     BaseModel,
@@ -7,7 +9,32 @@ from pydantic import (
     HttpUrl,
     JsonValue,
     field_validator,
+    model_validator,
 )
+
+
+class SourceIssueStage(StrEnum):
+    FETCH = "fetch"
+    PARSE = "parse"
+
+
+class SourceRecordIssue(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    stage: SourceIssueStage
+    code: str = Field(min_length=1)
+    message: str = Field(min_length=1)
+    recoverable: bool = True
+    source_record_id: str | None = Field(default=None, min_length=1)
+    record_position: int | None = Field(default=None, ge=0)
+    exception_type: str | None = Field(default=None, min_length=1)
+    metadata: dict[str, JsonValue] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def require_record_context(self) -> Self:
+        if self.source_record_id is None and self.record_position is None:
+            raise ValueError("source_record_id or record_position must be provided")
+        return self
 
 
 class RawJobRecord(BaseModel):
@@ -34,5 +61,6 @@ class RawJobPage(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     records: list[RawJobRecord] = Field(default_factory=list)
+    source_issues: list[SourceRecordIssue] = Field(default_factory=list)
     next_cursor: str | None = Field(default=None, min_length=1)
     page_metadata: dict[str, JsonValue] = Field(default_factory=dict)

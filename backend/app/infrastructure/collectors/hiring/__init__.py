@@ -2,6 +2,8 @@ from backend.app.infrastructure.collectors.hiring.collector import PaginatedJobC
 from backend.app.infrastructure.collectors.hiring.contracts import (
     RawJobPage,
     RawJobRecord,
+    SourceIssueStage,
+    SourceRecordIssue,
 )
 from backend.app.infrastructure.collectors.hiring.protocols import (
     JobRecordNormalizer,
@@ -18,4 +20,6 @@ __all__ = [
     "RecordNormalizationError",
     "SourceAdapter",
     "SourceAdapterError",
+    "SourceIssueStage",
+    "SourceRecordIssue",
 ]

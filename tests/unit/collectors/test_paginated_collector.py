@@ -19,6 +19,8 @@ from backend.app.infrastructure.collectors.hiring import (
     RawJobRecord,
     RecordNormalizationError,
     SourceAdapterError,
+    SourceIssueStage,
+    SourceRecordIssue,
 )
 
 
@@ -109,14 +111,42 @@ def make_record(record_id, *, malformed=False):
     )
 
 
-def make_page(*record_ids, next_cursor=None, page_number=1, malformed_ids=()):
+def make_page(
+    *record_ids,
+    next_cursor=None,
+    page_number=1,
+    malformed_ids=(),
+    source_issues=(),
+):
     return RawJobPage(
         records=[
             make_record(record_id, malformed=record_id in malformed_ids)
             for record_id in record_ids
         ],
+        source_issues=list(source_issues),
         next_cursor=next_cursor,
         page_metadata={"page": page_number},
+    )
+
+
+def make_source_issue(
+    record_id=None,
+    *,
+    position=None,
+    stage=SourceIssueStage.FETCH,
+    code="detail_unavailable",
+    recoverable=True,
+    metadata=None,
+):
+    return SourceRecordIssue(
+        stage=stage,
+        code=code,
+        message="The synthetic source record could not be retrieved.",
+        recoverable=recoverable,
+        source_record_id=record_id,
+        record_position=position,
+        exception_type="SyntheticSourceError",
+        metadata=metadata or {},
     )
 
 
@@ -261,6 +291,138 @@ def test_malformed_record_is_skipped_while_valid_records_survive():
     assert [job.posting.source_job_id for job in result.jobs] == ["JOB-1", "JOB-2"]
     assert result.issues[0].stage is CollectionIssueStage.NORMALIZE
     assert result.issues[0].source_record_id == "JOB-BAD"
+
+
+def test_successful_records_survive_a_source_record_issue():
+    adapter = FakeSourceAdapter(
+        {
+            None: make_page(
+                "JOB-1",
+                "JOB-2",
+                source_issues=[make_source_issue("JOB-BAD", position=1)],
+            )
+        }
+    )
+
+    result = collect(adapter)
+
+    assert result.status is CollectionStatus.PARTIAL
+    assert result.records_encountered == 3
+    assert result.records_collected == 2
+    assert result.records_skipped == 1
+    assert [job.posting.source_job_id for job in result.jobs] == ["JOB-1", "JOB-2"]
+
+
+def test_multiple_source_record_issues_are_counted_and_merged():
+    adapter = FakeSourceAdapter(
+        {
+            None: make_page(
+                "JOB-1",
+                source_issues=[
+                    make_source_issue("JOB-BAD-1", position=0),
+                    make_source_issue(
+                        "JOB-BAD-2",
+                        position=2,
+                        stage=SourceIssueStage.PARSE,
+                        code="invalid_detail_payload",
+                    ),
+                ],
+            )
+        }
+    )
+
+    result = collect(adapter)
+
+    assert result.status is CollectionStatus.PARTIAL
+    assert result.records_encountered == 3
+    assert result.records_collected == 1
+    assert result.records_skipped == 2
+    assert [issue.code for issue in result.issues] == [
+        "detail_unavailable",
+        "invalid_detail_payload",
+    ]
+
+
+def test_page_with_only_source_record_issues_returns_partial_result():
+    adapter = FakeSourceAdapter(
+        {
+            None: make_page(
+                source_issues=[
+                    make_source_issue("JOB-BAD-1", position=0),
+                    make_source_issue("JOB-BAD-2", position=1),
+                ]
+            )
+        }
+    )
+
+    result = collect(adapter)
+
+    assert result.status is CollectionStatus.PARTIAL
+    assert result.pages_attempted == 1
+    assert result.records_encountered == 2
+    assert result.records_collected == 0
+    assert result.records_skipped == 2
+    assert result.jobs == []
+
+
+def test_source_issue_context_becomes_collection_issue_context():
+    adapter = FakeSourceAdapter(
+        {
+            "cursor-2": make_page(
+                source_issues=[
+                    make_source_issue(
+                        "JOB-BAD",
+                        position=4,
+                        stage=SourceIssueStage.PARSE,
+                        code="malformed_detail",
+                        recoverable=False,
+                        metadata={"http_status": 200, "field": "description"},
+                    )
+                ]
+            )
+        }
+    )
+    request = CollectionRequest(
+        organization="Example Bank",
+        resume_cursor="cursor-2",
+    )
+
+    result = collect(adapter, request)
+    issue = result.issues[0]
+
+    assert issue.stage is CollectionIssueStage.PARSE
+    assert issue.scope is CollectionIssueScope.RECORD
+    assert issue.source_record_id == "JOB-BAD"
+    assert issue.record_position == 4
+    assert issue.page_cursor == "cursor-2"
+    assert issue.code == "malformed_detail"
+    assert issue.message == "The synthetic source record could not be retrieved."
+    assert issue.recoverable is False
+    assert issue.exception_type == "SyntheticSourceError"
+    assert issue.metadata == {"http_status": 200, "field": "description"}
+
+
+def test_source_issues_do_not_change_cursor_pagination():
+    adapter = FakeSourceAdapter(
+        {
+            None: make_page(
+                "JOB-1",
+                next_cursor="cursor-2",
+                page_number=1,
+                source_issues=[make_source_issue("JOB-BAD", position=1)],
+            ),
+            "cursor-2": make_page("JOB-2", page_number=2),
+        }
+    )
+
+    result = collect(adapter)
+
+    assert adapter.requested_cursors == [None, "cursor-2"]
+    assert result.pages_attempted == 2
+    assert result.records_encountered == 3
+    assert result.records_collected == 2
+    assert result.records_skipped == 1
+    assert result.status is CollectionStatus.PARTIAL
 
 
 def test_page_failure_after_success_returns_partial_result():

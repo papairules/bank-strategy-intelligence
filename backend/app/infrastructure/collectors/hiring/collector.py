@@ -96,6 +96,35 @@ class PaginatedJobCollector:
 
             page_metadata.append(page.page_metadata)
 
+            for source_issue in page.source_issues:
+                if (
+                    request.max_records is not None
+                    and records_encountered >= request.max_records
+                ):
+                    stopped_by_limit = True
+                    resume_cursor = page.next_cursor
+                    break
+
+                records_encountered += 1
+                records_skipped += 1
+                issues.append(
+                    CollectionIssue(
+                        stage=CollectionIssueStage(source_issue.stage.value),
+                        scope=CollectionIssueScope.RECORD,
+                        code=source_issue.code,
+                        message=source_issue.message,
+                        recoverable=source_issue.recoverable,
+                        source_record_id=source_issue.source_record_id,
+                        record_position=source_issue.record_position,
+                        page_cursor=cursor,
+                        exception_type=source_issue.exception_type,
+                        metadata=source_issue.metadata,
+                    )
+                )
+
+            if stopped_by_limit:
+                break
+
             for record in page.records:
                 if (
                     request.max_records is not None

@@ -68,6 +68,7 @@ class CollectionIssue(BaseModel):
     message: str = Field(min_length=1)
     recoverable: bool
     source_record_id: str | None = None
+    record_position: int | None = Field(default=None, ge=0)
     page_cursor: str | None = None
     exception_type: str | None = None
     metadata: dict[str, JsonValue] = Field(default_factory=dict)
