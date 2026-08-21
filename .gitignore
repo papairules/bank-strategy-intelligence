@@ -30,3 +30,4 @@ htmlcov/
 # Logs
 *.log
 logs/
+*.egg-info/
