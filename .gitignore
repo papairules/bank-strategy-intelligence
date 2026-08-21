@@ -31,3 +31,9 @@ htmlcov/
 *.log
 logs/
 *.egg-info/
+
+# Local persistence
+data/
+*.db
+*.sqlite
+*.sqlite3
