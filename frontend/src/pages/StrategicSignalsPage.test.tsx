@@ -13,7 +13,7 @@ describe("StrategicSignalsPage", () => {
     vi.stubGlobal("fetch", vi.fn(() => ok({ organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", generated_signal_count: 0, coverage_context: context, signals: [], limitations: ["Technology enrichment coverage is below the configured reliability threshold; broader cross-domain claims are withheld."] })));
     renderPage();
     expect(screen.getByText("Evaluating cross-domain evidence…")).toBeInTheDocument();
-    expect(await screen.findByText("Insufficient cross-domain coverage for reliable strategic signals.")).toBeInTheDocument();
+    expect(await screen.findByText("Not enough independent support yet for a governed cross-domain signal.")).toBeInTheDocument();
     expect(screen.getByText("5.3%")).toBeInTheDocument();
     expect(screen.getByText("Inspect supporting evidence")).toHaveAttribute("href", "/evidence");
   });

@@ -25,7 +25,7 @@ describe("TechnologyIntelligencePage", () => {
     expect(screen.getAllByText("Power BI").length).toBeGreaterThan(0);
     expect(screen.getByText("Senior Analytics Consultant")).toBeInTheDocument();
     expect(screen.getByText("evidence…")).toBeInTheDocument();
-    expect(screen.getByText("Insufficient enrichment coverage for reliable technology signals.")).toBeInTheDocument();
+    expect(screen.getByText("No deterministic technology signal met every configured support threshold.")).toBeInTheDocument();
   });
 
   it("renders populated deterministic signals with navigable evidence counts", async () => {
@@ -39,7 +39,8 @@ describe("TechnologyIntelligencePage", () => {
     render(<TechnologyIntelligencePage />);
     expect(await screen.findByText("Observed hiring concentration for Python")).toBeInTheDocument();
     expect(screen.getByText("1 evidence records")).toBeInTheDocument();
-    expect(screen.getByText("View contributing job")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "View job" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "View evidence" })).toBeInTheDocument();
   });
 
   it("renders error and empty states without production mocks", async () => {

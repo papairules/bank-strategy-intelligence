@@ -1,16 +1,21 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 const navigation = [
-  { label: "Overview", path: "/", mark: "OV" },
-  { label: "Hiring Intelligence", path: "/hiring", mark: "HI" },
-  { label: "Technology Intelligence", path: "/technology", mark: "TI" },
-  { label: "Strategic Signals", path: "/signals", mark: "SS" },
-  { label: "Evidence", path: "/evidence", mark: "EV" },
+  { label: "Overview", path: "/", mark: "OV", group: "Workspace" },
+  { label: "Hiring Intelligence", path: "/hiring", mark: "HI", group: "Intelligence" },
+  { label: "Technology Intelligence", path: "/technology", mark: "TI", group: "Intelligence" },
+  { label: "Strategic Signals", path: "/signals", mark: "SS", group: "Intelligence" },
+  { label: "Evidence Explorer", path: "/evidence", mark: "EV", group: "Evidence" },
+  { label: "Ask Evidence", path: "/evidence#ask-evidence", mark: "AE", group: "Governed AI" },
+  { label: "Ask Strategy", path: "/signals#ask-strategy", mark: "AS", group: "Governed AI" },
 ];
 
 export function AppShell() {
   const location = useLocation();
-  const current = navigation.find((item) => item.path === location.pathname)?.label ?? "Hiring Intelligence";
+  const current = navigation.find((item) => item.path === `${location.pathname}${location.hash}`)?.label
+    ?? navigation.find((item) => !item.path.includes("#") && item.path === location.pathname)?.label
+    ?? "Overview";
+  const groups = Array.from(new Set(navigation.map((item) => item.group)));
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -18,13 +23,16 @@ export function AppShell() {
           <span className="brand__mark">BSI</span>
           <div><strong>Bank Strategy</strong><span>Intelligence</span></div>
         </div>
-        <div className="nav-label">Intelligence workspace</div>
         <nav>
-          {navigation.map((item) => (
-            <NavLink key={item.path} to={item.path} end={item.path === "/"} className={({ isActive }) => isActive ? "nav-item nav-item--active" : "nav-item"}>
+          {groups.map((group) => <div className="nav-group" key={group}><div className="nav-label">{group}</div>{navigation.filter((item) => item.group === group).map((item) => (
+            <NavLink key={item.path} to={item.path} end={item.path === "/"} className={({ isActive }) => {
+              const hash = item.path.includes("#") ? item.path.slice(item.path.indexOf("#")) : "";
+              const active = hash ? isActive && location.hash === hash : isActive && !location.hash;
+              return active ? "nav-item nav-item--active" : "nav-item";
+            }}>
               <span className="nav-item__mark">{item.mark}</span>{item.label}
             </NavLink>
-          ))}
+          ))}</div>)}
         </nav>
         <div className="sidebar__footer"><span className="status-dot" />Evidence-backed intelligence</div>
       </aside>
