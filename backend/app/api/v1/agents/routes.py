@@ -2,10 +2,18 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from backend.app.api.dependencies import get_evidence_agent_service
+from backend.app.api.dependencies import get_evidence_agent_service, get_strategy_agent_service
 from backend.app.api.v1.agents.schemas import (
     EvidenceAgentAnswerRequest,
     EvidenceAgentAnswerResponse,
+    StrategyAgentAnswerRequest,
+    StrategyAgentAnswerResponse,
+)
+from backend.app.application.agents.strategy_agent import (
+    StrategyAgentError,
+    StrategyAgentFailureCode,
+    StrategyAgentRequest,
+    StrategyAgentService,
 )
 from backend.app.application.agents.evidence_agent import (
     EvidenceAgentError,
@@ -15,8 +23,9 @@ from backend.app.application.agents.evidence_agent import (
 )
 
 
-router = APIRouter(prefix="/agents/evidence", tags=["Evidence Agent"])
+router = APIRouter(prefix="/agents")
 EvidenceAgent = Annotated[EvidenceAgentService, Depends(get_evidence_agent_service)]
+StrategyAgent = Annotated[StrategyAgentService, Depends(get_strategy_agent_service)]
 
 _FAILURE_STATUS = {
     EvidenceAgentFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -35,7 +44,7 @@ _FAILURE_STATUS = {
 }
 
 
-@router.post("/answer", response_model=EvidenceAgentAnswerResponse)
+@router.post("/evidence/answer", response_model=EvidenceAgentAnswerResponse, tags=["Evidence Agent"])
 async def answer_evidence_question(
     request: EvidenceAgentAnswerRequest,
     service: EvidenceAgent,
@@ -55,6 +64,46 @@ async def answer_evidence_question(
     return EvidenceAgentAnswerResponse.model_validate(result.model_dump())
 
 
+_STRATEGY_FAILURE_STATUS = {
+    StrategyAgentFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
+    StrategyAgentFailureCode.INVALID_REQUEST: status.HTTP_422_UNPROCESSABLE_ENTITY,
+    StrategyAgentFailureCode.AUTHENTICATION: status.HTTP_503_SERVICE_UNAVAILABLE,
+    StrategyAgentFailureCode.PERMISSIONS: status.HTTP_503_SERVICE_UNAVAILABLE,
+    StrategyAgentFailureCode.QUOTA: status.HTTP_429_TOO_MANY_REQUESTS,
+    StrategyAgentFailureCode.TIMEOUT: status.HTTP_504_GATEWAY_TIMEOUT,
+    StrategyAgentFailureCode.PROVIDER_UNAVAILABLE: status.HTTP_503_SERVICE_UNAVAILABLE,
+    StrategyAgentFailureCode.INVALID_PROVIDER_REQUEST: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.MALFORMED_PROVIDER_OUTPUT: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.INVALID_TOOL_REQUEST: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.TOOL_EXECUTION_LIMIT: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.TOOL_EXECUTION_FAILURE: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.PAYLOAD_LIMIT: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.REFERENCE_VALIDATION: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.CLAIM_VALIDATION: status.HTTP_502_BAD_GATEWAY,
+    StrategyAgentFailureCode.PROVENANCE_VALIDATION: status.HTTP_502_BAD_GATEWAY,
+}
+
+
+@router.post("/strategy/answer", response_model=StrategyAgentAnswerResponse, tags=["Strategy Agent"])
+async def answer_strategy_question(
+    request: StrategyAgentAnswerRequest,
+    service: StrategyAgent,
+) -> StrategyAgentAnswerResponse:
+    try:
+        result = await service.answer(
+            StrategyAgentRequest(
+                organization=request.organization,
+                question=request.question,
+            )
+        )
+    except StrategyAgentError as error:
+        raise HTTPException(
+            status_code=_STRATEGY_FAILURE_STATUS[error.code],
+            detail={"code": error.code.value, "message": _safe_strategy_message(error.code)},
+        ) from error
+    return StrategyAgentAnswerResponse.model_validate(result.model_dump())
+
+
 def _safe_message(code: EvidenceAgentFailureCode) -> str:
     if code == EvidenceAgentFailureCode.DISABLED:
         return "The Evidence Agent is currently disabled."
@@ -72,3 +121,25 @@ def _safe_message(code: EvidenceAgentFailureCode) -> str:
     }:
         return "The Evidence Agent could not validate a grounded answer."
     return "The Evidence Agent is temporarily unavailable."
+
+
+def _safe_strategy_message(code: StrategyAgentFailureCode) -> str:
+    if code == StrategyAgentFailureCode.DISABLED:
+        return "The Strategy Agent is currently disabled."
+    if code == StrategyAgentFailureCode.QUOTA:
+        return "The Strategy Agent is temporarily rate limited."
+    if code == StrategyAgentFailureCode.TIMEOUT:
+        return "The Strategy Agent request timed out."
+    if code in {
+        StrategyAgentFailureCode.INVALID_PROVIDER_REQUEST,
+        StrategyAgentFailureCode.MALFORMED_PROVIDER_OUTPUT,
+        StrategyAgentFailureCode.INVALID_TOOL_REQUEST,
+        StrategyAgentFailureCode.TOOL_EXECUTION_LIMIT,
+        StrategyAgentFailureCode.TOOL_EXECUTION_FAILURE,
+        StrategyAgentFailureCode.PAYLOAD_LIMIT,
+        StrategyAgentFailureCode.REFERENCE_VALIDATION,
+        StrategyAgentFailureCode.CLAIM_VALIDATION,
+        StrategyAgentFailureCode.PROVENANCE_VALIDATION,
+    }:
+        return "The Strategy Agent could not validate a governed answer."
+    return "The Strategy Agent is temporarily unavailable."

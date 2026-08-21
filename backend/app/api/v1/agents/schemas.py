@@ -4,6 +4,11 @@ from backend.app.application.agents.evidence_agent import (
     EvidenceAgentCitation,
     EvidenceAgentStatus,
 )
+from backend.app.application.agents.strategy_agent import (
+    StrategyAgentStatus,
+    StrategySupportClass,
+)
+from uuid import UUID
 
 
 class EvidenceAgentAnswerRequest(BaseModel):
@@ -45,3 +50,52 @@ class EvidenceAgentErrorDetail(BaseModel):
 
     code: str
     message: str
+
+
+class StrategyAgentAnswerRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    organization: str = Field(min_length=1, max_length=200)
+    question: str = Field(min_length=1, max_length=2000)
+
+    @model_validator(mode="after")
+    def reject_blank_question(self):
+        if not self.question.strip():
+            raise ValueError("question must contain non-whitespace text")
+        return self
+
+
+class StrategySupportReferenceResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reference: str
+    domain: str
+    support_class: StrategySupportClass
+    tool_name: str
+    evidence_ids: list[UUID]
+    job_ids: list[UUID]
+    signal_ids: list[UUID]
+
+
+class StrategyFindingResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str
+    statement: str
+    support: list[StrategySupportReferenceResponse]
+
+
+class StrategyAgentAnswerResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    status: StrategyAgentStatus
+    organization: str
+    question: str
+    executive_summary: str
+    findings: list[StrategyFindingResponse]
+    reliability: float = Field(ge=0, le=1)
+    limitations: list[str]
+    tool_calls_used: int = Field(ge=0)
+    provider: str
+    model: str
+    agent_version: str

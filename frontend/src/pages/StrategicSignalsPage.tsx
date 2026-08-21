@@ -4,6 +4,7 @@ import { MetricCard } from "../components/MetricCard";
 import { Panel } from "../components/Panel";
 import { ErrorState, LoadingState } from "../components/States";
 import { useApi } from "../hooks/useApi";
+import { AskStrategyPanel } from "../features/strategy/AskStrategyPanel";
 import { formatDate, formatNumber, formatPercent, titleCase } from "../utils/format";
 
 const ORGANIZATION = "Wells Fargo";
@@ -19,6 +20,8 @@ export function StrategicSignalsPage() {
       <Panel title="Cross-domain strategic signals" eyebrow="Observed intelligence alignment" action={<span className="panel-note">{result.data.generated_signal_count} signals</span>}>
         {result.data.signals.length === 0 ? <div className="strategic-suppression"><strong>Insufficient cross-domain coverage for reliable strategic signals.</strong><p>Hiring evidence is available for {result.data.coverage_context.jobs_with_evidence} of {result.data.coverage_context.total_jobs} jobs, while technology enrichment currently covers {result.data.coverage_context.enriched_jobs} jobs ({formatPercent(result.data.coverage_context.enrichment_coverage * 100, 1)}). Broader cross-domain claims are therefore withheld.</p>{result.data.limitations.length > 0 && <ul>{result.data.limitations.map((item) => <li key={item}>{item}</li>)}</ul>}<Link className="primary-button primary-button--link" to="/evidence">Inspect supporting evidence</Link></div> : <div className="signals-list">{result.data.signals.map((signal) => <article className="signal-card strategic-signal-card" key={signal.signal_id}><div className="signal-card__meta"><span>{titleCase(signal.signal_type)}</span><span>{formatPercent(signal.confidence * 100)} confidence</span></div><h3>{signal.title}</h3><p>{signal.summary}</p><div className="domain-tags">{signal.domains_involved.map((domain) => <span key={domain}>{titleCase(domain)}</span>)}</div><div className="signal-score"><span>Strength</span><div><i style={{ width: `${signal.strength * 100}%` }} /></div><strong>{formatPercent(signal.strength * 100)}</strong></div><div className="strategic-signal-metrics"><span>Evidence coverage <strong>{formatPercent(signal.evidence_coverage * 100)}</strong></span><span>{signal.hiring_contributor_count} hiring contributors</span><span>{signal.technology_contributor_count} technology contributors</span><span>{signal.supporting_evidence_ids.length} evidence records</span></div><footer><span>{formatDate(signal.observation_start)} – {formatDate(signal.observation_end)}</span><Link to="/evidence">Trace evidence</Link></footer>{signal.limitations.length > 0 && <details><summary>Limitations</summary><ul>{signal.limitations.map((item) => <li key={item}>{item}</li>)}</ul></details>}</article>)}</div>}
       </Panel>
+      <div className="intelligence-divider"><span>Agent-generated strategic synthesis</span></div>
+      <AskStrategyPanel organization={ORGANIZATION} />
     </>}
   </div>;
 }
