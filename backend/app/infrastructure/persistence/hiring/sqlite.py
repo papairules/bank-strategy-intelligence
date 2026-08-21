@@ -225,6 +225,17 @@ class SQLiteJobPostingRepository:
         ).fetchall()
         return [_job_posting_from_row(row) for row in rows]
 
+    def list_by_organization(self, organization: str) -> list[JobPosting]:
+        rows = self._connection.execute(
+            """
+            SELECT * FROM job_postings
+            WHERE organization = ?
+            ORDER BY posted_date, job_id
+            """,
+            (organization,),
+        ).fetchall()
+        return [_job_posting_from_row(row) for row in rows]
+
     def search(
         self,
         *,

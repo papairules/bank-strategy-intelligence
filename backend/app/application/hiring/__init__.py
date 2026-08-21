@@ -36,6 +36,21 @@ from backend.app.application.hiring.queries import (
     HiringReadService,
     HiringReadServiceProtocol,
 )
+from backend.app.application.hiring.analytics import (
+    CapabilityHiringConcentration,
+    CapabilityHiringGroup,
+    GeographicHiringConcentration,
+    GeographicHiringGroup,
+    HiringAnalyticsJobQuery,
+    HiringAnalyticsService,
+    HiringRecordReference,
+    HiringSnapshot,
+    HiringTrendBucket,
+    HiringTrendGranularity,
+    HiringTrendSummary,
+    SeniorityHiringGroup,
+    SeniorityHiringSummary,
+)
 
 __all__ = [
     "CollectedJob",
@@ -66,4 +81,17 @@ __all__ = [
     "ScheduledJobOutcome",
     "HiringReadService",
     "HiringReadServiceProtocol",
+    "CapabilityHiringConcentration",
+    "CapabilityHiringGroup",
+    "GeographicHiringConcentration",
+    "GeographicHiringGroup",
+    "HiringAnalyticsJobQuery",
+    "HiringAnalyticsService",
+    "HiringRecordReference",
+    "HiringSnapshot",
+    "HiringTrendBucket",
+    "HiringTrendGranularity",
+    "HiringTrendSummary",
+    "SeniorityHiringGroup",
+    "SeniorityHiringSummary",
 ]

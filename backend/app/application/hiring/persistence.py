@@ -34,6 +34,8 @@ class JobPostingRepository(Protocol):
 
     def list_all(self) -> list[JobPosting]: ...
 
+    def list_by_organization(self, organization: str) -> list[JobPosting]: ...
+
     def search(
         self,
         *,

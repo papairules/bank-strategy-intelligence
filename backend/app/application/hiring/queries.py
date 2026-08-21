@@ -32,6 +32,8 @@ class HiringReadServiceProtocol(Protocol):
 
     def get_run(self, run_id: UUID) -> CollectionRun | None: ...
 
+    def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]: ...
+
 
 class HiringReadService:
     def __init__(
@@ -83,3 +85,7 @@ class HiringReadService:
     def get_run(self, run_id: UUID) -> CollectionRun | None:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.collection_runs.get(run_id)
+
+    def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.job_postings.list_by_organization(organization)
