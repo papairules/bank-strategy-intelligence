@@ -1,0 +1,28 @@
+import { useEffect } from "react";
+import { evidenceApi } from "../../api/evidence";
+import { ErrorState, LoadingState } from "../../components/States";
+import { useApi } from "../../hooks/useApi";
+import { formatDate, formatPercent, titleCase } from "../../utils/format";
+
+export function EvidenceDetailPanel({ evidenceId, onClose }: { evidenceId: string; onClose: () => void }) {
+  const detail = useApi((signal) => evidenceApi.detail(evidenceId, signal), [evidenceId]);
+  useEffect(() => {
+    const listener = (event: KeyboardEvent) => event.key === "Escape" && onClose();
+    window.addEventListener("keydown", listener);
+    return () => window.removeEventListener("keydown", listener);
+  }, [onClose]);
+  return <div className="drawer-backdrop" onMouseDown={onClose}><aside className="job-drawer" role="dialog" aria-modal="true" aria-label="Evidence detail" onMouseDown={(event) => event.stopPropagation()}><header className="drawer-header"><div><span className="eyebrow">Evidence & traceability</span><h2>{detail.data?.job_title ?? "Evidence record"}</h2></div><button className="icon-button" onClick={onClose} aria-label="Close evidence detail">×</button></header><div className="drawer-content">
+    {detail.loading && <LoadingState label="Loading evidence graph…" />}
+    {detail.error && <ErrorState message={detail.error} />}
+    {detail.data && <>
+      <section className="detail-section"><SectionTitle title="Source evidence" origin="Captured source" /><dl className="detail-grid detail-grid--compact"><div><dt>Organization</dt><dd>{detail.data.organization}</dd></div><div><dt>Job</dt><dd>{detail.data.job_title}</dd></div><div><dt>Location</dt><dd>{detail.data.job_location}</dd></div><div><dt>Source</dt><dd>{detail.data.source} · {titleCase(detail.data.source_type)}</dd></div><div><dt>Captured</dt><dd>{formatDate(detail.data.captured_at)}</dd></div><div><dt>Collector</dt><dd>{detail.data.collector_identity}</dd></div></dl>{detail.data.source_excerpt && <blockquote>{detail.data.source_excerpt}</blockquote>}<a className="source-link" href={detail.data.source_url} target="_blank" rel="noreferrer">View authoritative source ↗</a></section>
+      <section className="detail-section detail-section--ai"><SectionTitle title="AI enrichment" origin="Model-derived" />{detail.data.enrichment_present ? <><p className="origin-explainer">These classifications are derived from the source evidence and are not raw source fields.</p><DetailTags label="Capabilities" values={detail.data.capabilities} /><DetailTags label="Skills" values={detail.data.skills} /><DetailTags label="Technologies" values={detail.data.technologies} /><dl className="detail-grid detail-grid--compact"><div><dt>Provider</dt><dd>{detail.data.enrichment_provider}</dd></div><div><dt>Model</dt><dd>{detail.data.enrichment_model}</dd></div><div><dt>Schema</dt><dd>{detail.data.enrichment_schema_version}</dd></div><div><dt>Confidence</dt><dd>{detail.data.application_confidence === null ? "Unavailable" : formatPercent(detail.data.application_confidence * 100)}</dd></div><div><dt>Seniority</dt><dd>{detail.data.seniority ? titleCase(detail.data.seniority) : "Not classified"}</dd></div><div><dt>Business unit</dt><dd>{detail.data.business_unit ?? "Not classified"}</dd></div></dl>{detail.data.enrichment_limitations.length > 0 && <div className="limitations"><strong>Limitations</strong><ul>{detail.data.enrichment_limitations.map((item) => <li key={item}>{item}</li>)}</ul></div>}</> : <div className="inline-empty">No persisted AI enrichment uses this evidence.</div>}</section>
+      <section className="detail-section"><SectionTitle title="Derived intelligence" origin="Deterministic relationships" /><RelationshipGroup title="Hiring signals" items={detail.data.related_hiring_signals.map((item) => `${item.title} · ${item.signal_type}`)} empty="No hiring signals currently cite this evidence." /><RelationshipGroup title="Technology observations" items={detail.data.technology_observations.map((item) => `${item.technology} · ${item.category} · ${formatPercent(item.confidence * 100)} confidence`)} empty="No technology observations derive from this evidence." /><RelationshipGroup title="Technology strategic signals" items={detail.data.related_technology_signals.map((item) => `${item.title} · ${item.signal_type}`)} empty="No technology strategic signals currently cite this evidence because enrichment coverage is below the configured signal threshold." /></section>
+      <section className="detail-section"><SectionTitle title="Traceability" origin="Identifiers" /><dl className="detail-grid detail-grid--compact"><div><dt>Evidence ID</dt><dd className="mono">{detail.data.evidence_id}</dd></div><div><dt>Job ID</dt><dd className="mono">{detail.data.job_id}</dd></div><div><dt>Raw reference</dt><dd className="mono">{detail.data.raw_reference ?? "Unavailable"}</dd></div></dl></section>
+    </>}
+  </div></aside></div>;
+}
+
+function SectionTitle({ title, origin }: { title: string; origin: string }) { return <div className="section-title"><h3>{title}</h3><span>{origin}</span></div>; }
+function DetailTags({ label, values }: { label: string; values: string[] }) { if (!values.length) return null; return <div className="tag-group"><span>{label}</span><div>{values.map((value) => <span className="tag" key={value}>{value}</span>)}</div></div>; }
+function RelationshipGroup({ title, items, empty }: { title: string; items: string[]; empty: string }) { return <div className="relationship-group"><strong>{title}</strong>{items.length ? <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul> : <p>{empty}</p>}</div>; }

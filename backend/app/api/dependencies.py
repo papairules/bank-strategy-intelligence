@@ -2,6 +2,8 @@ from functools import lru_cache
 
 from fastapi import Depends
 
+from backend.app.application.evidence import UnifiedEvidenceService
+from backend.app.application.hiring import HiringAnalyticsService, HiringSignalService
 from backend.app.application.hiring import HiringDashboardService, HiringReadService
 from backend.app.application.technology import (
     TechnologyAnalyticsService,
@@ -36,3 +38,20 @@ def get_technology_signal_service(
     ),
 ) -> TechnologySignalService:
     return TechnologySignalService(analytics_service)
+
+
+def get_unified_evidence_service(
+    read_service: HiringReadService = Depends(get_hiring_read_service),
+    technology_analytics: TechnologyAnalyticsService = Depends(
+        get_technology_analytics_service
+    ),
+    technology_signals: TechnologySignalService = Depends(
+        get_technology_signal_service
+    ),
+) -> UnifiedEvidenceService:
+    return UnifiedEvidenceService(
+        read_service,
+        HiringSignalService(HiringAnalyticsService(read_service)),
+        technology_analytics,
+        technology_signals,
+    )

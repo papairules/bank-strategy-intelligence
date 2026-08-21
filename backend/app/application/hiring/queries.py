@@ -38,6 +38,8 @@ class HiringReadServiceProtocol(Protocol):
 
     def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]: ...
 
+    def list_all_jobs(self) -> list[JobPosting]: ...
+
     def get_enrichment(
         self,
         *,
@@ -135,6 +137,10 @@ class HiringReadService:
     def list_jobs_for_analytics(self, organization: str) -> list[JobPosting]:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.job_postings.list_by_organization(organization)
+
+    def list_all_jobs(self) -> list[JobPosting]:
+        with self._unit_of_work_factory() as unit_of_work:
+            return unit_of_work.job_postings.list_all()
 
     def get_enrichment(
         self,

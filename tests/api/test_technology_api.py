@@ -87,3 +87,28 @@ def test_signals_endpoint_serializes_safe_low_coverage_state(client):
 
 def test_openapi_contains_technology_signals_path(client):
     assert "/api/v1/technology/organizations/{organization}/signals" in client.get("/openapi.json").json()["paths"]
+
+
+def test_unified_evidence_summary_records_detail_and_filters(client):
+    summary = client.get("/api/v1/evidence/organizations/Wells%20Fargo/summary")
+    assert summary.status_code == 200
+    assert summary.json()["total_evidence_records"] == 1
+    assert summary.json()["evidence_coverage"] == 100
+    records = client.get("/api/v1/evidence/organizations/Wells%20Fargo/records?enriched=true&technology=python&location=charlotte")
+    assert records.status_code == 200
+    assert records.json()["total"] == 1
+    evidence_id = records.json()["items"][0]["evidence_id"]
+    detail = client.get(f"/api/v1/evidence/{evidence_id}")
+    assert detail.status_code == 200
+    assert detail.json()["enrichment_provider"] == "vertex_gemini"
+    assert detail.json()["technology_observations"][0]["technology"] == "Python"
+
+
+def test_unified_evidence_missing_pagination_and_openapi(client):
+    assert client.get(f"/api/v1/evidence/{uuid4()}").status_code == 404
+    assert client.get("/api/v1/evidence/organizations/Unknown/records").json()["items"] == []
+    assert client.get("/api/v1/evidence/organizations/Wells%20Fargo/records?limit=101").status_code == 422
+    paths = client.get("/openapi.json").json()["paths"]
+    assert "/api/v1/evidence/organizations/{organization}/summary" in paths
+    assert "/api/v1/evidence/organizations/{organization}/records" in paths
+    assert "/api/v1/evidence/{evidence_id}" in paths
