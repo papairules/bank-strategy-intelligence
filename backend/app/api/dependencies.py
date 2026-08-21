@@ -3,6 +3,7 @@ from functools import lru_cache
 from fastapi import Depends
 
 from backend.app.application.evidence import UnifiedEvidenceService
+from backend.app.application.agents.evidence_agent import EvidenceAgentService
 from backend.app.application.hiring import HiringAnalyticsService, HiringSignalService
 from backend.app.application.hiring import HiringDashboardService, HiringReadService
 from backend.app.application.strategy import CrossDomainStrategicSignalService
@@ -14,11 +15,19 @@ from backend.app.application.technology import (
 from backend.app.infrastructure.composition.hiring_read import (
     create_hiring_read_service,
 )
+from backend.app.infrastructure.composition.evidence_agent import (
+    create_evidence_agent_service,
+)
 
 
 @lru_cache
 def get_hiring_read_service() -> HiringReadService:
     return create_hiring_read_service()
+
+
+@lru_cache
+def get_evidence_agent_service() -> EvidenceAgentService:
+    return create_evidence_agent_service()
 
 
 def get_hiring_dashboard_service(

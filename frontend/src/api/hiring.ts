@@ -17,9 +17,28 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public readonly status: number,
+    public readonly code?: string,
   ) {
     super(message);
   }
+}
+
+async function errorFromResponse(response: Response): Promise<ApiError> {
+  let message = `Request failed with status ${response.status}`;
+  let code: string | undefined;
+  try {
+    const body = (await response.json()) as {
+      detail?: string | { code?: string; message?: string };
+    };
+    if (typeof body.detail === "string") message = body.detail;
+    if (body.detail && typeof body.detail === "object") {
+      if (body.detail.message) message = body.detail.message;
+      code = body.detail.code;
+    }
+  } catch {
+    // Preserve the safe status-based message.
+  }
+  return new ApiError(message, response.status, code);
 }
 
 export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
@@ -28,16 +47,24 @@ export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T>
     signal,
   });
   if (!response.ok) {
-    let message = `Request failed with status ${response.status}`;
-    try {
-      const body = (await response.json()) as { detail?: string };
-      if (body.detail) message = body.detail;
-    } catch {
-      // Preserve the safe status-based message.
-    }
-    throw new ApiError(message, response.status);
+    throw await errorFromResponse(response);
   }
   return response.json() as Promise<T>;
+}
+
+export async function postJson<TRequest, TResponse>(
+  path: string,
+  body: TRequest,
+  signal?: AbortSignal,
+): Promise<TResponse> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers: { Accept: "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!response.ok) throw await errorFromResponse(response);
+  return response.json() as Promise<TResponse>;
 }
 
 function organizationPath(organization: string): string {
