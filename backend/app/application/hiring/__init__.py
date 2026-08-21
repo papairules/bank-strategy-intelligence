@@ -86,6 +86,14 @@ from backend.app.application.hiring.dashboard import (
     HiringDashboardService,
     HiringOrganizationSummary,
 )
+from backend.app.application.hiring.batch_enrichment import (
+    BatchEnrichmentIdentity,
+    BatchEnrichmentStatus,
+    HiringBatchEnrichmentRequest,
+    HiringBatchEnrichmentResult,
+    HiringBatchEnrichmentService,
+    HiringBatchJobOutcome,
+)
 
 __all__ = [
     "CollectedJob",
@@ -158,4 +166,10 @@ __all__ = [
     "HiringDashboardQuery",
     "HiringDashboardService",
     "HiringOrganizationSummary",
+    "BatchEnrichmentIdentity",
+    "BatchEnrichmentStatus",
+    "HiringBatchEnrichmentRequest",
+    "HiringBatchEnrichmentResult",
+    "HiringBatchEnrichmentService",
+    "HiringBatchJobOutcome",
 ]
