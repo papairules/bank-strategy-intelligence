@@ -25,6 +25,13 @@ from backend.app.application.hiring.execution import (
     HiringCollectionExecutionResult,
     HiringCollectionExecutionService,
 )
+from backend.app.application.hiring.scheduling import (
+    HiringCollectionScheduler,
+    IntervalCadence,
+    ScheduledExecutionTarget,
+    ScheduledHiringJob,
+    ScheduledJobOutcome,
+)
 
 __all__ = [
     "CollectedJob",
@@ -48,4 +55,9 @@ __all__ = [
     "HiringCollectionExecutionResult",
     "HiringCollectionExecutionService",
     "PersistenceError",
+    "HiringCollectionScheduler",
+    "IntervalCadence",
+    "ScheduledExecutionTarget",
+    "ScheduledHiringJob",
+    "ScheduledJobOutcome",
 ]
