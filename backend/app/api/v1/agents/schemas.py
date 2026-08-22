@@ -4,6 +4,11 @@ from backend.app.application.agents.evidence_agent import (
     EvidenceAgentCitation,
     EvidenceAgentStatus,
 )
+from backend.app.application.agents.hiring_agent import (
+    HiringAgentStatus,
+    HiringEvidence,
+    HiringSignal,
+)
 from backend.app.application.agents.strategy_agent import (
     StrategyAgentStatus,
     StrategySupportClass,
@@ -102,3 +107,33 @@ class StrategyAgentAnswerResponse(BaseModel):
     model: str
     agent_version: str
     strategic_signals: list[StrategicSignal] = Field(default_factory=list)
+
+
+class HiringAgentAnswerRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    organization: str = Field(min_length=1, max_length=200)
+
+    @model_validator(mode="after")
+    def reject_blank_organization(self):
+        if not self.organization.strip():
+            raise ValueError("organization must contain non-whitespace text")
+        return self
+
+
+class HiringAgentAnswerResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    status: HiringAgentStatus
+    organization: str
+    generated_at: str
+    total_input_jobs: int = Field(ge=0)
+    unique_jobs: int = Field(ge=0)
+    enriched_jobs: int = Field(ge=0)
+    failed_enrichments: int = Field(ge=0)
+    hiring_signals: list[HiringSignal]
+    evidence: list[HiringEvidence]
+    warnings: list[str]
+    provider: str
+    model: str
+    agent_version: str

@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class HiringSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="BSI_", extra="ignore")
+    model_config = SettingsConfigDict(env_prefix="BSI_", env_file=".env", extra="ignore")
 
     sqlite_database_path: Path = Path("data/hiring-intelligence.sqlite3")
     wells_fargo_request_timeout_seconds: float = Field(default=20.0, gt=0)
@@ -33,6 +33,10 @@ class HiringSettings(BaseSettings):
     strategy_agent_max_search_results: int = Field(default=10, ge=1, le=50)
     strategy_agent_max_evidence: int = Field(default=10, ge=1, le=20)
     strategy_agent_max_payload_chars: int = Field(default=100_000, ge=1_000)
+    hiring_agent_enabled: bool = False
+    hiring_agent_use_llm: bool = True
+    hiring_agent_max_jobs: int | None = Field(default=None, gt=0)
+    hiring_agent_workers: int = Field(default=6, ge=1, le=20)
     openai_api_key: str | None = Field(default=None, repr=False)
     openai_model: str = "gpt-5.4-mini"
     cors_origins: list[str] = Field(

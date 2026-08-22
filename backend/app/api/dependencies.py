@@ -4,6 +4,7 @@ from fastapi import Depends
 
 from backend.app.application.evidence import UnifiedEvidenceService
 from backend.app.application.agents.evidence_agent import EvidenceAgentService
+from backend.app.application.agents.hiring_agent import HiringAgentAppService
 from backend.app.application.agents.strategy_agent import IntegratedStrategyAgentService
 from backend.app.application.hiring import HiringAnalyticsService, HiringSignalService
 from backend.app.application.hiring import HiringDashboardService, HiringReadService
@@ -18,6 +19,9 @@ from backend.app.infrastructure.composition.hiring_read import (
 )
 from backend.app.infrastructure.composition.evidence_agent import (
     create_evidence_agent_service,
+)
+from backend.app.infrastructure.composition.hiring_agent import (
+    create_hiring_agent_service,
 )
 from backend.app.infrastructure.composition.strategy_agent import (
     create_strategy_agent_service,
@@ -37,6 +41,11 @@ def get_evidence_agent_service() -> EvidenceAgentService:
 @lru_cache
 def get_strategy_agent_service() -> IntegratedStrategyAgentService:
     return create_strategy_agent_service()
+
+
+@lru_cache
+def get_hiring_agent_service() -> HiringAgentAppService:
+    return create_hiring_agent_service()
 
 
 def get_hiring_dashboard_service(

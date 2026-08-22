@@ -2,10 +2,16 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from backend.app.api.dependencies import get_evidence_agent_service, get_strategy_agent_service
+from backend.app.api.dependencies import (
+    get_evidence_agent_service,
+    get_hiring_agent_service,
+    get_strategy_agent_service,
+)
 from backend.app.api.v1.agents.schemas import (
     EvidenceAgentAnswerRequest,
     EvidenceAgentAnswerResponse,
+    HiringAgentAnswerRequest,
+    HiringAgentAnswerResponse,
     StrategyAgentAnswerRequest,
     StrategyAgentAnswerResponse,
 )
@@ -21,11 +27,18 @@ from backend.app.application.agents.evidence_agent import (
     EvidenceAgentRequest,
     EvidenceAgentService,
 )
+from backend.app.application.agents.hiring_agent import (
+    HiringAgentAppRequest,
+    HiringAgentAppService,
+    HiringAgentError,
+    HiringAgentFailureCode,
+)
 
 
 router = APIRouter(prefix="/agents")
 EvidenceAgent = Annotated[EvidenceAgentService, Depends(get_evidence_agent_service)]
 StrategyAgent = Annotated[IntegratedStrategyAgentService, Depends(get_strategy_agent_service)]
+HiringAgent = Annotated[HiringAgentAppService, Depends(get_hiring_agent_service)]
 
 _FAILURE_STATUS = {
     EvidenceAgentFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -104,6 +117,37 @@ async def answer_strategy_question(
             detail={"code": error.code.value, "message": _safe_strategy_message(error)},
         ) from error
     return StrategyAgentAnswerResponse.model_validate(result.model_dump())
+
+
+_HIRING_FAILURE_STATUS = {
+    HiringAgentFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
+    HiringAgentFailureCode.INVALID_REQUEST: status.HTTP_422_UNPROCESSABLE_ENTITY,
+    HiringAgentFailureCode.AUTHENTICATION: status.HTTP_503_SERVICE_UNAVAILABLE,
+    HiringAgentFailureCode.PROVIDER_UNAVAILABLE: status.HTTP_503_SERVICE_UNAVAILABLE,
+}
+
+
+@router.post("/hiring/answer", response_model=HiringAgentAnswerResponse, tags=["Hiring Agent"])
+async def answer_hiring_agent_request(
+    request: HiringAgentAnswerRequest,
+    service: HiringAgent,
+) -> HiringAgentAnswerResponse:
+    try:
+        result = await service.answer(HiringAgentAppRequest(organization=request.organization))
+    except HiringAgentError as error:
+        raise HTTPException(
+            status_code=_HIRING_FAILURE_STATUS[error.code],
+            detail={"code": error.code.value, "message": _safe_hiring_message(error.code)},
+        ) from error
+    return HiringAgentAnswerResponse.model_validate(result.model_dump())
+
+
+def _safe_hiring_message(code: HiringAgentFailureCode) -> str:
+    if code == HiringAgentFailureCode.DISABLED:
+        return "The Hiring Agent is currently disabled."
+    if code == HiringAgentFailureCode.AUTHENTICATION:
+        return "The Hiring Agent is not configured with valid credentials."
+    return "The Hiring Agent is temporarily unavailable."
 
 
 def _safe_message(code: EvidenceAgentFailureCode) -> str:

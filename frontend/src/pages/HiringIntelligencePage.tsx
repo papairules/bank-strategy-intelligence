@@ -6,6 +6,7 @@ import { RankedBars } from "../components/RankedBars";
 import { ErrorState, LoadingState } from "../components/States";
 import { useOrganization } from "../context/OrganizationContext";
 import { TrendChart } from "../components/TrendChart";
+import { HiringAgentPanel } from "../features/hiring/HiringAgentPanel";
 import { JobExplorer } from "../features/hiring/JobExplorer";
 import { useApi } from "../hooks/useApi";
 import { formatDate, formatNumber, formatPercent, titleCase } from "../utils/format";
@@ -64,6 +65,9 @@ export function HiringIntelligencePage() {
       </Panel>
 
       <JobExplorer organization={organization} />
+
+      <div className="intelligence-divider"><span>Agent-generated hiring synthesis</span></div>
+      <div id="hiring-agent"><HiringAgentPanel organization={organization} /></div>
     </div>
   );
 }
