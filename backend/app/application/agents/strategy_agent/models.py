@@ -1,7 +1,41 @@
 from enum import StrEnum
+from datetime import date
+from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
+
+
+SourceType = Literal[
+    "earnings_release", "annual_report", "quarterly_report", "sec_filing",
+    "investor_presentation", "earnings_call", "company_announcement",
+    "company_strategy_page", "leadership_statement", "news",
+    "industry_research", "other",
+]
+
+SignalType = Literal[
+    "GROWTH", "INVESTMENT", "REVENUE_GROWTH", "CAPITAL_ALLOCATION",
+    "NEW_PRODUCT", "MARKET_EXPANSION", "PARTNERSHIP", "ACQUISITION",
+    "TECHNOLOGY_ADOPTION", "TRANSFORMATION", "COST_REDUCTION",
+    "REGULATORY_PRIORITY", "GUIDANCE",
+]
+
+StrategicDirection = Literal[
+    "grow", "increase_investment", "transform", "optimize", "reduce",
+    "exit", "maintain", "reallocate",
+]
+
+
+def _validated_publication_date(value: str | None) -> str | None:
+    if value is None:
+        return None
+    candidate = value.strip()
+    if len(candidate) != 10:
+        return None
+    try:
+        return date.fromisoformat(candidate).isoformat()
+    except ValueError:
+        return None
 
 
 class StrategyAgentStatus(StrEnum):
@@ -19,6 +53,7 @@ class StrategySupportClass(StrEnum):
 class StrategyAgentFailureCode(StrEnum):
     DISABLED = "disabled_agent"
     INVALID_REQUEST = "invalid_request"
+    ORGANIZATION_SCOPE_MISMATCH = "organization_scope_mismatch"
     PROVIDER_UNAVAILABLE = "provider_unavailable"
     AUTHENTICATION = "authentication"
     PERMISSIONS = "permissions"
@@ -39,6 +74,7 @@ class StrategyAgentRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     organization: str = Field(min_length=1, max_length=200)
     question: str = Field(min_length=1, max_length=2000)
+    time_horizon: str | None = Field(default=None, min_length=1, max_length=100)
 
     @model_validator(mode="after")
     def reject_blank(self):
@@ -137,6 +173,7 @@ class StrategyAgentResult(BaseModel):
     provider: str
     model: str
     agent_version: str
+    strategic_signals: list["StrategicSignal"] = Field(default_factory=list)
 
 
 class StrategyAgentError(Exception):
@@ -144,3 +181,86 @@ class StrategyAgentError(Exception):
         super().__init__(message)
         self.code = code
         self.metadata = metadata or {}
+
+
+class StrategyAgentInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    company: str = Field(min_length=1)
+    question: str = Field(min_length=1)
+    time_horizon: str | None = None
+
+
+class ResearchPlan(BaseModel):
+    queries: list[str] = Field(min_length=5, max_length=8)
+
+
+class Source(BaseModel):
+    source_id: str = ""
+    title: str
+    url: str
+    publisher: str | None = None
+    source_type: SourceType = "other"
+    publication_date: str | None = None
+    content: str
+
+    @field_validator("publication_date", mode="before")
+    @classmethod
+    def validate_publication_date(cls, value: object) -> str | None:
+        return _validated_publication_date(value if isinstance(value, str) else None)
+
+
+class SearchResults(BaseModel):
+    results: list[Source] = Field(default_factory=list)
+
+
+class Evidence(BaseModel):
+    evidence_id: str = ""
+    theme: str
+    business_unit: str | None = None
+    signal_type: SignalType
+    direction: str | None = None
+    statement: str
+    time_horizon: str | None = None
+    source_id: str
+    source_url: str
+    source_type: SourceType
+    publication_date: str | None = None
+
+    @field_validator("publication_date", mode="before")
+    @classmethod
+    def validate_publication_date(cls, value: object) -> str | None:
+        return _validated_publication_date(value if isinstance(value, str) else None)
+
+
+class EvidenceBatch(BaseModel):
+    evidence: list[Evidence] = Field(default_factory=list)
+
+
+class StrategicSignalDraft(BaseModel):
+    priority: str
+    business_unit: str | None = None
+    direction: StrategicDirection
+    time_horizon: str | None = None
+    hypothesis: str
+    supporting_evidence_ids: list[str]
+
+
+class StrategicSignalDrafts(BaseModel):
+    signals: list[StrategicSignalDraft] = Field(default_factory=list)
+
+
+class StrategicSignal(StrategicSignalDraft):
+    confidence: float = Field(ge=0, le=1)
+    confidence_breakdown: dict[str, float]
+    evidence: list[Evidence]
+
+
+class StrategyAgentOutput(BaseModel):
+    company: str
+    question: str
+    time_horizon: str | None = None
+    strategic_signals: list[StrategicSignal] = Field(default_factory=list)
+    message: str | None = None
+
+
+StrategyAgentResult.model_rebuild()

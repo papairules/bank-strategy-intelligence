@@ -150,6 +150,10 @@ Settings use the `BSI_` environment prefix.
 | `BSI_WELLS_FARGO_SCHEDULE_INTERVAL_SECONDS` | `86400` | Interval measured from the previous run's completion. |
 | `BSI_WELLS_FARGO_SCHEDULE_MAX_PAGES` | `1` | Maximum pages per scheduled run. |
 | `BSI_WELLS_FARGO_SCHEDULE_MAX_RECORDS` | `20` | Maximum records processed per scheduled run. |
+| `BSI_STRATEGY_AGENT_ENABLED` | `false` | Enables the interactive LangGraph Strategy Agent POST endpoint. |
+| `BSI_STRATEGY_AGENT_PROVIDER` | `openai_web` | Provider selector for the interactive Strategy Agent. |
+| `BSI_OPENAI_API_KEY` | unset | OpenAI credential used by live strategy research. |
+| `BSI_OPENAI_MODEL` | `gpt-5.4-mini` | OpenAI model used for planning, extraction, inference, and quality review. |
 
 Example:
 
@@ -160,6 +164,17 @@ export BSI_WELLS_FARGO_RETRY_COUNT=0
 ```
 
 Do not commit `.env` files, credentials, or local databases. The public Workday source does not require credentials.
+
+To enable the interactive Strategy Agent locally, set the server-side variables before starting FastAPI:
+
+```bash
+export BSI_STRATEGY_AGENT_ENABLED=true
+export BSI_OPENAI_API_KEY=<your-key>
+export BSI_OPENAI_MODEL=gpt-5.4-mini
+uvicorn backend.app.main:app --reload
+```
+
+`POST /api/v1/agents/strategy/answer` accepts `organization`, `question`, and an optional `time_horizon`. Its response retains the legacy summary and findings fields and adds canonical `strategic_signals` with confidence, evidence IDs, and source URLs. The deterministic `GET /api/v1/strategy/organizations/{organization}/signals` flow is separate.
 
 ## SQLite Persistence
 

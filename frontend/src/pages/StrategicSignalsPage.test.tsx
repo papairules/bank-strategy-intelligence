@@ -34,5 +34,6 @@ describe("StrategicSignalsPage", () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("Backend unavailable"))));
     renderPage();
     expect(await screen.findByText("Backend unavailable")).toBeInTheDocument();
+    expect(screen.getByLabelText("Strategic question")).toBeInTheDocument();
   });
 });

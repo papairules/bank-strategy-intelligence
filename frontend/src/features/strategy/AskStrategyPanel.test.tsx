@@ -19,6 +19,7 @@ const answer: StrategyAgentAnswer = {
     { reference: "strategy_ref_4", domain: "strategy", support_class: "derived_signal", tool_name: "strategy.get_signals", evidence_ids: [], job_ids: [], signal_ids: [] },
   ] }], reliability: .42, limitations: ["The observation period is short."], tool_calls_used: 4,
   provider: "vertex_gemini", model: "gemini-2.5-flash", agent_version: "strategy-orchestrator-v1",
+  strategic_signals: [],
 };
 const apiMock = vi.mocked(strategyAgentApi.answer);
 
@@ -53,10 +54,43 @@ describe("AskStrategyPanel", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
+  it("submits a time horizon and renders native evidence with its source URL", async () => {
+    apiMock.mockResolvedValue({ ...answer, strategic_signals: [{
+      priority: "Modernize payments", business_unit: "Payments", direction: "transform", time_horizon: "2025–2027",
+      hypothesis: "The company is transforming its payments platform.", supporting_evidence_ids: ["ev-1"],
+      confidence: .8, confidence_breakdown: { source_quality: .8 }, evidence: [{
+        evidence_id: "ev-1", theme: "Payments", business_unit: "Payments", signal_type: "TRANSFORMATION",
+        direction: "modernize", statement: "Management announced a payments modernization program.", time_horizon: "2025–2027",
+        source_id: "src-1", source_url: "https://example.com/strategy", source_type: "company_announcement", publication_date: "2026-01-10",
+      }],
+    }] });
+    renderPanel();
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText("Strategic question"), "What is supported?");
+    await user.type(screen.getByLabelText(/Time horizon/), "2025–2027");
+    await user.click(screen.getByRole("button", { name: "Analyze" }));
+    expect(await screen.findByText("Modernize payments")).toBeInTheDocument();
+    expect(apiMock).toHaveBeenCalledWith({ organization: "Wells Fargo", question: "What is supported?", time_horizon: "2025–2027" });
+    await user.click(screen.getByText("1 supporting evidence item"));
+    expect(screen.getByRole("link", { name: "Open source" })).toHaveAttribute("href", "https://example.com/strategy");
+    expect(screen.getByText(/Evidence ev-1/)).toBeInTheDocument();
+  });
+
   it.each([["disabled_agent", "Strategy Agent unavailable"], ["provider_unavailable", "Provider temporarily unavailable"], ["claim_validation", "Governed synthesis unavailable"]])("renders safe %s failures", async (code, title) => {
     apiMock.mockRejectedValue(new ApiError("Safe failure", 503, code)); renderPanel(); await submit();
     expect(await screen.findByText(title)).toBeInTheDocument();
     expect(screen.getByText(/No automatic retry/)).toBeInTheDocument();
+  });
+
+  it("renders an organization scope mismatch clearly", async () => {
+    apiMock.mockRejectedValue(new ApiError(
+      "The question targets Goldman Sachs, but the current data scope is Wells Fargo. Switch the Current Data Scope to Goldman Sachs or ask about Wells Fargo.",
+      422,
+      "organization_scope_mismatch",
+    ));
+    renderPanel(); await submit();
+    expect(await screen.findByText("Organization scope mismatch")).toBeInTheDocument();
+    expect(screen.getByText(/current data scope is Wells Fargo/)).toBeInTheDocument();
   });
 
   it("shows loading and prevents duplicate submission", async () => {

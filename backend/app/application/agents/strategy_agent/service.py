@@ -1,4 +1,7 @@
+import asyncio
 import json
+import logging
+import re
 from collections.abc import Callable
 from datetime import date
 from typing import Protocol
@@ -22,6 +25,7 @@ from backend.app.application.agents.strategy_agent.models import (
     StrategyToolCall,
     StrategyToolResult,
     StrategyToolSpec,
+    StrategyAgentOutput,
 )
 from backend.app.application.agents.strategy_agent.prompts import STRATEGY_AGENT_SYSTEM_POLICY
 from backend.app.application.agents.strategy_agent.provider import StrategyAgentProvider
@@ -29,6 +33,54 @@ from backend.app.application.agents.strategy_agent.validation import (
     contains_unsupported_intent_claim,
     contains_unsupported_support_narrowing,
 )
+from backend.app.application.agents.strategy_agent.graph import initial_state
+
+
+logger = logging.getLogger(__name__)
+
+_ORGANIZATION_ALIASES = {
+    "Wells Fargo": ("wells fargo",),
+    "Goldman Sachs": ("goldman sachs", "goldman"),
+    "BNY": ("bank of new york mellon", "bny mellon", "bny"),
+}
+
+
+def _canonical_organization(name: str) -> str | None:
+    normalized = " ".join(name.casefold().split())
+    return next(
+        (
+            canonical
+            for canonical, aliases in _ORGANIZATION_ALIASES.items()
+            if normalized in aliases
+        ),
+        None,
+    )
+
+
+def _organizations_named_in(question: str) -> set[str]:
+    named: set[str] = set()
+    for canonical, aliases in _ORGANIZATION_ALIASES.items():
+        if any(
+            re.search(rf"(?<!\w){re.escape(alias)}(?!\w)", question, re.IGNORECASE)
+            for alias in aliases
+        ):
+            named.add(canonical)
+    return named
+
+
+def _validate_organization_scope(organization: str, question: str) -> None:
+    selected = _canonical_organization(organization)
+    if selected is None:
+        return
+    mismatches = sorted(_organizations_named_in(question) - {selected})
+    if not mismatches:
+        return
+    target = ", ".join(mismatches)
+    raise StrategyAgentError(
+        StrategyAgentFailureCode.ORGANIZATION_SCOPE_MISMATCH,
+        f"The question targets {target}, but the current data scope is {selected}. "
+        f"Switch the Current Data Scope to {target} or ask about {selected}.",
+    )
 
 
 class StrategyToolBundle(Protocol):
@@ -305,3 +357,100 @@ class StrategyAgentService:
         if status == StrategyAgentStatus.INSUFFICIENT_EVIDENCE:
             score = min(score, 0.35)
         return round(max(0.0, min(score, 1.0)), 4)
+
+
+class IntegratedStrategyAgentService:
+    """Async FastAPI boundary and compatibility adapter for the LangGraph agent."""
+
+    AGENT_VERSION = "strategy-langgraph-v1"
+
+    def __init__(
+        self,
+        graph,
+        *,
+        enabled: bool = False,
+        model: str,
+        api_key_configured: bool = True,
+    ) -> None:
+        self._graph = graph
+        self._enabled = enabled
+        self._model = model
+        self._api_key_configured = api_key_configured
+
+    async def answer(self, request: StrategyAgentRequest) -> StrategyAgentResult:
+        _validate_organization_scope(request.organization, request.question)
+        if not self._enabled:
+            raise StrategyAgentError(
+                StrategyAgentFailureCode.DISABLED,
+                "Strategy Agent is disabled.",
+            )
+        if not self._api_key_configured:
+            raise StrategyAgentError(
+                StrategyAgentFailureCode.AUTHENTICATION,
+                "OpenAI API credentials are not configured.",
+            )
+        logger.info("[integrated_strategy] organization=%s", request.organization)
+        state = initial_state(
+            company=request.organization,
+            question=request.question,
+            time_horizon=request.time_horizon,
+        )
+        try:
+            result = await asyncio.to_thread(self._graph.invoke, state)
+            output = StrategyAgentOutput.model_validate(result["final_output"])
+        except StrategyAgentError:
+            raise
+        except Exception as exc:
+            raise StrategyAgentError(
+                StrategyAgentFailureCode.PROVIDER_UNAVAILABLE,
+                "Integrated OpenAI Strategy Agent execution failed.",
+                metadata={"error_type": type(exc).__name__},
+            ) from exc
+        signals = output.strategic_signals
+        findings = [
+            StrategyFinding(
+                title=signal.priority,
+                statement=signal.hypothesis,
+                support=[],
+            )
+            for signal in signals
+        ]
+        reliability = (
+            round(sum(signal.confidence for signal in signals) / len(signals), 4)
+            if signals
+            else 0.0
+        )
+        status = (
+            StrategyAgentStatus.ANSWERED
+            if signals
+            else StrategyAgentStatus.INSUFFICIENT_EVIDENCE
+        )
+        if signals:
+            themes = ", ".join(signal.priority for signal in signals)
+            executive_summary = (
+                f"Evidence-backed research identified {len(signals)} supported strategic "
+                f"theme{'s' if len(signals) != 1 else ''}: {themes}."
+            )
+            limitations: list[str] = []
+        else:
+            executive_summary = output.message or (
+                "Insufficient evidence to identify a reliable strategic direction."
+            )
+            limitations = [executive_summary]
+        logger.info(
+            "[strategy_adapter] produced %d compatibility findings", len(findings)
+        )
+        return StrategyAgentResult(
+            status=status,
+            organization=request.organization,
+            question=request.question,
+            executive_summary=executive_summary,
+            findings=findings,
+            reliability=reliability,
+            limitations=limitations,
+            tool_calls_used=len(result.get("research_queries", [])),
+            provider="openai",
+            model=self._model,
+            agent_version=self.AGENT_VERSION,
+            strategic_signals=signals,
+        )

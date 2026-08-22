@@ -560,6 +560,7 @@ def test_cors_defaults_and_preflight_are_conservative(client, monkeypatch):
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
     defaults = HiringSettings(_env_file=None)
+    assert "http://127.0.0.1:5173" in defaults.cors_origins
     assert "*" not in defaults.cors_origins
     monkeypatch.setenv("BSI_CORS_ORIGINS", '["http://localhost:4173"]')
     assert HiringSettings(_env_file=None).cors_origins == ["http://localhost:4173"]

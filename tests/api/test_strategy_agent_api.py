@@ -86,6 +86,22 @@ def test_answered_response_serializes_support_and_invokes_once(client_factory):
     assert body["findings"][0]["support"][0]["evidence_ids"] == [str(EVIDENCE_ID)]
     assert len(agent.requests) == 1
     assert agent.requests[0].organization == "Wells Fargo"
+    assert body["strategic_signals"] == []
+
+
+def test_optional_time_horizon_reaches_strategy_service(client_factory):
+    agent = FakeStrategyAgent(result())
+    with client_factory(agent) as client:
+        response = client.post(
+            "/api/v1/agents/strategy/answer",
+            json={
+                "organization": "Wells Fargo",
+                "question": "What does the evidence suggest?",
+                "time_horizon": "12 months",
+            },
+        )
+    assert response.status_code == 200
+    assert agent.requests[0].time_horizon == "12 months"
 
 
 def test_insufficient_evidence_is_successful(client_factory):
@@ -94,6 +110,28 @@ def test_insufficient_evidence_is_successful(client_factory):
     assert response.status_code == 200
     assert response.json()["status"] == "insufficient_evidence"
     assert response.json()["findings"] == []
+
+
+def test_organization_scope_mismatch_returns_clear_422(client_factory):
+    agent = FakeStrategyAgent(error=StrategyAgentError(
+        StrategyAgentFailureCode.ORGANIZATION_SCOPE_MISMATCH,
+        "The question targets Goldman Sachs, but the current data scope is Wells Fargo. "
+        "Switch the Current Data Scope to Goldman Sachs or ask about Wells Fargo.",
+    ))
+    with client_factory(agent) as client:
+        response = client.post(
+            "/api/v1/agents/strategy/answer",
+            json={
+                "organization": "Wells Fargo",
+                "question": "What are Goldman Sachs's AI priorities?",
+            },
+        )
+    assert response.status_code == 422
+    assert response.json()["detail"] == {
+        "code": "organization_scope_mismatch",
+        "message": "The question targets Goldman Sachs, but the current data scope is Wells Fargo. "
+        "Switch the Current Data Scope to Goldman Sachs or ask about Wells Fargo.",
+    }
 
 
 @pytest.mark.parametrize("code,expected", [

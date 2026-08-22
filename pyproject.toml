@@ -8,6 +8,8 @@ dependencies = [
     "pydantic",
     "pydantic-settings",
     "google-genai",
+    "openai>=1.68.0",
+    "langgraph>=0.3.0",
 ]
 
 [project.optional-dependencies]

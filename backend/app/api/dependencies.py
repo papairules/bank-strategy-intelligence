@@ -4,7 +4,7 @@ from fastapi import Depends
 
 from backend.app.application.evidence import UnifiedEvidenceService
 from backend.app.application.agents.evidence_agent import EvidenceAgentService
-from backend.app.application.agents.strategy_agent import StrategyAgentService
+from backend.app.application.agents.strategy_agent import IntegratedStrategyAgentService
 from backend.app.application.hiring import HiringAnalyticsService, HiringSignalService
 from backend.app.application.hiring import HiringDashboardService, HiringReadService
 from backend.app.application.strategy import CrossDomainStrategicSignalService
@@ -35,7 +35,7 @@ def get_evidence_agent_service() -> EvidenceAgentService:
 
 
 @lru_cache
-def get_strategy_agent_service() -> StrategyAgentService:
+def get_strategy_agent_service() -> IntegratedStrategyAgentService:
     return create_strategy_agent_service()
 
 

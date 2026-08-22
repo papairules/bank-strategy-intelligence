@@ -13,7 +13,7 @@ from backend.app.application.agents.strategy_agent import (
     StrategyAgentError,
     StrategyAgentFailureCode,
     StrategyAgentRequest,
-    StrategyAgentService,
+    IntegratedStrategyAgentService,
 )
 from backend.app.application.agents.evidence_agent import (
     EvidenceAgentError,
@@ -25,7 +25,7 @@ from backend.app.application.agents.evidence_agent import (
 
 router = APIRouter(prefix="/agents")
 EvidenceAgent = Annotated[EvidenceAgentService, Depends(get_evidence_agent_service)]
-StrategyAgent = Annotated[StrategyAgentService, Depends(get_strategy_agent_service)]
+StrategyAgent = Annotated[IntegratedStrategyAgentService, Depends(get_strategy_agent_service)]
 
 _FAILURE_STATUS = {
     EvidenceAgentFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -67,6 +67,7 @@ async def answer_evidence_question(
 _STRATEGY_FAILURE_STATUS = {
     StrategyAgentFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
     StrategyAgentFailureCode.INVALID_REQUEST: status.HTTP_422_UNPROCESSABLE_ENTITY,
+    StrategyAgentFailureCode.ORGANIZATION_SCOPE_MISMATCH: status.HTTP_422_UNPROCESSABLE_ENTITY,
     StrategyAgentFailureCode.AUTHENTICATION: status.HTTP_503_SERVICE_UNAVAILABLE,
     StrategyAgentFailureCode.PERMISSIONS: status.HTTP_503_SERVICE_UNAVAILABLE,
     StrategyAgentFailureCode.QUOTA: status.HTTP_429_TOO_MANY_REQUESTS,
@@ -94,12 +95,13 @@ async def answer_strategy_question(
             StrategyAgentRequest(
                 organization=request.organization,
                 question=request.question,
+                time_horizon=request.time_horizon,
             )
         )
     except StrategyAgentError as error:
         raise HTTPException(
             status_code=_STRATEGY_FAILURE_STATUS[error.code],
-            detail={"code": error.code.value, "message": _safe_strategy_message(error.code)},
+            detail={"code": error.code.value, "message": _safe_strategy_message(error)},
         ) from error
     return StrategyAgentAnswerResponse.model_validate(result.model_dump())
 
@@ -123,7 +125,10 @@ def _safe_message(code: EvidenceAgentFailureCode) -> str:
     return "The Evidence Agent is temporarily unavailable."
 
 
-def _safe_strategy_message(code: StrategyAgentFailureCode) -> str:
+def _safe_strategy_message(error: StrategyAgentError) -> str:
+    code = error.code
+    if code == StrategyAgentFailureCode.ORGANIZATION_SCOPE_MISMATCH:
+        return str(error)
     if code == StrategyAgentFailureCode.DISABLED:
         return "The Strategy Agent is currently disabled."
     if code == StrategyAgentFailureCode.QUOTA:

@@ -7,6 +7,7 @@ from backend.app.application.agents.evidence_agent import (
 from backend.app.application.agents.strategy_agent import (
     StrategyAgentStatus,
     StrategySupportClass,
+    StrategicSignal,
 )
 from uuid import UUID
 
@@ -57,6 +58,7 @@ class StrategyAgentAnswerRequest(BaseModel):
 
     organization: str = Field(min_length=1, max_length=200)
     question: str = Field(min_length=1, max_length=2000)
+    time_horizon: str | None = Field(default=None, min_length=1, max_length=100)
 
     @model_validator(mode="after")
     def reject_blank_question(self):
@@ -99,3 +101,4 @@ class StrategyAgentAnswerResponse(BaseModel):
     provider: str
     model: str
     agent_version: str
+    strategic_signals: list[StrategicSignal] = Field(default_factory=list)

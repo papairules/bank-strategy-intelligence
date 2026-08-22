@@ -9,7 +9,7 @@ describe("evidenceAgentApi", () => {
     vi.stubGlobal("fetch", fetchMock);
     await evidenceAgentApi.answer({ organization: "Wells Fargo", question: "What is supported?" });
     expect(fetchMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v1/agents/evidence/answer",
+      "http://127.0.0.1:8000/api/v1/agents/evidence/answer",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({ organization: "Wells Fargo", question: "What is supported?" }),
