@@ -33,10 +33,12 @@ logs/
 *.egg-info/
 
 # Local persistence
-data/
-*.db
-*.sqlite
-*.sqlite3
+# data/
+# *.db
+# *.sqlite
+# *.sqlite3
+data/hiring_agent_cache/
+
 
 # Frontend
 frontend/node_modules/
