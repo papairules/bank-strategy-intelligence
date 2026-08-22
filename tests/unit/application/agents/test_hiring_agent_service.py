@@ -87,6 +87,23 @@ def test_success_path_produces_signals_and_evidence():
     assert result.agent_version == HiringAgentAppService.AGENT_VERSION
 
 
+def test_production_path_preserves_description_and_disables_url_fetching():
+    from backend.app.application.agents.hiring_agent.service import _raw_job_from_posting
+
+    class ExplodingFetcher:
+        def fetch(self, job):
+            raise AssertionError("production Hiring Agent must not fetch posting_url")
+
+    posting = make_job_posting()
+    service = build_service(job_source=lambda organization: [posting], fetcher=ExplodingFetcher())
+
+    result = asyncio.run(service.answer(HiringAgentAppRequest(organization="Wells Fargo")))
+
+    assert result.status == HiringAgentStatus.ANALYZED
+    assert _raw_job_from_posting(posting).description == posting.description
+    assert "URL enrichment was disabled." in result.warnings
+
+
 def test_pipeline_failure_is_wrapped_as_provider_unavailable(monkeypatch):
     import backend.app.application.agents.hiring_agent.service as service_module
 

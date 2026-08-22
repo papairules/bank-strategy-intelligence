@@ -79,6 +79,7 @@ from backend.app.application.hiring.enrichment import (
     HiringTheme,
     ProviderFieldSupport,
     ProviderModelMetadata,
+    source_content_hash,
 )
 from backend.app.application.hiring.dashboard import (
     HiringAnalyticsResult,
@@ -97,6 +98,13 @@ from backend.app.application.hiring.batch_enrichment import (
 from backend.app.application.hiring.imports import (
     CanonicalJobIdentity,
     CanonicalJobImport,
+)
+from backend.app.application.hiring.kg import (
+    HiringKGEdgeType,
+    HiringKGNodeType,
+    HiringKnowledgeGraphService,
+    HiringKnowledgeGraphSummary,
+    summarize_hiring_knowledge_graph,
 )
 
 __all__ = [
@@ -166,6 +174,7 @@ __all__ = [
     "HiringTheme",
     "ProviderFieldSupport",
     "ProviderModelMetadata",
+    "source_content_hash",
     "HiringAnalyticsResult",
     "HiringDashboardQuery",
     "HiringDashboardService",
@@ -178,4 +187,9 @@ __all__ = [
     "HiringBatchJobOutcome",
     "CanonicalJobIdentity",
     "CanonicalJobImport",
+    "HiringKGEdgeType",
+    "HiringKGNodeType",
+    "HiringKnowledgeGraphService",
+    "HiringKnowledgeGraphSummary",
+    "summarize_hiring_knowledge_graph",
 ]

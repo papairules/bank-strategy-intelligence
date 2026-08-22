@@ -1,6 +1,8 @@
 from collections.abc import Callable
 from datetime import datetime, timezone
 from enum import StrEnum
+import hashlib
+import json
 import re
 from typing import Protocol, Self
 import unicodedata
@@ -181,6 +183,7 @@ class HiringEnrichmentResult(BaseModel):
 
     job_id: UUID
     evidence_id: UUID
+    source_content_hash: str = ""
     capability_classifications: list[HiringCapability] = Field(default_factory=list)
     skills: list[str] = Field(default_factory=list)
     technologies: list[str] = Field(default_factory=list)
@@ -193,6 +196,15 @@ class HiringEnrichmentResult(BaseModel):
     field_support: list[EnrichmentFieldSupport] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
     model_metadata: EnrichmentModelMetadata
+
+    @field_validator("source_content_hash")
+    @classmethod
+    def validate_source_content_hash(cls, value: str) -> str:
+        if value == "":
+            return value
+        if len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
+            raise ValueError("source_content_hash must be a lowercase SHA-256 hex digest")
+        return value
 
 
 class EnrichmentFailureCode(StrEnum):
@@ -224,6 +236,20 @@ class HiringEnrichmentError(Exception):
 
 class HiringEnrichmentProvider(Protocol):
     async def enrich(self, request: HiringEnrichmentRequest) -> HiringProviderResponse: ...
+
+
+def source_content_hash(posting: JobPosting) -> str:
+    """Version the persisted source fields supplied to enrichment providers."""
+    payload = {
+        "title": posting.title,
+        "description": posting.description,
+        "location": posting.location,
+        "country": posting.country,
+        "posted_date": posting.posted_date.isoformat(),
+        "source_url": str(posting.source_url),
+    }
+    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 class HiringEnrichmentService:
@@ -283,6 +309,7 @@ class HiringEnrichmentService:
         return HiringEnrichmentResult(
             job_id=posting.job_id,
             evidence_id=evidence.evidence_id,
+            source_content_hash=source_content_hash(posting),
             capability_classifications=output.capability_classifications,
             skills=output.skills,
             technologies=output.technologies,
@@ -300,7 +327,6 @@ class HiringEnrichmentService:
                 model_confidence=output.model_confidence,
             ),
         )
-
     @staticmethod
     def _request(posting: JobPosting, evidence: Evidence) -> HiringEnrichmentRequest:
         return HiringEnrichmentRequest(

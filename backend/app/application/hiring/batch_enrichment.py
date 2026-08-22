@@ -2,12 +2,13 @@ from enum import StrEnum
 from typing import Protocol
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
 from backend.app.application.hiring.enrichment import (
     EnrichmentFailureCode,
     HiringEnrichmentError,
     HiringEnrichmentResult,
+    source_content_hash,
 )
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence
@@ -58,6 +59,7 @@ class HiringBatchJobOutcome(BaseModel):
     status: BatchEnrichmentStatus
     failure_code: str | None = None
     message: str | None = None
+    diagnostic_metadata: dict[str, JsonValue] = Field(default_factory=dict, exclude=True)
 
 
 class HiringBatchEnrichmentResult(BaseModel):
@@ -108,7 +110,7 @@ class BatchEnrichmentBoundary(Protocol):
 
 
 class BatchPersistenceBoundary(Protocol):
-    def has_current(self, *, job_id: UUID, evidence_id: UUID, provider: str, model: str, prompt_schema_version: str) -> bool: ...
+    def has_current(self, *, job_id: UUID, evidence_id: UUID, provider: str, model: str, prompt_schema_version: str, source_content_hash: str) -> bool: ...
     def save(self, enrichment: HiringEnrichmentResult) -> None: ...
 
 
@@ -149,6 +151,7 @@ class HiringBatchEnrichmentService:
                 provider=self._identity.provider,
                 model=self._identity.model,
                 prompt_schema_version=self._identity.prompt_schema_version,
+                source_content_hash=source_content_hash(job),
             ):
                 outcomes.append(self._outcome(job, BatchEnrichmentStatus.SKIPPED_EXISTING))
                 continue
@@ -194,15 +197,21 @@ class HiringBatchEnrichmentService:
         return any(value is not None and value.strip() for value in (job.description, evidence.source_excerpt))
 
     @staticmethod
-    def _outcome(job: JobPosting, status: BatchEnrichmentStatus, failure_code: str | None = None, message: str | None = None) -> HiringBatchJobOutcome:
-        return HiringBatchJobOutcome(job_id=job.job_id, evidence_id=job.evidence_id, title=job.title, status=status, failure_code=failure_code, message=message)
+    def _outcome(job: JobPosting, status: BatchEnrichmentStatus, failure_code: str | None = None, message: str | None = None, diagnostic_metadata: dict[str, JsonValue] | None = None) -> HiringBatchJobOutcome:
+        return HiringBatchJobOutcome(job_id=job.job_id, evidence_id=job.evidence_id, title=job.title, status=status, failure_code=failure_code, message=message, diagnostic_metadata=diagnostic_metadata or {})
 
     @classmethod
     def _enrichment_failure(cls, job: JobPosting, error: HiringEnrichmentError) -> HiringBatchJobOutcome:
         validation_codes = {EnrichmentFailureCode.EMPTY_EVIDENCE, EnrichmentFailureCode.MALFORMED_STRUCTURED_OUTPUT, EnrichmentFailureCode.VALIDATION_FAILURE}
         status = BatchEnrichmentStatus.FAILED_VALIDATION if error.code in validation_codes else BatchEnrichmentStatus.FAILED_PROVIDER
         message = "Enrichment validation failed." if status == BatchEnrichmentStatus.FAILED_VALIDATION else "Enrichment provider request failed."
-        return cls._outcome(job, status, error.code.value, message)
+        return cls._outcome(
+            job,
+            status,
+            error.code.value,
+            message,
+            diagnostic_metadata=error.metadata,
+        )
 
     @staticmethod
     def _result(request, jobs, eligible, outcomes, *, attempted: int, stopped: bool) -> HiringBatchEnrichmentResult:

@@ -14,6 +14,11 @@ from backend.app.application.agents.strategy_agent import (
     StrategySupportClass,
     StrategicSignal,
 )
+from backend.app.application.agents.supervisor_agent import (
+    ReportQuestionAnswer,
+    ReportQuestionRequest,
+    SupervisorReportResult,
+)
 from uuid import UUID
 
 
@@ -137,3 +142,31 @@ class HiringAgentAnswerResponse(BaseModel):
     provider: str
     model: str
     agent_version: str
+
+
+class SupervisorReportApiRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    organization: str = Field(min_length=1, max_length=200)
+    question: str | None = Field(default=None, min_length=1, max_length=2000)
+    time_horizon: str | None = Field(default=None, min_length=1, max_length=100)
+
+    @model_validator(mode="after")
+    def reject_blank_values(self):
+        if not self.organization.strip():
+            raise ValueError("organization must contain non-whitespace text")
+        if self.question is not None and not self.question.strip():
+            raise ValueError("question must contain non-whitespace text")
+        return self
+
+
+class SupervisorReportApiResponse(SupervisorReportResult):
+    model_config = ConfigDict(extra="forbid")
+
+
+class ReportQuestionApiRequest(ReportQuestionRequest):
+    model_config = ConfigDict(extra="forbid")
+
+
+class ReportQuestionApiResponse(ReportQuestionAnswer):
+    model_config = ConfigDict(extra="forbid")

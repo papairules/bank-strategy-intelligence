@@ -14,6 +14,7 @@ from backend.app.application.hiring import (
     HiringEnrichmentResult,
     HiringReadService,
     HiringTheme,
+    source_content_hash,
 )
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence, SourceType
@@ -75,6 +76,7 @@ def make_enrichment(
     return HiringEnrichmentResult(
         job_id=posting.job_id,
         evidence_id=evidence.evidence_id,
+        source_content_hash=source_content_hash(posting),
         capability_classifications=[HiringCapability.DATA_ANALYTICS],
         skills=["portfolio analytics"],
         technologies=["Python", "SQL"],
@@ -134,6 +136,25 @@ def test_database_initialization_adds_enrichment_schema_and_indexes(database):
     assert "hiring_enrichments" in tables
     assert "idx_hiring_enrichments_job_latest" in indexes
     assert "idx_hiring_enrichments_evidence_id" in indexes
+
+
+def test_initialize_adds_source_hash_column_to_existing_database(tmp_path):
+    path = tmp_path / "legacy.sqlite3"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE TABLE hiring_enrichments ("
+            "job_id TEXT, evidence_id TEXT, provider TEXT, model TEXT, "
+            "prompt_schema_version TEXT, enrichment_timestamp TEXT)"
+        )
+
+    SQLiteDatabase(path).initialize()
+
+    with sqlite3.connect(path) as connection:
+        columns = {
+            row[1]: row for row in connection.execute("PRAGMA table_info(hiring_enrichments)")
+        }
+    assert "source_content_hash" in columns
+    assert columns["source_content_hash"][3] == 1
 
 
 def test_enrichment_round_trip_preserves_complete_application_result(database):
@@ -217,6 +238,7 @@ def test_exact_cache_lookup_and_missing_enrichment_are_deterministic(database):
         provider="vertex_gemini",
         model="gemini-2.5-flash",
         prompt_schema_version="hiring-enrichment-v3",
+        source_content_hash=enrichment.source_content_hash,
     )
     assert HiringReadService(database.unit_of_work).get_latest_enrichment(
         posting.job_id
@@ -230,6 +252,7 @@ def test_exact_cache_lookup_and_missing_enrichment_are_deterministic(database):
         provider="vertex_gemini",
         model="gemini-2.5-flash",
         prompt_schema_version="hiring-enrichment-v3",
+        source_content_hash=enrichment.source_content_hash,
     )
 
 

@@ -6,6 +6,7 @@ from backend.app.application.evidence import UnifiedEvidenceService
 from backend.app.application.agents.evidence_agent import EvidenceAgentService
 from backend.app.application.agents.hiring_agent import HiringAgentAppService
 from backend.app.application.agents.strategy_agent import IntegratedStrategyAgentService
+from backend.app.application.agents.supervisor_agent import ReportQAService, SupervisorAppService
 from backend.app.application.hiring import HiringAnalyticsService, HiringSignalService
 from backend.app.application.hiring import HiringDashboardService, HiringReadService
 from backend.app.application.strategy import CrossDomainStrategicSignalService
@@ -26,6 +27,10 @@ from backend.app.infrastructure.composition.hiring_agent import (
 from backend.app.infrastructure.composition.strategy_agent import (
     create_strategy_agent_service,
 )
+from backend.app.infrastructure.composition.supervisor_agent import (
+    create_supervisor_app_service,
+)
+from backend.app.infrastructure.composition.report_qa import create_report_qa_service
 
 
 @lru_cache
@@ -46,6 +51,16 @@ def get_strategy_agent_service() -> IntegratedStrategyAgentService:
 @lru_cache
 def get_hiring_agent_service() -> HiringAgentAppService:
     return create_hiring_agent_service()
+
+
+@lru_cache
+def get_supervisor_app_service() -> SupervisorAppService:
+    return create_supervisor_app_service()
+
+
+@lru_cache
+def get_report_qa_service() -> ReportQAService:
+    return create_report_qa_service()
 
 
 def get_hiring_dashboard_service(

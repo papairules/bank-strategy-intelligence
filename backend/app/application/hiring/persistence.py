@@ -114,6 +114,7 @@ class HiringEnrichmentRepository(Protocol):
         provider: str,
         model: str,
         prompt_schema_version: str,
+        source_content_hash: str,
     ) -> bool: ...
 
 
@@ -217,6 +218,7 @@ class HiringEnrichmentPersistenceService:
         provider: str,
         model: str,
         prompt_schema_version: str,
+        source_content_hash: str,
     ) -> bool:
         with self._unit_of_work_factory() as unit_of_work:
             return unit_of_work.enrichments.exists(
@@ -225,4 +227,5 @@ class HiringEnrichmentPersistenceService:
                 provider=provider,
                 model=model,
                 prompt_schema_version=prompt_schema_version,
+                source_content_hash=source_content_hash,
             )

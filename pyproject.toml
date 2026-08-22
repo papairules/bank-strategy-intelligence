@@ -10,6 +10,7 @@ dependencies = [
     "google-genai",
     "openai>=1.68.0",
     "langgraph>=0.3.0",
+    "networkx>=3.4",
 ]
 
 [project.optional-dependencies]

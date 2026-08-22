@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS hiring_enrichments (
     provider TEXT NOT NULL,
     model TEXT NOT NULL,
     prompt_schema_version TEXT NOT NULL,
+    source_content_hash TEXT NOT NULL,
     enrichment_timestamp TEXT NOT NULL,
     capability_classifications TEXT NOT NULL,
     skills TEXT NOT NULL,
@@ -129,6 +130,15 @@ class SQLiteDatabase:
     def initialize(self) -> None:
         with self.connect() as connection:
             connection.executescript(SCHEMA)
+            columns = {
+                row["name"]
+                for row in connection.execute("PRAGMA table_info(hiring_enrichments)")
+            }
+            if "source_content_hash" not in columns:
+                connection.execute(
+                    "ALTER TABLE hiring_enrichments "
+                    "ADD COLUMN source_content_hash TEXT NOT NULL DEFAULT ''"
+                )
 
     def unit_of_work(self) -> SQLiteHiringUnitOfWork:
         return SQLiteHiringUnitOfWork(self)
@@ -469,16 +479,17 @@ class SQLiteHiringEnrichmentRepository:
             """
             INSERT INTO hiring_enrichments (
                 job_id, evidence_id, provider, model, prompt_schema_version,
-                enrichment_timestamp, capability_classifications, skills,
+                source_content_hash, enrichment_timestamp, capability_classifications, skills,
                 technologies, seniority_level, is_leadership, business_unit,
                 hiring_themes, confidence, model_confidence, field_confidences,
                 field_support, limitations, provider_request_id, model_version,
                 usage_metadata
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (
                 job_id, evidence_id, provider, model, prompt_schema_version
             ) DO UPDATE SET
                 enrichment_timestamp = excluded.enrichment_timestamp,
+                source_content_hash = excluded.source_content_hash,
                 capability_classifications = excluded.capability_classifications,
                 skills = excluded.skills,
                 technologies = excluded.technologies,
@@ -501,6 +512,7 @@ class SQLiteHiringEnrichmentRepository:
                 metadata["provider"],
                 metadata["model"],
                 metadata["prompt_schema_version"],
+                values["source_content_hash"],
                 metadata["enrichment_timestamp"],
                 _dump_json(values["capability_classifications"]),
                 _dump_json(values["skills"]),
@@ -595,12 +607,14 @@ class SQLiteHiringEnrichmentRepository:
         provider: str,
         model: str,
         prompt_schema_version: str,
+        source_content_hash: str,
     ) -> bool:
         row = self._connection.execute(
             """
             SELECT 1 FROM hiring_enrichments
             WHERE job_id = ? AND evidence_id = ? AND provider = ?
                 AND model = ? AND prompt_schema_version = ?
+                AND source_content_hash = ?
             LIMIT 1
             """,
             (
@@ -609,6 +623,7 @@ class SQLiteHiringEnrichmentRepository:
                 provider,
                 model,
                 prompt_schema_version,
+                source_content_hash,
             ),
         ).fetchone()
         return row is not None
@@ -752,6 +767,7 @@ def _hiring_enrichment_from_row(row: sqlite3.Row) -> HiringEnrichmentResult:
         {
             "job_id": row["job_id"],
             "evidence_id": row["evidence_id"],
+            "source_content_hash": row["source_content_hash"],
             "capability_classifications": json.loads(
                 row["capability_classifications"]
             ),

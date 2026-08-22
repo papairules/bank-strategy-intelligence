@@ -14,6 +14,8 @@ from backend.app.application.agents.hiring_agent.pipeline import (
     JobClassification,
     JobClassificationBatch,
     JobPageParser,
+    RawJob,
+    classify_jobs,
     load_jobs,
     load_jobs_detailed,
     repair_text,
@@ -141,6 +143,24 @@ def test_does_not_claim_growth_from_snapshot(tmp_path: Path):
 
 def test_repairs_common_mojibake():
     assert repair_text("Director â€“ Compliance") == "Director – Compliance"
+
+
+def test_csv_description_text_is_preserved_and_used_for_classification():
+    job = RawJob.model_validate({
+        "company": "BNY",
+        "source_job_id": "B1",
+        "title": "Engineer",
+        "description_text": "Build machine learning platforms from approved CSV content.",
+        "posting_url": "https://example.com/B1",
+    })
+    fetched = {"B1": FetchResult(status="skipped", source_url=job.posting_url)}
+
+    classifications, _, _ = classify_jobs(
+        [job], fetched, client=None, model="unused", batch_size=1, retries=0, use_llm=False
+    )
+
+    assert job.description == "Build machine learning platforms from approved CSV content."
+    assert classifications["B1"].capability == "Data and AI"
 
 
 def test_company_aliases_and_subsidiaries_are_accepted(tmp_path: Path):

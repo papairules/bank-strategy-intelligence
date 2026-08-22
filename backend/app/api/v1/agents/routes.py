@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -6,6 +7,8 @@ from backend.app.api.dependencies import (
     get_evidence_agent_service,
     get_hiring_agent_service,
     get_strategy_agent_service,
+    get_supervisor_app_service,
+    get_report_qa_service,
 )
 from backend.app.api.v1.agents.schemas import (
     EvidenceAgentAnswerRequest,
@@ -14,6 +17,19 @@ from backend.app.api.v1.agents.schemas import (
     HiringAgentAnswerResponse,
     StrategyAgentAnswerRequest,
     StrategyAgentAnswerResponse,
+    SupervisorReportApiRequest,
+    SupervisorReportApiResponse,
+    ReportQuestionApiRequest,
+    ReportQuestionApiResponse,
+)
+from backend.app.application.agents.supervisor_agent import (
+    SupervisorAppService,
+    SupervisorReportRequest,
+    SupervisorRuntimeError,
+    SupervisorRuntimeFailureCode,
+    ReportQAError,
+    ReportQAErrorCode,
+    ReportQAService,
 )
 from backend.app.application.agents.strategy_agent import (
     StrategyAgentError,
@@ -39,6 +55,8 @@ router = APIRouter(prefix="/agents")
 EvidenceAgent = Annotated[EvidenceAgentService, Depends(get_evidence_agent_service)]
 StrategyAgent = Annotated[IntegratedStrategyAgentService, Depends(get_strategy_agent_service)]
 HiringAgent = Annotated[HiringAgentAppService, Depends(get_hiring_agent_service)]
+SupervisorAgent = Annotated[SupervisorAppService, Depends(get_supervisor_app_service)]
+ReportQAAgent = Annotated[ReportQAService, Depends(get_report_qa_service)]
 
 _FAILURE_STATUS = {
     EvidenceAgentFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -140,6 +158,62 @@ async def answer_hiring_agent_request(
             detail={"code": error.code.value, "message": _safe_hiring_message(error.code)},
         ) from error
     return HiringAgentAnswerResponse.model_validate(result.model_dump())
+
+
+_SUPERVISOR_FAILURE_STATUS = {
+    SupervisorRuntimeFailureCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
+    SupervisorRuntimeFailureCode.ORGANIZATION_SCOPE_MISMATCH: status.HTTP_422_UNPROCESSABLE_ENTITY,
+    SupervisorRuntimeFailureCode.SPECIALIST_FAILURE: status.HTTP_503_SERVICE_UNAVAILABLE,
+    SupervisorRuntimeFailureCode.SUPERVISOR_FAILURE: status.HTTP_502_BAD_GATEWAY,
+}
+
+
+@router.post(
+    "/supervisor/report",
+    response_model=SupervisorReportApiResponse,
+    tags=["Supervisor Agent"],
+)
+async def generate_supervisor_report(
+    request: SupervisorReportApiRequest,
+    service: SupervisorAgent,
+) -> SupervisorReportApiResponse:
+    try:
+        result = await service.generate_report(
+            SupervisorReportRequest(**request.model_dump())
+        )
+    except SupervisorRuntimeError as error:
+        raise HTTPException(
+            status_code=_SUPERVISOR_FAILURE_STATUS[error.code],
+            detail={"code": error.code.value, "message": str(error)},
+        ) from error
+    return SupervisorReportApiResponse.model_validate(result.model_dump())
+
+
+_REPORT_QA_FAILURE_STATUS = {
+    ReportQAErrorCode.DISABLED: status.HTTP_503_SERVICE_UNAVAILABLE,
+    ReportQAErrorCode.ORGANIZATION_SCOPE_MISMATCH: status.HTTP_422_UNPROCESSABLE_ENTITY,
+    ReportQAErrorCode.PROVIDER_FAILURE: status.HTTP_503_SERVICE_UNAVAILABLE,
+    ReportQAErrorCode.MALFORMED_PROVIDER_OUTPUT: status.HTTP_502_BAD_GATEWAY,
+}
+
+
+@router.post(
+    "/supervisor/report/answer",
+    response_model=ReportQuestionApiResponse,
+    tags=["Supervisor Agent"],
+)
+async def answer_supervisor_report_question(
+    request: ReportQuestionApiRequest,
+    service: ReportQAAgent,
+) -> ReportQuestionApiResponse:
+    try:
+        result = await asyncio.to_thread(service.answer, request)
+    except ReportQAError as error:
+        raise HTTPException(
+            status_code=_REPORT_QA_FAILURE_STATUS[error.code],
+            detail={"code": error.code.value, "message": str(error)},
+        ) from error
+    return ReportQuestionApiResponse.model_validate(result.model_dump())
 
 
 def _safe_hiring_message(code: HiringAgentFailureCode) -> str:

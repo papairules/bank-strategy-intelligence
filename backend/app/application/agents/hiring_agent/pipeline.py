@@ -22,7 +22,7 @@ from urllib.request import Request, urlopen
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 SCHEMA_VERSION = "1.0"
@@ -84,6 +84,10 @@ class RawJob(BaseModel):
     company: str
     source_job_id: str
     title: str
+    description: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("description", "description_text"),
+    )
     role_family: str | None = None
     city: str | None = None
     state: str | None = None
@@ -490,7 +494,7 @@ def validate_fetched_company(
 
 
 def heuristic_classification(job: RawJob) -> JobClassification:
-    text = f" {job.title} {job.role_family or ''} ".casefold()
+    text = f" {job.title} {job.role_family or ''} {job.description or ''} ".casefold()
     rules = [
         ("Data and AI", ("data", "artificial intelligence", "machine learning", " genai", " ai ")),
         ("Cloud and Platform Engineering", ("cloud", "platform", "devops", "site reliability")),
@@ -526,7 +530,7 @@ def classify_jobs(jobs: list[RawJob], fetched: dict[str, FetchResult], *, client
     for start in range(0, len(jobs), batch_size):
         batch = jobs[start : start + batch_size]
         requested = {job.source_job_id for job in batch}
-        payload = [{"source_job_id": job.source_job_id, "title": job.title, "role_family": job.role_family, "location": ", ".join(filter(None, [job.city, job.state, job.country])), "structured_job_data": fetched[job.source_job_id].structured_data, "description": fetched[job.source_job_id].text[:12_000] if fetched[job.source_job_id].text else None} for job in batch]
+        payload = [{"source_job_id": job.source_job_id, "title": job.title, "role_family": job.role_family, "location": ", ".join(filter(None, [job.city, job.state, job.country])), "structured_job_data": fetched[job.source_job_id].structured_data, "description": (fetched[job.source_job_id].text or job.description or "")[:12_000] or None} for job in batch]
         parsed = None
         last_error = "no structured output"
         for attempt in range(retries + 1):

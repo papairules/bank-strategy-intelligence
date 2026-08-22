@@ -15,6 +15,7 @@ from backend.app.application.hiring import (
     HiringBatchEnrichmentService,
     HiringEnrichmentError,
     HiringEnrichmentResult,
+    source_content_hash,
 )
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence, SourceType
@@ -34,7 +35,7 @@ def records(count=3, organization="Example Bank"):
 
 
 def enrichment(posting, evidence, *, model=IDENTITY.model, schema=IDENTITY.prompt_schema_version):
-    return HiringEnrichmentResult(job_id=posting.job_id, evidence_id=evidence.evidence_id, seniority_level=EnrichmentSeniority.UNKNOWN, is_leadership=False, confidence=.5, model_metadata=EnrichmentModelMetadata(provider=IDENTITY.provider, model=model, prompt_schema_version=schema, enrichment_timestamp=datetime(2026, 8, 21, tzinfo=timezone.utc), model_confidence=.5))
+    return HiringEnrichmentResult(job_id=posting.job_id, evidence_id=evidence.evidence_id, source_content_hash=source_content_hash(posting), seniority_level=EnrichmentSeniority.UNKNOWN, is_leadership=False, confidence=.5, model_metadata=EnrichmentModelMetadata(provider=IDENTITY.provider, model=model, prompt_schema_version=schema, enrichment_timestamp=datetime(2026, 8, 21, tzinfo=timezone.utc), model_confidence=.5))
 
 
 class Read:
@@ -54,13 +55,13 @@ class Enricher:
 
 class Persistence:
     def __init__(self, existing=None, fail=False): self.current=set(existing or []); self.saved=[]; self.fail=fail
-    def key(self, job_id, evidence_id, provider, model, prompt_schema_version): return (job_id,evidence_id,provider,model,prompt_schema_version)
+    def key(self, job_id, evidence_id, provider, model, prompt_schema_version, source_content_hash): return (job_id,evidence_id,provider,model,prompt_schema_version,source_content_hash)
     def has_current(self, **values): return self.key(**values) in self.current
     def save(self, value):
         if self.fail: raise RuntimeError("database secret")
         self.saved.append(value)
         m=value.model_metadata
-        self.current.add(self.key(value.job_id,value.evidence_id,m.provider,m.model,m.prompt_schema_version))
+        self.current.add(self.key(value.job_id,value.evidence_id,m.provider,m.model,m.prompt_schema_version,value.source_content_hash))
 
 
 def run(service, **values):
@@ -81,7 +82,7 @@ def test_dry_run_discovers_candidates_without_provider_or_writes():
 
 
 def test_existing_current_is_skipped_but_historical_version_is_eligible():
-    items=records(2); current={(items[0][0].job_id,items[0][1].evidence_id,IDENTITY.provider,IDENTITY.model,IDENTITY.prompt_schema_version)}
+    items=records(2); current={(items[0][0].job_id,items[0][1].evidence_id,IDENTITY.provider,IDENTITY.model,IDENTITY.prompt_schema_version,source_content_hash(items[0][0]))}
     persistence=Persistence(current); service,_,provider,_=create(items,persistence=persistence)
     result=run(service,dry_run=True,max_jobs=2)
     assert result.existing_enrichment_skips == 1 and result.eligible_jobs == 1
@@ -99,6 +100,31 @@ def test_success_is_called_once_persisted_and_repeated_run_is_idempotent():
     assert len(provider.calls) == len(persistence.saved) == 1
 
 
+def test_changed_source_content_hash_is_eligible_for_reenrichment():
+    items = records(1)
+    original = items[0][0]
+    current = {
+        (
+            original.job_id,
+            items[0][1].evidence_id,
+            IDENTITY.provider,
+            IDENTITY.model,
+            IDENTITY.prompt_schema_version,
+            source_content_hash(original),
+        )
+    }
+    changed = original.model_copy(update={"description": "Use SQL and Python for analytics."})
+    service, _, provider, _ = create(
+        [(changed, items[0][1])], persistence=Persistence(current)
+    )
+
+    result = run(service, dry_run=True, max_jobs=1)
+
+    assert result.eligible_jobs == 1
+    assert result.existing_enrichment_skips == 0
+    assert provider.calls == []
+
+
 @pytest.mark.parametrize("continue_on_error,expected_calls,stopped", [(True,2,False),(False,1,True)])
 def test_failure_policy_isolates_or_stops(continue_on_error,expected_calls,stopped):
     items=records(2); failure=HiringEnrichmentError(EnrichmentFailureCode.PROVIDER_UNAVAILABLE,"provider secret")
@@ -107,6 +133,32 @@ def test_failure_policy_isolates_or_stops(continue_on_error,expected_calls,stopp
     assert len(provider.calls)==expected_calls and result.stopped_early is stopped
     assert result.failed_jobs == 1 and all(item.message != "provider secret" for item in result.outcomes)
     assert len(persistence.saved) == (1 if continue_on_error else 0)
+
+
+def test_batch_retains_internal_diagnostics_but_excludes_them_from_serialization():
+    items = records(1)
+    failure = HiringEnrichmentError(
+        EnrichmentFailureCode.INVALID_REQUEST,
+        "unsafe provider message",
+        metadata={
+            "error_category": "unprocessable_entity",
+            "exception_type": "UnprocessableEntityError",
+            "status_code": 422,
+            "request_id": "req_safe_test",
+            "sanitized_message": "OpenAI returned HTTP 422.",
+        },
+    )
+    provider = Enricher({items[0][0].job_id: failure})
+    service, _, _, persistence = create(items, enricher=provider)
+
+    result = run(service, dry_run=False, max_jobs=1)
+    outcome = result.outcomes[0]
+
+    assert persistence.saved == []
+    assert outcome.message == "Enrichment provider request failed."
+    assert outcome.diagnostic_metadata["status_code"] == 422
+    assert "diagnostic_metadata" not in outcome.model_dump()
+    assert "unsafe provider message" not in result.model_dump_json()
 
 
 def test_validation_identity_mismatch_and_provider_validation_are_not_persisted():
