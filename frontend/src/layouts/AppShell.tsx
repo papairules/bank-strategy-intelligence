@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { CURRENT_ORGANIZATION } from "../config/organization";
+import { AVAILABLE_ORGANIZATIONS, DEFAULT_ORGANIZATION, type Organization } from "../config/organization";
+import { OrganizationProvider } from "../context/OrganizationContext";
 
 const navigation = [
   { label: "Overview", path: "/", mark: "OV", group: "Workspace" },
@@ -12,12 +14,14 @@ const navigation = [
 ];
 
 export function AppShell() {
+  const [organization, setOrganization] = useState<Organization>(DEFAULT_ORGANIZATION);
   const location = useLocation();
   const current = navigation.find((item) => item.path === `${location.pathname}${location.hash}`)?.label
     ?? navigation.find((item) => !item.path.includes("#") && item.path === location.pathname)?.label
     ?? "Overview";
   const groups = Array.from(new Set(navigation.map((item) => item.group)));
   return (
+    <OrganizationProvider value={{ organization, setOrganization }}>
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
@@ -40,10 +44,11 @@ export function AppShell() {
       <main className="main-shell">
         <header className="topbar">
           <div><span className="topbar__label">Current workspace</span><strong>{current}</strong></div>
-          <div className="topbar__context"><span>Current data scope</span><strong>{CURRENT_ORGANIZATION}</strong></div>
+          <label className="topbar__context"><span>Current data scope</span><select aria-label="Organization" value={organization} onChange={(event) => setOrganization(event.target.value as Organization)}>{AVAILABLE_ORGANIZATIONS.map((item) => <option key={item}>{item}</option>)}</select></label>
         </header>
-        <Outlet />
+        <div key={organization}><Outlet /></div>
       </main>
     </div>
+    </OrganizationProvider>
   );
 }

@@ -1,3 +1,5 @@
-export const CURRENT_ORGANIZATION = "Wells Fargo";
+export const AVAILABLE_ORGANIZATIONS = ["Wells Fargo", "BNY"] as const;
 
-export const AVAILABLE_ORGANIZATIONS = [CURRENT_ORGANIZATION] as const;
+export type Organization = (typeof AVAILABLE_ORGANIZATIONS)[number];
+
+export const DEFAULT_ORGANIZATION: Organization = "Wells Fargo";

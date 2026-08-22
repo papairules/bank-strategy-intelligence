@@ -5,16 +5,17 @@ import { hiringApi } from "../api/hiring";
 import { strategyApi } from "../api/strategy";
 import { technologyApi } from "../api/technology";
 import { ErrorState, LoadingState } from "../components/States";
-import { CURRENT_ORGANIZATION } from "../config/organization";
+import { useOrganization } from "../context/OrganizationContext";
 import { useApi } from "../hooks/useApi";
 import { formatDate, formatNumber, formatPercent } from "../utils/format";
 
 export function OverviewPage() {
-  const hiring = useApi((signal) => hiringApi.summary(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
-  const technology = useApi((signal) => technologyApi.summary(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
-  const technologySignals = useApi((signal) => technologyApi.signals(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
-  const evidence = useApi((signal) => evidenceApi.summary(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
-  const strategy = useApi((signal) => strategyApi.signals(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
+  const { organization } = useOrganization();
+  const hiring = useApi((signal) => hiringApi.summary(organization, signal), [organization]);
+  const technology = useApi((signal) => technologyApi.summary(organization, signal), [organization]);
+  const technologySignals = useApi((signal) => technologyApi.signals(organization, signal), [organization]);
+  const evidence = useApi((signal) => evidenceApi.summary(organization, signal), [organization]);
+  const strategy = useApi((signal) => strategyApi.signals(organization, signal), [organization]);
   const loading = hiring.loading || technology.loading || technologySignals.loading || evidence.loading || strategy.loading;
   const hasError = Boolean(hiring.error || technology.error || technologySignals.error || evidence.error || strategy.error);
   const intelligence = hiring.data && technology.data && technologySignals.data && evidence.data && strategy.data
@@ -24,7 +25,7 @@ export function OverviewPage() {
 
   return <div className="page overview-page">
     <section className="executive-header">
-      <div><span className="eyebrow">Executive intelligence workspace</span><h1>Bank Strategy Intelligence</h1><p>Observed hiring evidence, deterministic intelligence, and governed interpretation for <strong>{CURRENT_ORGANIZATION}</strong>.</p></div>
+      <div><span className="eyebrow">Executive intelligence workspace</span><h1>Bank Strategy Intelligence</h1><p>Observed hiring evidence, deterministic intelligence, and governed interpretation for <strong>{organization}</strong>.</p></div>
       <div className="executive-header__scope"><span>Evidence scope</span><strong>Public hiring records</strong><small>Observed evidence—not enterprise-wide disclosure</small></div>
     </section>
 
@@ -32,7 +33,7 @@ export function OverviewPage() {
     {hasError && <ErrorState message="One or more intelligence domains could not be loaded." />}
     {intelligence && <>
       <div className="executive-context" aria-label="Intelligence context">
-        <span><small>Organization</small><strong>{CURRENT_ORGANIZATION}</strong></span>
+        <span><small>Organization</small><strong>{organization}</strong></span>
         <span><small>Observation period</small><strong>{formatDate(intelligence.hiring.observation_start)} – {formatDate(intelligence.hiring.observation_end)}</strong></span>
         <span><small>Source evidence coverage</small><strong>{formatPercent(intelligence.evidence.evidence_coverage, 0)}</strong></span>
         <span><small>AI enrichment coverage</small><strong>{formatPercent(intelligence.hiring.enrichment_coverage, 0)}</strong></span>

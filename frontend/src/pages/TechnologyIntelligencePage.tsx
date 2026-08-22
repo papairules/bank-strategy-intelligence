@@ -4,7 +4,7 @@ import { MetricCard } from "../components/MetricCard";
 import { Panel } from "../components/Panel";
 import { RankedBars } from "../components/RankedBars";
 import { ErrorState, LoadingState } from "../components/States";
-import { CURRENT_ORGANIZATION } from "../config/organization";
+import { useOrganization } from "../context/OrganizationContext";
 import { JobDetailPanel } from "../features/hiring/JobDetailPanel";
 import { EvidenceDetailPanel } from "../features/evidence/EvidenceDetailPanel";
 import { useApi } from "../hooks/useApi";
@@ -13,21 +13,21 @@ import { formatDate, formatNumber, formatPercent, titleCase } from "../utils/for
 const PAGE_SIZE = 25;
 
 export function TechnologyIntelligencePage() {
+  const { organization } = useOrganization();
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
   const [selectedEvidence, setSelectedEvidence] = useState<string | null>(null);
-  const summary = useApi((signal) => technologyApi.summary(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
-  const analytics = useApi((signal) => technologyApi.analytics(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
-  const signals = useApi((signal) => technologyApi.signals(CURRENT_ORGANIZATION, signal), [CURRENT_ORGANIZATION]);
+  const summary = useApi((signal) => technologyApi.summary(organization, signal), [organization]);
+  const analytics = useApi((signal) => technologyApi.analytics(organization, signal), [organization]);
+  const signals = useApi((signal) => technologyApi.signals(organization, signal), [organization]);
   const observations = useApi(
-    (signal) => technologyApi.observations(CURRENT_ORGANIZATION, { limit: PAGE_SIZE, offset: 0 }, signal),
-    [CURRENT_ORGANIZATION],
+    (signal) => technologyApi.observations(organization, { limit: PAGE_SIZE, offset: 0 }, signal),
+    [organization],
   );
 
   return (
     <div className="page">
       <div className="page-heading">
         <div><span className="eyebrow">Technology Intelligence</span><h1>Observed technology demand from hiring evidence</h1><p>Traceable technologies extracted from persisted hiring enrichment. Observations indicate demand in classified roles—not confirmed organization-wide technology strategy.</p></div>
-        <label className="organization-select"><span>Organization</span><select value={CURRENT_ORGANIZATION} disabled><option>{CURRENT_ORGANIZATION}</option></select></label>
       </div>
 
       {summary.loading && <LoadingState label="Loading technology coverage…" />}
@@ -63,8 +63,8 @@ export function TechnologyIntelligencePage() {
         {observations.data?.items.length === 0 && <div className="inline-empty">No technology observations are available for this organization.</div>}
         {observations.data && observations.data.items.length > 0 && <div className="table-wrap"><table><thead><tr><th>Technology</th><th>Category</th><th>Related job</th><th>Business unit</th><th>Location</th><th>Evidence</th><th>Confidence</th></tr></thead><tbody>{observations.data.items.map((item) => <tr key={`${item.job_id}-${item.normalized_technology}`}><td><strong>{item.normalized_technology}</strong>{item.technology !== item.normalized_technology && <span className="table-subtext">Source: {item.technology}</span>}</td><td>{item.category}</td><td><button className="job-title-button" onClick={() => setSelectedJob(item.job_id)}>{item.job_title}</button></td><td>{item.business_unit ?? <span className="muted">Not available</span>}</td><td>{item.location}</td><td><button className="job-title-button mono evidence-reference" title={item.evidence_id} onClick={() => setSelectedEvidence(item.evidence_id)}>{item.evidence_id.slice(0, 8)}…</button>{item.support_references[0]?.excerpt && <span className="table-subtext support-snippet">{item.support_references[0].excerpt}</span>}</td><td>{formatPercent(item.confidence * 100, 0)}<span className="table-subtext">{titleCase(item.provenance.provider)}</span></td></tr>)}</tbody></table></div>}
       </Panel>
-      {selectedJob && <JobDetailPanel organization={CURRENT_ORGANIZATION} jobId={selectedJob} onClose={() => setSelectedJob(null)} />}
-      {selectedEvidence && <EvidenceDetailPanel organization={CURRENT_ORGANIZATION} evidenceId={selectedEvidence} onClose={() => setSelectedEvidence(null)} onViewJob={(jobId) => { setSelectedEvidence(null); setSelectedJob(jobId); }} />}
+      {selectedJob && <JobDetailPanel organization={organization} jobId={selectedJob} onClose={() => setSelectedJob(null)} />}
+      {selectedEvidence && <EvidenceDetailPanel organization={organization} evidenceId={selectedEvidence} onClose={() => setSelectedEvidence(null)} onViewJob={(jobId) => { setSelectedEvidence(null); setSelectedJob(jobId); }} />}
     </div>
   );
 }
