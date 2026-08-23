@@ -11,6 +11,7 @@ from backend.app.application.agents import (
     EvidenceSearchInput,
     OrganizationInput,
 )
+from backend.app.application.agents.context import compact_agent_context
 from backend.app.application.agents.models import EvidenceTrace
 from backend.app.application.evidence import UnifiedEvidencePage, UnifiedEvidenceRecord
 
@@ -257,6 +258,13 @@ class EvidenceAgentService:
                     )
                     result = self._scope_detail(result, request.organization)
                     if result.found and result.detail is not None:
+                        projected = compact_agent_context(
+                            result.detail.model_dump(mode="json"),
+                            question=request.question,
+                        )
+                        result = AgentEvidenceDetailResult.model_validate(
+                            {"found": True, "detail": projected}
+                        )
                         self._catalog_record(result.detail, catalog)
                 else:
                     result = self._tools.trace(
@@ -276,10 +284,14 @@ class EvidenceAgentService:
                 "Evidence provider supplied invalid tool arguments.",
                 metadata={"tool": call.name},
             ) from error
+        payload = compact_agent_context(
+            result.model_dump(mode="json"),
+            question=request.question,
+        )
         return EvidenceAgentToolResult(
             call_id=call.call_id,
             name=call.name,
-            result=result.model_dump(mode="json"),
+            result=payload,
         )
 
     def _search(

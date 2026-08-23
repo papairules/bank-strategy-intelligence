@@ -15,6 +15,7 @@ from backend.app.application.technology import (
     categorize_technology,
     normalize_technology,
 )
+from backend.app.application.hiring.kg import source_technology
 from backend.app.domain.hiring import JobPosting
 from backend.app.domain.intelligence import Evidence, SourceType
 
@@ -161,3 +162,28 @@ def test_organization_isolation_empty_behavior_and_determinism():
     assert first.snapshot.total_jobs == 1
     assert empty.snapshot.total_jobs == 0
     assert empty.top_technologies == []
+
+
+def test_source_observation_cache_is_scoped_and_invalidated(monkeypatch):
+    wells = make_record("Cache Wells Fargo")
+    bny = make_record("Cache BNY")
+    service = build_service([wells, bny])
+    original = source_technology.extract_source_technologies
+    executions = 0
+
+    def counted(*args, **kwargs):
+        nonlocal executions
+        executions += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(source_technology, "extract_source_technologies", counted)
+    service.observations("Cache Wells Fargo")
+    build_service([wells, bny]).observations("Cache Wells Fargo")
+    assert executions == 1
+
+    service.observations("Cache BNY")
+    assert executions == 2
+
+    wells[0].description = "Java only."
+    service.observations("Cache Wells Fargo")
+    assert executions == 3

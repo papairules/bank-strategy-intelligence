@@ -89,6 +89,7 @@ class HiringAgentAppService:
     """Async FastAPI boundary for the LLM-assisted hiring intelligence pipeline."""
 
     AGENT_VERSION = "hiring-agent-v1"
+    DEFAULT_LLM_CONTEXT_JOBS = 50
 
     def __init__(
         self,
@@ -130,6 +131,11 @@ class HiringAgentAppService:
         context = _company_context(request.organization)
         client = self._client_factory() if (self._use_llm and self._client_factory) else None
         logger.info("[hiring_agent] organization=%s jobs=%d", request.organization, len(jobs))
+        # Classification genuinely needs source text, but never send an entire
+        # organization snapshot to the model when no explicit cap is configured.
+        effective_max_jobs = self._max_jobs
+        if self._use_llm and effective_max_jobs is None:
+            effective_max_jobs = self.DEFAULT_LLM_CONTEXT_JOBS
         try:
             output = await asyncio.to_thread(
                 run_hiring_agent_for_jobs,
@@ -138,7 +144,7 @@ class HiringAgentAppService:
                 client=client,
                 fetcher=self._fetcher,
                 cache_directory=self._cache_directory,
-                max_jobs=self._max_jobs,
+                max_jobs=effective_max_jobs,
                 enrich_from_urls=False,
                 use_llm=self._use_llm,
                 workers=self._workers,

@@ -54,8 +54,16 @@ class CrossDomainStrategicSignalService:
         hiring_signals = self._hiring.signals(organization)
         technology = self._technology_analytics.analytics(organization)
         technology_signals = self._technology_signals.generate(organization)
-        evidence_summary = self._evidence.summary(organization)
-        evidence_records = self._evidence.records_for_intelligence(organization)
+        intelligence = getattr(self._evidence, "intelligence", None)
+        if intelligence is None:
+            evidence_summary = self._evidence.summary(organization)
+            evidence_records = self._evidence.records_for_intelligence(organization)
+        else:
+            evidence_summary, evidence_records = intelligence(
+                organization,
+                hiring=hiring_signals,
+                technology=technology_signals,
+            )
         context = StrategicCoverageContext(
             total_jobs=evidence_summary.total_jobs,
             jobs_with_evidence=evidence_summary.jobs_with_evidence,

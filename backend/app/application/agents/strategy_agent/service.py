@@ -10,6 +10,7 @@ from uuid import UUID
 from pydantic import BaseModel, ValidationError
 
 from backend.app.application.agents.registry import AgentToolRegistry
+from backend.app.application.agents.context import compact_agent_context
 from backend.app.application.agents.strategy_agent.models import (
     StrategyAgentError,
     StrategyAgentFailureCode,
@@ -136,7 +137,7 @@ class StrategyAgentService:
             )
         )
         calls = self._validate_plan(plan)
-        results = [self._execute(call, request.organization) for call in calls]
+        results = [self._execute(call, request.organization, request.question) for call in calls]
         self._enforce_payload_limit(results)
         references = self._create_references(results)
         final = await self._provider.respond(
@@ -167,7 +168,7 @@ class StrategyAgentService:
             raise StrategyAgentError(StrategyAgentFailureCode.TOOL_EXECUTION_LIMIT, "Provider exceeded the tool execution limit.")
         return unique
 
-    def _execute(self, call: StrategyToolCall, organization: str) -> StrategyToolResult:
+    def _execute(self, call: StrategyToolCall, organization: str, question: str = "") -> StrategyToolResult:
         definition = self._definitions[call.name]
         arguments = dict(call.arguments)
         if "organization" in definition.input_model.model_fields:
@@ -186,6 +187,7 @@ class StrategyAgentService:
             raise StrategyAgentError(StrategyAgentFailureCode.TOOL_EXECUTION_FAILURE, "An approved intelligence tool failed.") from exc
         payload = output.model_dump(mode="json") if isinstance(output, BaseModel) else output
         payload = self._enforce_organization_scope(call.name, payload, organization)
+        payload = compact_agent_context(payload, question=question)
         return StrategyToolResult(call_id=call.call_id, name=call.name, result=payload)
 
     def _dispatch(self, name: str) -> Callable:

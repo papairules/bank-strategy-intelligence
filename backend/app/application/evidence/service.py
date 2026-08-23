@@ -56,13 +56,31 @@ class UnifiedEvidenceService:
         self._technology_signals = technology_signals
 
     def summary(self, organization: str) -> EvidenceSummary:
-        records = self._records(organization)
+        summary, _ = self.intelligence(organization)
+        return summary
+
+    def intelligence(
+        self,
+        organization: str,
+        *,
+        hiring: HiringSignalGenerationResult | None = None,
+        technology: TechnologySignalGenerationResult | None = None,
+    ) -> tuple[EvidenceSummary, list[UnifiedEvidenceRecord]]:
         jobs = self._read_service.list_jobs_for_analytics(organization)
+        records = self._records(
+            organization,
+            jobs=jobs,
+            hiring=hiring,
+            technology=technology,
+        )
         dates = [job.posted_date for job in jobs]
         source_counts: dict[tuple[str, object], int] = {}
         for record in records:
             key = (record.source, record.source_type)
             source_counts[key] = source_counts.get(key, 0) + 1
+        generated_at = max((record.captured_at for record in records), default=None)
+        if generated_at is None:
+            generated_at = self._generated_at(organization)
         return EvidenceSummary(
             organization=organization,
             total_evidence_records=len(records),
@@ -77,8 +95,8 @@ class UnifiedEvidenceService:
             source_distribution=[EvidenceSourceDistribution(source=source, source_type=source_type, evidence_count=count) for (source, source_type), count in sorted(source_counts.items(), key=lambda item: (item[0][0].casefold(), str(item[0][1])))],
             observation_start=min(dates) if dates else None,
             observation_end=max(dates) if dates else None,
-            generated_at=max((record.captured_at for record in records), default=self._generated_at(organization)),
-        )
+            generated_at=generated_at,
+        ), records
 
     def list_records(self, organization: str, filters: EvidenceRecordFilters) -> UnifiedEvidencePage:
         records = self._records(organization)
@@ -140,19 +158,39 @@ class UnifiedEvidenceService:
             technology_observations=[EvidenceTechnologyObservationReference(technology=item.normalized_technology, category=item.category, confidence=item.confidence, support_excerpt=item.support_references[0].excerpt if item.support_references else None) for item in observations],
         )
 
-    def _records(self, organization: str) -> list[UnifiedEvidenceRecord]:
-        context = self._context(organization)
+    def _records(
+        self,
+        organization: str,
+        *,
+        jobs: list[JobPosting] | None = None,
+        hiring: HiringSignalGenerationResult | None = None,
+        technology: TechnologySignalGenerationResult | None = None,
+    ) -> list[UnifiedEvidenceRecord]:
+        context = self._context(organization, hiring=hiring, technology=technology)
         records = []
-        for job in self._read_service.list_jobs_for_analytics(organization):
+        jobs_to_process = (
+            jobs
+            if jobs is not None
+            else self._read_service.list_jobs_for_analytics(organization)
+        )
+        for job in jobs_to_process:
             evidence = self._read_service.get_evidence(job.evidence_id)
             if evidence is not None:
                 records.append(self._record(job, evidence, context))
         return sorted(records, key=lambda item: (-item.observed_at.toordinal(), item.job_title.casefold(), str(item.evidence_id)))
 
-    def _context(self, organization: str):
-        hiring = self._hiring_signals.generate(organization)
+    def _context(
+        self,
+        organization: str,
+        *,
+        hiring: HiringSignalGenerationResult | None = None,
+        technology: TechnologySignalGenerationResult | None = None,
+    ):
+        if hiring is None:
+            hiring = self._hiring_signals.generate(organization)
         technology_observations = self._technology_observations.observations(organization)
-        technology = self._technology_signals.generate(organization)
+        if technology is None:
+            technology = self._technology_signals.generate(organization)
         hiring_by_evidence: dict[UUID, list[EvidenceSignalReference]] = {}
         for generated in hiring.signals:
             reference = EvidenceSignalReference(signal_id=generated.signal.signal_id, signal_type=generated.signal.signal_type, title=generated.title)

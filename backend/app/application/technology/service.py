@@ -1,6 +1,9 @@
+import hashlib
+import json
 from collections import defaultdict
 from collections.abc import Callable
 from datetime import datetime, timezone
+from threading import RLock
 from typing import Protocol
 
 from backend.app.application.hiring import EnrichmentField, EnrichmentSeniority, HiringEnrichmentResult
@@ -33,26 +36,70 @@ class TechnologyReadBoundary(Protocol):
 
 
 class TechnologyObservationService:
+    _cache_lock = RLock()
+    _observation_cache: dict[str, tuple[str, int, list[TechnologyObservation]]] = {}
+
     def __init__(self, read_service: TechnologyReadBoundary) -> None:
         self._read_service = read_service
 
     def extract(self, organization: str) -> tuple[list[JobPosting], int, list[TechnologyObservation]]:
         jobs = self._read_service.list_jobs_for_analytics(organization)
-        observations: list[TechnologyObservation] = []
-        enriched_jobs = 0
+        from backend.app.application.hiring.kg import source_technology
+
+        fingerprint_parts: list[object] = [
+            organization,
+            len(jobs),
+            [(alias, technology) for alias, technology, _ in source_technology._patterns()],
+        ]
+        records: list[tuple[JobPosting, Evidence, HiringEnrichmentResult | None]] = []
         for job in jobs:
             evidence = self._read_service.get_evidence(job.evidence_id)
+            fingerprint_parts.append(job.model_dump(mode="json"))
+            fingerprint_parts.append(evidence.model_dump(mode="json") if evidence is not None else None)
             if evidence is None:
                 continue
-            source_observations = self._source_observations(job, evidence)
             enrichment = self._read_service.get_latest_enrichment(job.job_id)
+            fingerprint_parts.append(
+                enrichment.model_dump(mode="json") if enrichment is not None else None
+            )
+            records.append((job, evidence, enrichment))
+        fingerprint = hashlib.sha256(
+            json.dumps(
+                fingerprint_parts,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8")
+        ).hexdigest()
+
+        with self._cache_lock:
+            cached = self._observation_cache.get(organization)
+            if cached is not None and cached[0] == fingerprint:
+                return jobs, cached[1], list(cached[2])
+
+            enriched_jobs, observations = self._build_observations(records)
+            self._observation_cache[organization] = (
+                fingerprint,
+                enriched_jobs,
+                observations,
+            )
+            return jobs, enriched_jobs, list(observations)
+
+    def _build_observations(
+        self,
+        records: list[tuple[JobPosting, Evidence, HiringEnrichmentResult | None]],
+    ) -> tuple[int, list[TechnologyObservation]]:
+        observations: list[TechnologyObservation] = []
+        enriched_jobs = 0
+        for job, evidence, enrichment in records:
+            source_observations = self._source_observations(job, evidence)
             if enrichment is None or enrichment.evidence_id != job.evidence_id:
                 observations.extend(source_observations)
                 continue
             enriched_jobs += 1
             enriched_observations = self._for_job(job, evidence, enrichment)
             observations.extend(self._merge_observations(source_observations, enriched_observations))
-        return jobs, enriched_jobs, observations
+        return enriched_jobs, observations
 
     @staticmethod
     def _source_observations(job: JobPosting, evidence: Evidence) -> list[TechnologyObservation]:
