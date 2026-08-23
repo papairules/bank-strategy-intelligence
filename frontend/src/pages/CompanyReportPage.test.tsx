@@ -3,15 +3,22 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { OrganizationProvider } from "../context/OrganizationContext";
+import type { ReportReference } from "../types/supervisorReport";
 import { CompanyReportPage } from "./CompanyReportPage";
 
-const references = Array.from({ length: 9 }, (_, index) => ({ reference_id: `source-${index}`, domain: "strategy", evidence_ids: [`evidence-${index}`], job_ids: [], source_url: `https://source${index}.example.com/report` }));
+const references: ReportReference[] = Array.from({ length: 9 }, (_, index) => ({ reference_id: `source-${index}`, domain: "strategy", evidence_ids: [`EV_00${index}`], job_ids: [], source_url: index === 0 ? "https://wellsfargo.com/annual-report" : `https://sec.gov/report-${index}` }));
 references.push({ ...references[0], reference_id: "duplicate-url" });
+references.push(
+  { reference_id: "strategy-internal", domain: "strategy", evidence_ids: ["EV_INTERNAL"], job_ids: [], source_url: null },
+  { reference_id: "hiring-signal", domain: "hiring", evidence_ids: ["HIRING_1"], job_ids: [], source_url: null },
+  { reference_id: "hiring-external", domain: "hiring", evidence_ids: ["HIRING_2"], job_ids: [], source_url: "https://jobs.example.com/job-1" },
+  { reference_id: "kg:technology:python", domain: "hiring_kg", evidence_ids: ["KG_1"], job_ids: ["job-1"], source_url: null },
+);
 
 function outlookRow(overrides = {}) { return {
   opportunity_theme: "AI Enablement & Modernization", supervisor_priority: "Highest", opportunity_titles: ["AI Enablement & Modernization"], relevant_hiring_jobs: 1203,
   supporting_evidence_count: 6, supporting_job_ids: ["job-1"], supporting_evidence_ids: ["evidence-1"], strategy_evidence_ids: ["strategy-1"], hiring_evidence_ids: ["hiring-1"], hiring_signal_ids: [], kg_concept_references: [],
-  horizon_30: null, horizon_60: null, horizon_90: "Validate the modernization roadmap", horizon_180: "Mobilize delivery", horizon_360: "Scale the operating model", confidence: .8, score: 80, limitations: [], ...overrides,
+  horizon_30: "No action needed", horizon_60: null, horizon_90: "Validate the modernization roadmap", horizon_180: "Mobilize delivery", horizon_360: "Scale the operating model", confidence: .8, score: 80, limitations: [], ...overrides,
 }; }
 
 function response(rows = [outlookRow(), outlookRow({ opportunity_theme: "Capital normalization", supervisor_priority: "Capital", relevant_hiring_jobs: null, horizon_90: "Assess regulatory readiness", horizon_180: null, horizon_360: null })]) { return {
@@ -64,7 +71,8 @@ it("renders the API-backed multi-row outlook with exactly seven columns", async 
   expect(within(outlook).getByText("1,203")).toBeInTheDocument();
   expect(within(outlook).getByText("—")).toBeInTheDocument();
   expect(within(outlook).getByText("Validate the modernization roadmap")).toBeInTheDocument();
-  expect(within(outlook).getAllByText("No action needed").length).toBeGreaterThan(0);
+  expect(within(outlook).getAllByText("No action recommended").length).toBeGreaterThan(0);
+  expect(within(outlook).queryByText("No action needed")).not.toBeInTheDocument();
 });
 
 it("shows the outlook empty state without restoring the company-level row", async () => {
@@ -74,20 +82,20 @@ it("shows the outlook empty state without restoring the company-level row", asyn
   expect(screen.queryByRole("columnheader", { name: "Company" })).not.toBeInTheDocument();
 });
 
-it("renders deduplicated sources, hiring dataset, and expansion controls", async () => {
+it("keeps report sources collapsed, deduplicates exact URLs, and preserves distinct same-domain documents", async () => {
   setup();
   await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
-  expect(await screen.findByRole("link", { name: "source0.example.com" })).toHaveAttribute("href", "https://source0.example.com/report");
-  expect(screen.getAllByRole("link", { name: "source0.example.com" })).toHaveLength(1);
-  expect(screen.getByRole("link", { name: "source2.example.com" })).toBeInTheDocument();
-  expect(screen.queryByRole("link", { name: "source3.example.com" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("link", { name: "source8.example.com" })).not.toBeInTheDocument();
-  await userEvent.click(screen.getByRole("button", { name: "Show all sources (10)" }));
-  expect(screen.getByRole("link", { name: "source8.example.com" })).toBeInTheDocument();
-  expect(screen.getByText("Hiring dataset")).toBeInTheDocument();
-  expect(screen.getByText("Hiring intelligence")).toBeInTheDocument();
-  await userEvent.click(screen.getByRole("button", { name: "Show less" }));
-  expect(screen.queryByRole("link", { name: "source8.example.com" })).not.toBeInTheDocument();
+  const details = (await screen.findByText("9 report sources")).closest("details")!;
+  expect(details).not.toHaveAttribute("open");
+  await userEvent.click(within(details).getByText("9 report sources"));
+  expect(details).toHaveAttribute("open");
+  const links = within(details).getAllByRole("link", { name: "Open source ↗" });
+  expect(links).toHaveLength(9);
+  expect(links[0]).toHaveAttribute("href", "https://wellsfargo.com/annual-report");
+  expect(links[1]).toHaveAttribute("href", "https://sec.gov/report-1");
+  expect(screen.queryByText(/EV_00/)).not.toBeInTheDocument();
+  expect(within(details).queryByText("Strategy · Internal evidence")).not.toBeInTheDocument();
+  expect(within(details).queryByText("Hiring External")).not.toBeInTheDocument();
 });
 
 it("keeps methodology limitations available but collapsed by default", async () => {
@@ -98,8 +106,20 @@ it("keeps methodology limitations available but collapsed by default", async () 
   expect(within(details).getByText("Hiring concentration is not proof of strategic investment.")).toBeInTheDocument();
 });
 
-it("shows grounded report Q&A only after report generation and renders source links", async () => {
-  const fetch = setup();
+it("groups grounded report Q&A references without changing the answer or request", async () => {
+  const qaWithReferences = { ...qaResponse, supporting_references: [
+    { reference_id: "source-0", reference_type: "strategy_source", label: "EV_005", source_url: "https://sec.gov/report-0", hiring_job_count: null },
+    { reference_id: "source-duplicate", reference_type: "strategy_source", label: "Duplicate", source_url: "https://sec.gov/report-0", hiring_job_count: null },
+    { reference_id: "source-1", reference_type: "strategy_source", label: "Annual Report", source_url: "https://sec.gov/report-1", hiring_job_count: null },
+    { reference_id: "opportunity-1", reference_type: "opportunity", label: "AI Enablement & Modernization", source_url: null, hiring_job_count: 1203 },
+    { reference_id: "hiring-1", reference_type: "hiring_evidence", label: "Persisted Hiring Intelligence", source_url: null, hiring_job_count: null },
+    { reference_id: "hiring-2", reference_type: "hiring_evidence", label: "Persisted Hiring Intelligence", source_url: null, hiring_job_count: null },
+    { reference_id: "hiring-2", reference_type: "hiring_evidence", label: "Persisted Hiring Intelligence", source_url: null, hiring_job_count: null },
+    { reference_id: "strategy-1", reference_type: "report_evidence", label: "strategy", source_url: null, hiring_job_count: null },
+    { reference_id: "strategy-2", reference_type: "strategy_evidence", label: "Report Evidence", source_url: null, hiring_job_count: null },
+    { reference_id: "kg-internal-1", reference_type: "kg_evidence", label: "kg:technology:python", source_url: null, hiring_job_count: null },
+  ] };
+  const fetch = setup(response(), qaWithReferences);
   expect(screen.queryByText("Ask about this report")).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   expect(await screen.findByText("Ask about this report")).toBeInTheDocument();
@@ -107,13 +127,37 @@ it("shows grounded report Q&A only after report generation and renders source li
   await userEvent.type(screen.getByLabelText("Ask a follow-up question about this report"), "Where do strategy and hiring align?");
   await userEvent.click(screen.getByRole("button", { name: "Ask" }));
   expect(await screen.findByText("The report shows alignment around modernization.")).toBeInTheDocument();
-  expect(screen.getAllByRole("link", { name: "source0.example.com" }).length).toBeGreaterThan(1);
+  const answerText = await screen.findByText("The report shows alignment around modernization.");
+  expect(answerText).toHaveClass("report-qa__answer-text");
+  const details = screen.getByText("8 supporting references").closest("details")!;
+  expect(details).not.toHaveAttribute("open");
+  await userEvent.click(within(details).getByText("8 supporting references"));
+  expect(details).toHaveAttribute("open");
+  expect(within(details).getByRole("heading", { name: "External Sources" })).toBeInTheDocument();
+  expect(within(details).getByRole("heading", { name: "Report Opportunities" })).toBeInTheDocument();
+  expect(within(details).getByRole("heading", { name: "Internal Hiring Evidence" })).toBeInTheDocument();
+  expect(within(details).getByRole("heading", { name: "Report Evidence" })).toBeInTheDocument();
+  expect(within(details).getByRole("heading", { name: "Other Supporting Evidence" })).toBeInTheDocument();
+  expect(within(details).getAllByRole("link", { name: "Open source ↗" })).toHaveLength(2);
+  expect(within(details).getAllByText("sec.gov")).toHaveLength(2);
+  expect(within(details).getByText("Annual Report")).toBeInTheDocument();
+  expect(within(details).getByText("AI Enablement & Modernization")).toBeInTheDocument();
+  expect(within(details).getByText("1,203 relevant jobs")).toBeInTheDocument();
+  expect(within(details).getByText("Hiring Intelligence")).toBeInTheDocument();
+  expect(within(details).getAllByText("2 supporting references")).toHaveLength(2);
+  expect(within(details).getByText("Strategy report evidence")).toBeInTheDocument();
+  expect(within(details).queryByText("Persisted Hiring Intelligence")).not.toBeInTheDocument();
+  expect(within(details).queryByText("strategy")).not.toBeInTheDocument();
+  expect(screen.queryByText("EV_005")).not.toBeInTheDocument();
+  expect(screen.queryByText("kg:technology:python")).not.toBeInTheDocument();
+  expect(within(details).queryByText("Duplicate")).not.toBeInTheDocument();
   const request = JSON.parse(String(fetch.mock.calls[1][1]?.body));
   expect(request.organization).toBe("Goldman Sachs");
   expect(request.report.total_hiring_jobs).toBe(847);
   expect(request.report.intelligence_outlook_rows[0].relevant_hiring_jobs).toBe(1203);
   expect(request.report.evidence_traceability.some((item: { reference_id: string }) => item.reference_id === "source-8")).toBe(true);
   expect(request.report).not.toHaveProperty("hiring_intelligence");
+  expect(fetch).toHaveBeenCalledTimes(2);
 });
 
 it("submits suggested questions and displays insufficient evidence", async () => {

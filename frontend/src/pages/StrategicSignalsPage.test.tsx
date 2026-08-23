@@ -1,40 +1,63 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { strategyAgentApi } from "../api/strategyAgent";
 import { OrganizationProvider } from "../context/OrganizationContext";
 import { StrategicSignalsPage } from "./StrategicSignalsPage";
 
-const context = { total_jobs: 19, jobs_with_evidence: 19, hiring_evidence_coverage: 1, enriched_jobs: 1, enrichment_coverage: 1 / 19, hiring_signal_count: 3, technology_observation_count: 10, technology_signal_count: 0, observation_start: "2026-08-20", observation_end: "2026-08-21" };
-function ok(body: unknown) { return Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } })); }
-function renderPage() { return render(<OrganizationProvider value={{ organization: "Wells Fargo", setOrganization: vi.fn() }}><MemoryRouter><StrategicSignalsPage /></MemoryRouter></OrganizationProvider>); }
-afterEach(() => vi.unstubAllGlobals());
+vi.mock("../api/strategyAgent", () => ({ strategyAgentApi: { answer: vi.fn() } }));
+
+const apiMock = vi.mocked(strategyAgentApi.answer);
+
+function renderPage(organization: "Wells Fargo" | "BNY" = "Wells Fargo") {
+  return render(
+    <OrganizationProvider value={{ organization, setOrganization: vi.fn() }}>
+      <MemoryRouter><StrategicSignalsPage /></MemoryRouter>
+    </OrganizationProvider>,
+  );
+}
+
+afterEach(() => {
+  cleanup();
+  window.sessionStorage.clear();
+  vi.clearAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("StrategicSignalsPage", () => {
-  it("renders real coverage and a polished suppression state", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => ok({ organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", generated_signal_count: 0, coverage_context: context, signals: [], limitations: ["Technology enrichment coverage is below the configured reliability threshold; broader cross-domain claims are withheld."] })));
+  it("makes Ask Strategy primary without loading deterministic signals", () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
     renderPage();
-    expect(screen.getByText("Evaluating cross-domain evidence…")).toBeInTheDocument();
-    expect(await screen.findByText("Not enough independent support yet for a governed cross-domain signal.")).toBeInTheDocument();
-    expect(screen.getByText("5.3%")).toBeInTheDocument();
-    expect(screen.getByText("Inspect supporting evidence")).toHaveAttribute("href", "/evidence");
-  });
 
-  it("renders populated scores, contributors, limitations, and traceability", async () => {
-    const signal = { signal_id: "signal-1", organization: "Wells Fargo", signal_type: "capability_technology_alignment", title: "Observed overlap between analytics hiring and Python", summary: "Within the observed hiring evidence, analytics classifications overlap with Python observations across 3 independently contributing job records.", primary_subject: "Data & Analytics", related_subjects: ["Python"], domains_involved: ["hiring_intelligence", "technology_intelligence"], observation_start: "2026-07-01", observation_end: "2026-08-20", strength: 0.7, confidence: 0.75, evidence_coverage: 1, hiring_contributor_count: 4, technology_contributor_count: 3, unique_contributing_job_ids: ["job-1", "job-2", "job-3"], supporting_evidence_ids: ["e-1", "e-2", "e-3"], related_hiring_signal_ids: ["h-1"], related_technology_signal_ids: ["t-1"], limitations: ["Cross-domain overlap is observational."], provenance: { generator: "CrossDomainStrategicSignalService", configuration_version: "cross-domain-signals-v1", deterministic: true } };
-    vi.stubGlobal("fetch", vi.fn(() => ok({ organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", generated_signal_count: 1, coverage_context: { ...context, enriched_jobs: 5, enrichment_coverage: 0.5, technology_signal_count: 1 }, signals: [signal], limitations: [] })));
-    renderPage();
-    expect(await screen.findByText(signal.title)).toBeInTheDocument();
-    expect(screen.getByText("75% confidence")).toBeInTheDocument();
-    expect(screen.getByText("4 hiring contributors")).toBeInTheDocument();
-    expect(screen.getByText("3 technology contributors")).toBeInTheDocument();
-    expect(screen.getByText("Trace evidence")).toHaveAttribute("href", "/evidence");
-    expect(screen.getByText("Cross-domain overlap is observational.")).toBeInTheDocument();
-  });
-
-  it("renders a safe API error", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("Backend unavailable"))));
-    renderPage();
-    expect(await screen.findByText("Backend unavailable")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Evidence-grounded strategic research" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Ask Strategy" })).toBeInTheDocument();
     expect(screen.getByLabelText("Strategic question")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Time horizon/)).toBeInTheDocument();
+    expect(screen.queryByText("Cross-domain strategic signals")).not.toBeInTheDocument();
+    expect(screen.queryByText(/hiring contributors/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Relevant Hiring Jobs")).not.toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(apiMock).not.toHaveBeenCalled();
+  });
+
+  it("uses the selected company scope and preserves Analyze behavior", async () => {
+    apiMock.mockResolvedValue({
+      status: "answered", organization: "BNY", question: "What changed recently?",
+      executive_summary: "Recent evidence supports a focused transformation pattern.", findings: [],
+      reliability: 0.8, limitations: [], tool_calls_used: 2, provider: "openai", model: "test-model",
+      agent_version: "strategy-orchestrator-v1", strategic_signals: [],
+    });
+    renderPage("BNY");
+    expect(screen.getByText(/recent developments for BNY/)).toBeInTheDocument();
+
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText("Strategic question"), "What changed recently?");
+    await user.type(screen.getByLabelText(/Time horizon/), "12 months");
+    await user.click(screen.getByRole("button", { name: "Analyze" }));
+
+    expect(await screen.findByText("Recent evidence supports a focused transformation pattern.")).toBeInTheDocument();
+    expect(apiMock).toHaveBeenCalledWith({ organization: "BNY", question: "What changed recently?", time_horizon: "12 months" });
   });
 });

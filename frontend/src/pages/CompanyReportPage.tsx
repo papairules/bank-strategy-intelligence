@@ -3,7 +3,8 @@ import { supervisorReportApi } from "../api/supervisorReport";
 import { ApiError } from "../api/hiring";
 import { useOrganization } from "../context/OrganizationContext";
 import { useSessionState } from "../hooks/useSessionState";
-import type { IntelligenceOutlookRow, ReportQuestionAnswer, ReportReference, SupervisorReportAnswer } from "../types/supervisorReport";
+import type { IntelligenceOutlookRow, ReportQuestionAnswer, ReportQuestionReference, ReportReference, SupervisorReportAnswer } from "../types/supervisorReport";
+import { titleCase } from "../utils/format";
 
 export function CompanyReportPage() {
   const { organization } = useOrganization();
@@ -46,7 +47,7 @@ export function CompanyReportPage() {
 
 function Report({ answer }: { answer: SupervisorReportAnswer }) {
   return <article className="panel strategy-answer">
-    <section><span className="strategy-answer__label">Executive Summary</span><p>{answer.report.executive_summary}</p></section>
+    <section><span className="strategy-answer__label">Executive Summary</span><p className="report-executive-summary">{answer.report.executive_summary}</p></section>
     <section>
       <p className="report-company-summary"><strong>{answer.report.organization}</strong><span aria-hidden="true"> · </span>{answer.report.total_hiring_jobs.toLocaleString()} Total Hiring Jobs</p>
       <span className="strategy-answer__label">Intelligence Outlook</span>
@@ -123,8 +124,8 @@ function ReportQA({ report }: { report: SupervisorReportAnswer }) {
     {error && <div className="ask-strategy__error" role="alert"><strong>Answer unavailable</strong><p>{error}</p></div>}
     {answer && <div className="report-qa__answer">
       {!answer.evidence_sufficient && <strong className="report-qa__insufficient">The current report does not contain enough evidence for a fully supported answer.</strong>}
-      <p>{answer.answer}</p>
-      {answer.supporting_references.length > 0 && <div><span className="strategy-answer__label">Sources / Evidence</span><ul>{answer.supporting_references.map((item) => <li key={item.reference_id}>{item.source_url ? <a href={item.source_url} target="_blank" rel="noreferrer">{sourceName(item.source_url)}</a> : item.label}{item.hiring_job_count != null ? ` · ${item.hiring_job_count.toLocaleString()} relevant jobs` : ""}</li>)}</ul></div>}
+      <p className="report-qa__answer-text">{answer.answer}</p>
+      {answer.supporting_references.length > 0 && <SupportingReferences references={answer.supporting_references} />}
       {answer.limitations.length > 0 && <small>{answer.limitations.join(" ")}</small>}
     </div>}
   </section>;
@@ -143,15 +144,94 @@ function OutlookRow({ row }: { row: IntelligenceOutlookRow }) {
 }
 
 function HorizonCell({ value }: { value?: string | null }) {
-  return <td>{value?.trim() || "No action needed"}</td>;
+  const displayValue = value?.trim();
+  return <td>{!displayValue || displayValue === "No action needed" ? "No action recommended" : displayValue}</td>;
 }
 
 function Sources({ references }: { references: ReportReference[] }) {
-  const [expanded, setExpanded] = useState(false);
-  const webSources = Array.from(new Map(references.filter((item) => item.source_url).map((item) => [item.source_url, item])).values());
-  const sources = [...webSources, { reference_id: "hiring-dataset", domain: "hiring", evidence_ids: [], job_ids: [], source_url: null }];
-  const visible = expanded ? sources : sources.slice(0, 3);
-  return <section><span className="strategy-answer__label">Sources</span>{visible.length > 0 ? <><div className="report-table-scroll"><table className="report-table report-table--sources"><thead><tr><th>Source</th><th>Used For</th></tr></thead><tbody>{visible.map((source) => <tr key={source.source_url ?? source.reference_id}><td>{source.source_url ? <a href={source.source_url} target="_blank" rel="noreferrer">{sourceName(source.source_url)}</a> : "Hiring dataset"}</td><td>{source.domain === "hiring" ? "Hiring intelligence" : "Strategy evidence"}</td></tr>)}</tbody></table></div>{sources.length > 3 && <button className="report-sources-toggle" type="button" onClick={() => setExpanded((value) => !value)}>{expanded ? "Show less" : `Show all sources (${sources.length})`}</button>}</> : <p className="report-empty">No source references are available.</p>}</section>;
+  const sources = deduplicateReferences(
+    references.filter((reference) => reference.domain === "strategy" && reference.source_url?.trim()),
+  );
+  return sources.length > 0 ? <details className="report-sources"><summary>{sources.length} report source{sources.length === 1 ? "" : "s"}</summary><div className="report-reference-list">{sources.map((source) => <div className="report-reference" key={source.reference_id}>
+    <span><strong>{source.source_url ? sourceName(source.source_url) : titleCase(source.domain)}</strong><small>{titleCase(source.domain)}{source.source_url ? ` · ${sourceName(source.source_url)}` : " · Internal evidence"}</small></span>
+    {source.source_url && <a href={source.source_url} target="_blank" rel="noreferrer">Open source ↗</a>}
+  </div>)}</div></details> : <p className="report-empty">No source references are available.</p>;
+}
+
+function SupportingReferences({ references }: { references: ReportQuestionReference[] }) {
+  const distinctReferences = deduplicateQASupportingReferences(references);
+  const groups = classifyQASupportingReferences(distinctReferences);
+  return <details className="report-supporting-references"><summary>{distinctReferences.length} supporting reference{distinctReferences.length === 1 ? "" : "s"}</summary><div className="report-supporting-reference-groups">
+    <ReferenceGroup heading="External Sources" references={groups.external} />
+    <ReferenceGroup heading="Report Opportunities" references={groups.opportunities} />
+    {groups.hiring.length > 0 && <AggregatedReferenceGroup heading="Internal Hiring Evidence" label="Hiring Intelligence" count={groups.hiring.length} />}
+    {groups.report.length > 0 && <AggregatedReferenceGroup heading="Report Evidence" label="Strategy report evidence" count={groups.report.length} />}
+    <ReferenceGroup heading="Other Supporting Evidence" references={groups.other} />
+  </div></details>;
+}
+
+function ReferenceGroup({ heading, references }: { heading: string; references: ReportQuestionReference[] }) {
+  if (references.length === 0) return null;
+  return <section className="report-supporting-reference-group"><h3>{heading}</h3><div className="report-reference-list">{references.map((reference) => <div className="report-reference" key={reference.reference_id}>
+    <span><strong>{displayReferenceLabel(reference)}</strong><small>{reference.source_url && isValidExternalUrl(reference.source_url) ? sourceName(reference.source_url) : reference.hiring_job_count != null ? `${reference.hiring_job_count.toLocaleString()} relevant jobs` : titleCase(reference.reference_type)}</small></span>
+    {reference.source_url && isValidExternalUrl(reference.source_url) && <a href={reference.source_url} target="_blank" rel="noreferrer">Open source ↗</a>}
+  </div>)}</div></section>;
+}
+
+function AggregatedReferenceGroup({ heading, label, count }: { heading: string; label: string; count: number }) {
+  return <section className="report-supporting-reference-group"><h3>{heading}</h3><div className="report-reference report-reference--aggregate"><span><strong>{label}</strong><small>{count} supporting reference{count === 1 ? "" : "s"}</small></span></div></section>;
+}
+
+function deduplicateQASupportingReferences(references: ReportQuestionReference[]) {
+  const seenIds = new Set<string>();
+  const seenUrls = new Set<string>();
+  return references.filter((reference) => {
+    const url = reference.source_url?.trim();
+    if (seenIds.has(reference.reference_id) || (url && isValidExternalUrl(url) && seenUrls.has(url))) return false;
+    seenIds.add(reference.reference_id);
+    if (url && isValidExternalUrl(url)) seenUrls.add(url);
+    return true;
+  });
+}
+
+function classifyQASupportingReferences(references: ReportQuestionReference[]) {
+  const groups: Record<"external" | "opportunities" | "hiring" | "report" | "other", ReportQuestionReference[]> = {
+    external: [], opportunities: [], hiring: [], report: [], other: [],
+  };
+  for (const reference of references) {
+    const type = reference.reference_type.toLowerCase();
+    const label = reference.label.toLowerCase();
+    if (reference.source_url && isValidExternalUrl(reference.source_url)) groups.external.push(reference);
+    else if (type.includes("opportunity")) groups.opportunities.push(reference);
+    else if (type.includes("hiring") || label.includes("hiring intelligence")) groups.hiring.push(reference);
+    else if (type.includes("strategy") || type.includes("report") || label === "strategy" || label.includes("report evidence")) groups.report.push(reference);
+    else groups.other.push(reference);
+  }
+  return groups;
+}
+
+function deduplicateReferences<T extends { reference_id: string; source_url?: string | null }>(references: T[]): T[] {
+  const seenIds = new Set<string>();
+  const seenUrls = new Set<string>();
+  return references.filter((reference) => {
+    const url = reference.source_url?.trim();
+    if (seenIds.has(reference.reference_id) || (url && seenUrls.has(url))) return false;
+    seenIds.add(reference.reference_id);
+    if (url) seenUrls.add(url);
+    return true;
+  });
+}
+
+function displayReferenceLabel(reference: ReportQuestionReference) {
+  if (reference.label.trim() && !isInternalId(reference.label)) return reference.label;
+  return titleCase(reference.reference_type);
+}
+
+function isInternalId(value: string) {
+  const normalized = value.trim();
+  return /^EV[_-]?\d+$/i.test(normalized)
+    || /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(normalized)
+    || /^(outlook|hiring|kg|strategy|report|evidence)[_:-][a-z0-9_:-]+$/i.test(normalized);
 }
 
 function sourceName(url: string) {
@@ -159,5 +239,14 @@ function sourceName(url: string) {
     return new URL(url).hostname.replace(/^www\./, "");
   } catch {
     return "Strategy source";
+  }
+}
+
+function isValidExternalUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
   }
 }
