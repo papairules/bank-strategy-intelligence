@@ -8,10 +8,12 @@ import type {
 } from "../types/hiring";
 
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
-export const API_BASE_URL = (configuredBaseUrl || "http://localhost:8000").replace(
-  /\/$/,
-  "",
-);
+// In dev (vite dev server) default to the local backend. In a production build
+// with no override, default to "" so requests are same-origin relative paths
+// (correct when the backend serves the built frontend, e.g. on Cloud Run).
+export const API_BASE_URL = (
+  configuredBaseUrl ?? (import.meta.env.DEV ? "http://localhost:8000" : "")
+).replace(/\/$/, "");
 
 export class ApiError extends Error {
   constructor(

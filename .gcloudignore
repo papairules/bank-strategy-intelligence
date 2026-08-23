@@ -1,0 +1,22 @@
+# Not needed inside the deployed container.
+.venv/
+venv/
+frontend/node_modules/
+frontend/src/
+frontend/coverage/
+frontend/*.tsbuildinfo
+data/csv/
+data/hiring_agent_cache/
+tests/
+architecture/
+.git/
+.gitignore
+*.pyc
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.env
+.env.*
+!.env.example

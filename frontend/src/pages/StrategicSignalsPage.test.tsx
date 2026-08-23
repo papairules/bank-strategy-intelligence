@@ -27,7 +27,7 @@ afterEach(() => {
 
 describe("StrategicSignalsPage", () => {
   it("makes Ask Strategy primary without loading deterministic signals", async () => {
-    const fetchMock = vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+    const fetchMock = vi.fn((_input: RequestInfo | URL) => Promise.resolve(new Response(JSON.stringify({
       organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 0,
       classified_jobs_used: 0, enriched_jobs_used: 0, hiring_signals_used: 0,
       strategic_themes_used: 0, top_capabilities: [], top_technologies: [], strategic_themes: [],
