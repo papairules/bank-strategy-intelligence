@@ -107,22 +107,26 @@ def test_explicit_alias_normalization_and_conservative_unknown_handling():
     assert categorize_technology("Unmapped Product") == TechnologyCategory.OTHER
 
 
-def test_observations_require_enrichment_and_preserve_traceability():
+def test_observations_include_source_support_and_preserve_traceability():
     enriched = make_record()
     plain = make_record(enriched=False)
     observations = build_service([enriched, plain]).observations("Wells Fargo")
-    assert [item.normalized_technology for item in observations] == ["Python", "Power BI", "SQL"]
-    assert all(item.job_id == enriched[0].job_id for item in observations)
-    assert all(item.evidence_id == enriched[1].evidence_id for item in observations)
-    assert all(item.support_references[0].evidence_id == enriched[1].evidence_id for item in observations)
-    assert observations[0].business_unit == "Consumer Analytics"
-    assert observations[0].confidence == 0.95
+    assert len(observations) == 6
+    assert {item.job_id for item in observations} == {enriched[0].job_id, plain[0].job_id}
+    assert all(item.support_references[0].evidence_id in {enriched[1].evidence_id, plain[1].evidence_id} for item in observations)
+    assert all(item.support_classification == "multiple" for item in observations if item.job_id == enriched[0].job_id)
+    assert all(item.support_classification == "source_evidence" for item in observations if item.job_id == plain[0].job_id)
+    plain_python = next(item for item in observations if item.job_id == plain[0].job_id and item.normalized_technology == "Python")
+    assert plain_python.provenance.provider == "deterministic_source"
+    assert plain_python.source_field == "job.description"
+    assert plain_python.matched_text == "Python"
+    assert next(item for item in observations if item.job_id == plain[0].job_id).confidence == 1.0
 
 
 def test_duplicate_aliases_are_one_observation_per_job():
     observations = build_service([make_record(technologies=["PowerBI", "Power BI"])]).observations("Wells Fargo")
-    assert len(observations) == 1
-    assert observations[0].normalized_technology == "Power BI"
+    assert len(observations) == 3
+    assert sum(item.normalized_technology == "Power BI" for item in observations) == 1
 
 
 def test_analytics_uses_enriched_job_denominator_and_all_cross_tabs():
@@ -131,6 +135,8 @@ def test_analytics_uses_enriched_job_denominator_and_all_cross_tabs():
     assert analytics.snapshot.total_jobs == 2
     assert analytics.snapshot.enriched_jobs == 1
     assert analytics.snapshot.technology_observation_count == 3
+    assert analytics.snapshot.source_technology_jobs == 2
+    assert analytics.snapshot.source_technology_observation_count == 6
     assert analytics.snapshot.unique_technologies == 3
     assert analytics.snapshot.technology_coverage_percentage == 50
     assert analytics.top_technologies[0].percentage_of_enriched_jobs == 100

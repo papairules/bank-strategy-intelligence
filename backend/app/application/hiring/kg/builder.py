@@ -22,6 +22,7 @@ from backend.app.domain.intelligence import Evidence
 from backend.app.domain.organization import organization_key
 
 from .models import HiringKGEdgeType, HiringKGNodeType, HiringKnowledgeGraphSummary
+from .source_technology import SourceTechnologyMatch, extract_source_technologies
 
 
 class HiringSignalBoundary(Protocol):
@@ -163,6 +164,8 @@ class HiringKnowledgeGraphService:
             graph, job, evidence, None, job.location, HiringKGNodeType.LOCATION,
             HiringKGEdgeType.LOCATED_IN, "persisted_source",
         )
+        for match in extract_source_technologies(job.description):
+            self._add_source_technology_edge(graph, job, evidence, match)
         if enrichment is None:
             return
         if enrichment.business_unit:
@@ -217,6 +220,39 @@ class HiringKnowledgeGraphService:
             node_id,
             edge_type,
             self._provenance(job, evidence, derivation_type, enrichment),
+        )
+
+    def _add_source_technology_edge(
+        self,
+        graph: nx.MultiDiGraph,
+        job: JobPosting,
+        evidence: Evidence,
+        match: SourceTechnologyMatch,
+    ) -> None:
+        node_id = concept_node_id(
+            HiringKGNodeType.TECHNOLOGY, job.organization, match.technology
+        )
+        graph.add_node(
+            node_id,
+            node_type=HiringKGNodeType.TECHNOLOGY.value,
+            organization=job.organization,
+            value=match.technology,
+            label=match.technology,
+        )
+        provenance = self._provenance(job, evidence, "persisted_source_technology", None)
+        provenance.update(
+            support_classification="source_evidence",
+            source_field=match.source_field,
+            matched_alias=match.alias,
+            matched_text=match.matched_text,
+            matched_value=match.technology,
+        )
+        self._add_edge(
+            graph,
+            job_node_id(job.job_id),
+            node_id,
+            HiringKGEdgeType.USES_TECHNOLOGY,
+            provenance,
         )
 
     def _add_signal(
@@ -328,6 +364,17 @@ class HiringKnowledgeGraphService:
         edge_type: HiringKGEdgeType,
         attributes: dict,
     ) -> None:
+        existing = graph.get_edge_data(source, target, edge_type.value)
+        if existing is not None and attributes.get("derivation_type") == "latest_persisted_enrichment":
+            source_record = dict(existing)
+            enrichment_record = dict(attributes)
+            merged = dict(existing)
+            merged.update(attributes)
+            merged["support_classification"] = "multiple"
+            merged["support_classifications"] = ["source_evidence", "ai_enrichment"]
+            merged["provenance_records"] = [source_record, enrichment_record]
+            graph.add_edge(source, target, key=edge_type.value, **merged)
+            return
         graph.add_edge(source, target, key=edge_type.value, edge_type=edge_type.value, **attributes)
 
 

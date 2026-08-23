@@ -23,6 +23,9 @@ export interface TechnologySnapshot {
   technology_observation_count: number;
   unique_technologies: number;
   technology_coverage_percentage: number;
+  source_technology_jobs: number;
+  source_technology_observation_count: number;
+  source_technology_coverage_percentage: number;
   observation_start: string | null;
   observation_end: string | null;
   generated_at: string;
@@ -42,6 +45,9 @@ export interface TechnologyObservation {
   business_unit: string | null;
   seniority: string;
   confidence: number;
+  support_classification: "source_evidence" | "ai_enrichment" | "multiple";
+  source_field: string | null;
+  matched_text: string | null;
   provenance: {
     provider: string;
     model: string;

@@ -32,9 +32,7 @@ def create_supervisor_app_service(
         return run_supervisor(request, client=client, model=resolved.openai_model)
 
     return SupervisorAppService(
-        strategy_service=create_strategy_agent_service(
-            resolved, client_factory=client_factory
-        ),
+        strategy_service=create_strategy_agent_service(resolved),
         hiring_signals=hiring_signals,
         hiring_read=read_service,
         hiring_kg=hiring_kg,

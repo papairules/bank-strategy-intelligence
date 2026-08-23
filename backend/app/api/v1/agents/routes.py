@@ -35,7 +35,7 @@ from backend.app.application.agents.strategy_agent import (
     StrategyAgentError,
     StrategyAgentFailureCode,
     StrategyAgentRequest,
-    IntegratedStrategyAgentService,
+    StrategyAgentService,
 )
 from backend.app.application.agents.evidence_agent import (
     EvidenceAgentError,
@@ -53,7 +53,7 @@ from backend.app.application.agents.hiring_agent import (
 
 router = APIRouter(prefix="/agents")
 EvidenceAgent = Annotated[EvidenceAgentService, Depends(get_evidence_agent_service)]
-StrategyAgent = Annotated[IntegratedStrategyAgentService, Depends(get_strategy_agent_service)]
+StrategyAgent = Annotated[StrategyAgentService, Depends(get_strategy_agent_service)]
 HiringAgent = Annotated[HiringAgentAppService, Depends(get_hiring_agent_service)]
 SupervisorAgent = Annotated[SupervisorAppService, Depends(get_supervisor_app_service)]
 ReportQAAgent = Annotated[ReportQAService, Depends(get_report_qa_service)]

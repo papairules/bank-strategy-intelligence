@@ -27,7 +27,7 @@ class HiringSettings(BaseSettings):
     evidence_agent_max_tool_calls: int = Field(default=3, ge=1, le=5)
     evidence_agent_max_evidence: int = Field(default=10, ge=1, le=20)
     strategy_agent_enabled: bool = False
-    strategy_agent_provider: str = "openai_web"
+    strategy_agent_provider: str = "vertex_gemini"
     strategy_agent_model: str = "gemini-2.5-flash"
     strategy_agent_max_tool_calls: int = Field(default=6, ge=1, le=10)
     strategy_agent_max_search_results: int = Field(default=10, ge=1, le=50)

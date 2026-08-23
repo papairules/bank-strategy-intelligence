@@ -26,6 +26,7 @@ from backend.app.application.hiring.kg import (
     get_jobs_for_technology,
     get_jobs_supporting_hiring_signal,
     get_technologies_for_organization,
+    extract_source_technologies,
     job_node_id,
     organization_node_id,
     summarize_hiring_knowledge_graph,
@@ -209,8 +210,11 @@ def test_enriched_relationship_provenance_and_query_helpers():
     assert edge["enrichment_confidence"] == 0.82
     assert edge["source_content_hash"] == "a" * 64
     assert "description" not in edge
+    assert edge["support_classification"] == "multiple"
+    assert edge["support_classifications"] == ["source_evidence", "ai_enrichment"]
+    assert len(edge["provenance_records"]) == 2
     assert get_jobs_for_capability(graph, "Cloud & Infrastructure") == [WELLS_JOB_ID]
-    assert get_jobs_for_technology(graph, "Python") == [WELLS_JOB_ID]
+    assert get_jobs_for_technology(graph, "Python") == [WELLS_JOB_ID, PLAIN_JOB_ID]
     assert get_evidence_for_job(graph, WELLS_JOB_ID) == [WELLS_EVIDENCE_ID]
 
 
@@ -222,7 +226,11 @@ def test_unenriched_job_has_only_base_relationships_and_summary_is_safe():
     }
     summary = summarize_hiring_knowledge_graph(graph)
 
-    assert outgoing == {HiringKGEdgeType.SUPPORTED_BY.value, HiringKGEdgeType.LOCATED_IN.value}
+    assert outgoing == {
+        HiringKGEdgeType.SUPPORTED_BY.value,
+        HiringKGEdgeType.LOCATED_IN.value,
+        HiringKGEdgeType.USES_TECHNOLOGY.value,
+    }
     assert summary.organization == "Wells Fargo"
     assert summary.jobs_read == 2
     assert summary.evidence_records_used == 2
@@ -230,6 +238,48 @@ def test_unenriched_job_has_only_base_relationships_and_summary_is_safe():
     assert summary.node_counts[HiringKGNodeType.JOB] == 2
     assert summary.edge_counts[HiringKGEdgeType.CLASSIFIED_AS] == 1
     assert "description" not in summary.model_dump_json()
+
+
+def test_source_only_technology_relationship_is_grounded_and_queryable():
+    graph = fixture_service()[0].build_for_organization("Wells Fargo")
+    technology = concept_node_id(HiringKGNodeType.TECHNOLOGY, "Wells Fargo", "Python")
+    edge = graph.get_edge_data(job_node_id(PLAIN_JOB_ID), technology)[
+        HiringKGEdgeType.USES_TECHNOLOGY.value
+    ]
+
+    assert edge["derivation_type"] == "persisted_source_technology"
+    assert edge["support_classification"] == "source_evidence"
+    assert edge["source_field"] == "job.description"
+    assert edge["matched_value"] == "Python"
+    assert edge["matched_text"] == "Python"
+    assert edge["evidence_id"] == str(PLAIN_EVIDENCE_ID)
+    assert get_jobs_for_technology(graph, "Python") == [WELLS_JOB_ID, PLAIN_JOB_ID]
+
+
+def test_source_extraction_uses_boundaries_and_is_deterministic():
+    text = "Pythonic code, Python; SQL and SQLServer. AWS, not awsish."
+    first = extract_source_technologies(text)
+    second = extract_source_technologies(text)
+
+    assert first == second
+    assert [item.technology for item in first] == ["AWS", "Python", "SQL"]
+    assert all(item.source_field == "job.description" for item in first)
+
+
+def test_source_technology_concepts_remain_organization_qualified():
+    wells_graph = fixture_service()[0].build_for_organization("Wells Fargo")
+    bny_posting = job(BNY_JOB_ID, BNY_EVIDENCE_ID, organization="BNY")
+    bny_graph = HiringKnowledgeGraphService(
+        FakeRead([bny_posting], [evidence(BNY_EVIDENCE_ID, BNY_JOB_ID)]),
+        FakeSignals(organization="BNY"),
+    ).build_for_organization("BNY")
+
+    wells_technology = concept_node_id(HiringKGNodeType.TECHNOLOGY, "Wells Fargo", "Python")
+    bny_technology = concept_node_id(HiringKGNodeType.TECHNOLOGY, "BNY", "Python")
+    assert wells_technology in wells_graph
+    assert bny_technology in bny_graph
+    assert bny_technology not in wells_graph
+    assert wells_technology not in bny_graph
 
 
 def test_deterministic_hiring_signal_is_evidence_linked_and_queryable():

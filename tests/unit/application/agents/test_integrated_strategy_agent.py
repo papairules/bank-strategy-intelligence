@@ -114,7 +114,7 @@ def test_openai_settings_are_namespaced(monkeypatch):
     settings = HiringSettings()
     assert settings.openai_api_key == "test-key"
     assert settings.openai_model == "gpt-test"
-    assert settings.strategy_agent_provider == "openai_web"
+    assert settings.strategy_agent_provider == "vertex_gemini"
 
 
 @pytest.mark.parametrize(("selected", "question", "target"), [

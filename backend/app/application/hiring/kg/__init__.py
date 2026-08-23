@@ -18,6 +18,7 @@ from .queries import (
     get_jobs_supporting_hiring_signal,
     get_technologies_for_organization,
 )
+from .source_technology import SourceTechnologyMatch, extract_source_technologies
 
 __all__ = [
     "HiringKnowledgeGraphService",
@@ -38,4 +39,6 @@ __all__ = [
     "organization_node_id",
     "signal_node_id",
     "summarize_hiring_knowledge_graph",
+    "SourceTechnologyMatch",
+    "extract_source_technologies",
 ]

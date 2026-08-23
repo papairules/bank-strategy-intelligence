@@ -138,6 +138,9 @@ class AgentTechnologySummary(BaseModel):
     technology_observation_count: int = Field(ge=0)
     unique_technologies: int = Field(ge=0)
     technology_coverage: float = Field(ge=0, le=1)
+    source_technology_jobs: int = Field(default=0, ge=0)
+    source_technology_observation_count: int = Field(default=0, ge=0)
+    source_technology_coverage: float = Field(default=0, ge=0, le=1)
     observation_start: date | None = None
     observation_end: date | None = None
     limitations: list[str] = Field(default_factory=list)

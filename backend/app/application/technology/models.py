@@ -61,6 +61,9 @@ class TechnologyObservation(BaseModel):
     business_unit: str | None = None
     seniority: EnrichmentSeniority
     confidence: float = Field(ge=0, le=1)
+    support_classification: str = "ai_enrichment"
+    source_field: str | None = None
+    matched_text: str | None = None
     provenance: TechnologyProvenance
     support_references: list[TechnologySupportReference] = Field(default_factory=list)
 
@@ -74,6 +77,9 @@ class TechnologyIntelligenceSnapshot(BaseModel):
     technology_observation_count: int = Field(ge=0)
     unique_technologies: int = Field(ge=0)
     technology_coverage_percentage: float = Field(ge=0, le=100)
+    source_technology_jobs: int = Field(default=0, ge=0)
+    source_technology_observation_count: int = Field(default=0, ge=0)
+    source_technology_coverage_percentage: float = Field(default=0, ge=0, le=100)
     observation_start: date | None = None
     observation_end: date | None = None
     generated_at: datetime

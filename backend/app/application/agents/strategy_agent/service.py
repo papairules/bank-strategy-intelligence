@@ -33,7 +33,6 @@ from backend.app.application.agents.strategy_agent.validation import (
     contains_unsupported_intent_claim,
     contains_unsupported_support_narrowing,
 )
-from backend.app.application.agents.strategy_agent.graph import initial_state
 
 
 logger = logging.getLogger(__name__)
@@ -234,6 +233,14 @@ class StrategyAgentService:
     def _support_classes(name: str, payload: dict) -> list[StrategySupportClass]:
         if name.endswith("get_signals"):
             return [StrategySupportClass.DERIVED_SIGNAL]
+        if name == "technology.search_observations":
+            serialized = json.dumps(payload, sort_keys=True).lower()
+            classes = []
+            if '"support_classification": "source_evidence"' in serialized or '"support_classification":"source_evidence"' in serialized:
+                classes.append(StrategySupportClass.SOURCE_EVIDENCE)
+            if '"support_classification": "ai_enrichment"' in serialized or '"support_classification": "multiple"' in serialized:
+                classes.append(StrategySupportClass.AI_ENRICHMENT)
+            return classes or [StrategySupportClass.DERIVED_ANALYTICS]
         if name.startswith("evidence."):
             classes = [StrategySupportClass.SOURCE_EVIDENCE]
             serialized = json.dumps(payload, sort_keys=True).lower()
@@ -381,6 +388,8 @@ class IntegratedStrategyAgentService:
         self._api_key_configured = api_key_configured
 
     async def answer(self, request: StrategyAgentRequest) -> StrategyAgentResult:
+        from backend.app.application.agents.strategy_agent.graph import initial_state
+
         _validate_organization_scope(request.organization, request.question)
         if not self._enabled:
             raise StrategyAgentError(
