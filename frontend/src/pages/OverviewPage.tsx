@@ -6,6 +6,7 @@ import { strategyApi } from "../api/strategy";
 import { technologyApi } from "../api/technology";
 import { ErrorState, LoadingState } from "../components/States";
 import { useOrganization } from "../context/OrganizationContext";
+import { GraphInsightsPanel } from "../features/insights/GraphInsightsPanel";
 import { useApi } from "../hooks/useApi";
 import { formatDate, formatNumber, formatPercent } from "../utils/format";
 
@@ -61,6 +62,9 @@ export function OverviewPage() {
         </ExecutiveCard>
       </div>
     </>}
+
+    <div className="intelligence-divider"><span>Knowledge graph insights</span></div>
+    <GraphInsightsPanel organization={organization} />
   </div>;
 }
 

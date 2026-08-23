@@ -18,6 +18,7 @@ function ok(body: unknown) {
 const technologySnapshot = { organization: "Wells Fargo", total_jobs: 19, enriched_jobs: 19, technology_observation_count: 24, unique_technologies: 23, technology_coverage_percentage: 100, observation_start: "2026-08-20", observation_end: "2026-08-21", generated_at: "2026-08-21T12:00:00Z" };
 const evidenceSummary = { organization: "Wells Fargo", total_evidence_records: 19, total_jobs: 19, jobs_with_evidence: 19, evidence_coverage: 100, enriched_evidence_count: 19, enrichment_coverage: 100, evidence_supporting_hiring_signals: 19, evidence_supporting_technology_observations: 5, evidence_supporting_technology_signals: 4, source_distribution: [{ source: "Workday", source_type: "career_site", evidence_count: 19 }], observation_start: "2026-08-20", observation_end: "2026-08-21", generated_at: "2026-08-21T12:00:00Z" };
 const strategyResult = { organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", generated_signal_count: 0, coverage_context: { total_jobs: 19, jobs_with_evidence: 19, hiring_evidence_coverage: 1, enriched_jobs: 19, enrichment_coverage: 1, hiring_signal_count: 3, technology_observation_count: 24, technology_signal_count: 2, observation_start: "2026-08-20", observation_end: "2026-08-21" }, signals: [], limitations: ["The observation period is shorter than the configured minimum.", "Evidence currently derives from a single public hiring source."] };
+const graphInsights = { organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 0, classified_jobs_used: 0, enriched_jobs_used: 0, hiring_signals_used: 0, strategic_themes_used: 0, top_capabilities: [], top_technologies: [], strategic_themes: [] };
 
 function stubOverviewFetch() {
   const fetch = vi.fn((input: RequestInfo | URL) => {
@@ -26,6 +27,7 @@ function stubOverviewFetch() {
     if (url.includes("/technology/") && url.includes("/summary")) return ok({ snapshot: technologySnapshot, coverage_limitation: null });
     if (url.includes("/technology/") && url.includes("/signals")) return ok({ organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", total_jobs: 19, enriched_jobs: 19, enrichment_coverage: 1, technology_observation_count: 24, generated_signal_count: 2, signals: [], limitations: [] });
     if (url.includes("/evidence/") && url.includes("/summary")) return ok(evidenceSummary);
+    if (url.includes("/graph-insights/")) return ok(graphInsights);
     return ok(strategyResult);
   });
   vi.stubGlobal("fetch", fetch);

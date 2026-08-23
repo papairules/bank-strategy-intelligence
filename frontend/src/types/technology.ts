@@ -23,6 +23,8 @@ export interface TechnologySnapshot {
   technology_observation_count: number;
   unique_technologies: number;
   technology_coverage_percentage: number;
+  jobs_with_technology_signal: number;
+  technology_signal_coverage_percentage: number;
   observation_start: string | null;
   observation_end: string | null;
   generated_at: string;
@@ -57,6 +59,7 @@ export interface TopTechnology {
   job_count: number;
   observation_count: number;
   percentage_of_enriched_jobs: number;
+  percentage_of_technology_classified_jobs: number;
   evidence_count: number;
   contributing_records: TechnologyRecordReference[];
 }

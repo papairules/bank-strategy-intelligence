@@ -8,6 +8,7 @@ class HiringSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="BSI_", env_file=".env", extra="ignore")
 
     sqlite_database_path: Path = Path("data/hiring-intelligence.sqlite3")
+    hiring_kg_graph_directory: Path = Path("data/graphs")
     wells_fargo_request_timeout_seconds: float = Field(default=20.0, gt=0)
     wells_fargo_retry_count: int = Field(default=2, ge=0)
     wells_fargo_schedule_enabled: bool = False
@@ -33,6 +34,7 @@ class HiringSettings(BaseSettings):
     strategy_agent_max_search_results: int = Field(default=10, ge=1, le=50)
     strategy_agent_max_evidence: int = Field(default=10, ge=1, le=20)
     strategy_agent_max_payload_chars: int = Field(default=100_000, ge=1_000)
+    strategy_agent_cache_ttl_hours: float = Field(default=24.0, ge=0)
     hiring_agent_enabled: bool = False
     hiring_agent_use_llm: bool = True
     hiring_agent_max_jobs: int | None = Field(default=None, gt=0)

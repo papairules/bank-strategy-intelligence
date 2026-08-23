@@ -13,6 +13,10 @@ from backend.app.application.hiring.kg import HiringKnowledgeGraphService
 from backend.app.config import HiringSettings
 from backend.app.infrastructure.composition.hiring_read import create_hiring_read_service
 from backend.app.infrastructure.composition.strategy_agent import create_strategy_agent_service
+from backend.app.infrastructure.persistence.hiring import (
+    SQLiteDatabase,
+    SQLiteStrategyResearchCacheRepository,
+)
 
 
 def create_supervisor_app_service(
@@ -23,7 +27,14 @@ def create_supervisor_app_service(
     resolved = settings or HiringSettings()
     read_service = create_hiring_read_service(resolved)
     hiring_signals = HiringSignalService(HiringAnalyticsService(read_service))
-    hiring_kg = HiringKnowledgeGraphService(read_service, hiring_signals)
+    database = SQLiteDatabase(resolved.sqlite_database_path)
+    database.initialize()
+    hiring_kg = HiringKnowledgeGraphService(
+        read_service,
+        hiring_signals,
+        graph_directory=resolved.hiring_kg_graph_directory,
+        strategy_research=SQLiteStrategyResearchCacheRepository(database),
+    )
 
     def supervisor_runner(request: SupervisorRequest) -> SupervisorResponse:
         client = client_factory() if client_factory else OpenAI(

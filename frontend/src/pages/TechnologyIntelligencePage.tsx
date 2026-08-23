@@ -7,6 +7,7 @@ import { ErrorState, LoadingState } from "../components/States";
 import { useOrganization } from "../context/OrganizationContext";
 import { JobDetailPanel } from "../features/hiring/JobDetailPanel";
 import { EvidenceDetailPanel } from "../features/evidence/EvidenceDetailPanel";
+import { GraphInsightsPanel } from "../features/insights/GraphInsightsPanel";
 import { useApi } from "../hooks/useApi";
 import { formatDate, formatNumber, formatPercent, titleCase } from "../utils/format";
 
@@ -33,19 +34,19 @@ export function TechnologyIntelligencePage() {
       {summary.loading && <LoadingState label="Loading technology coverage…" />}
       {summary.error && <ErrorState message={summary.error} />}
       {summary.data && <>
-        <div className="technology-coverage-notice"><strong>Classification coverage</strong><span>Technology classifications are available for {summary.data.snapshot.enriched_jobs} of {summary.data.snapshot.total_jobs} observed hiring records.</span>{summary.data.coverage_limitation && <small>{summary.data.coverage_limitation}</small>}</div>
+        <div className="technology-coverage-notice"><strong>Technology signal coverage</strong><span>An observed technology signal (LLM-verified enrichment or a deterministic keyword match) is available for {summary.data.snapshot.jobs_with_technology_signal} of {summary.data.snapshot.total_jobs} observed hiring records ({summary.data.snapshot.enriched_jobs} of which are LLM-verified).</span>{summary.data.coverage_limitation && <small>{summary.data.coverage_limitation}</small>}</div>
         <div className="metrics-grid metrics-grid--four">
-          <MetricCard icon="01" label="Enriched jobs" value={formatNumber(summary.data.snapshot.enriched_jobs)} context={`${summary.data.snapshot.total_jobs} total observed jobs`} />
+          <MetricCard icon="01" label="Technology signal coverage" value={formatPercent(summary.data.snapshot.technology_signal_coverage_percentage, 1)} context={`${summary.data.snapshot.jobs_with_technology_signal} of ${summary.data.snapshot.total_jobs} jobs`} />
           <MetricCard icon="02" label="Technology observations" value={formatNumber(summary.data.snapshot.technology_observation_count)} context="Evidence-linked mentions" />
           <MetricCard icon="03" label="Unique technologies" value={formatNumber(summary.data.snapshot.unique_technologies)} context="Conservatively normalized" />
-          <MetricCard icon="04" label="Classification coverage" value={formatPercent(summary.data.snapshot.technology_coverage_percentage, 1)} context={`${formatDate(summary.data.snapshot.observation_start)} – ${formatDate(summary.data.snapshot.observation_end)}`} />
+          <MetricCard icon="04" label="LLM-verified enrichment" value={formatPercent(summary.data.snapshot.technology_coverage_percentage, 1)} context={`${formatDate(summary.data.snapshot.observation_start)} – ${formatDate(summary.data.snapshot.observation_end)}`} />
         </div>
       </>}
 
       {analytics.loading && <LoadingState label="Loading technology analytics…" />}
       {analytics.error && <ErrorState message={analytics.error} />}
       {analytics.data && <div className="analytics-grid">
-        <Panel title="Top observed technologies" eyebrow="Share of enriched jobs"><RankedBars emptyMessage="No technology observations available." items={analytics.data.top_technologies.map((item) => ({ label: item.technology, count: item.job_count, percentage: item.percentage_of_enriched_jobs }))} /><p className="coverage-note">Percentages use enriched jobs as the denominator, not all observed jobs.</p></Panel>
+        <Panel title="Top observed technologies" eyebrow="Share of jobs with a technology signal"><RankedBars emptyMessage="No technology observations available." items={analytics.data.top_technologies.map((item) => ({ label: item.technology, count: item.job_count, percentage: item.percentage_of_technology_classified_jobs }))} /><p className="coverage-note">Percentages use jobs with any observed technology signal as the denominator (LLM-verified enrichment or keyword match), not all observed jobs.</p></Panel>
         <Panel title="Technology category mix" eyebrow="Observed classifications">{analytics.data.categories.length ? <div className="category-list">{analytics.data.categories.map((item) => <div key={item.category}><span>{item.category}</span><strong>{item.observation_count}</strong><small>{item.unique_technology_count} unique technologies · {item.job_count} jobs</small></div>)}</div> : <div className="inline-empty">No technology categories available.</div>}</Panel>
       </div>}
 
@@ -63,6 +64,10 @@ export function TechnologyIntelligencePage() {
         {observations.data?.items.length === 0 && <div className="inline-empty">No technology observations are available for this organization.</div>}
         {observations.data && observations.data.items.length > 0 && <div className="table-wrap"><table><thead><tr><th>Technology</th><th>Category</th><th>Related job</th><th>Business unit</th><th>Location</th><th>Evidence</th><th>Confidence</th></tr></thead><tbody>{observations.data.items.map((item) => <tr key={`${item.job_id}-${item.normalized_technology}`}><td><strong>{item.normalized_technology}</strong>{item.technology !== item.normalized_technology && <span className="table-subtext">Source: {item.technology}</span>}</td><td>{item.category}</td><td><button className="job-title-button" onClick={() => setSelectedJob(item.job_id)}>{item.job_title}</button></td><td>{item.business_unit ?? <span className="muted">Not available</span>}</td><td>{item.location}</td><td><button className="job-title-button mono evidence-reference" title={item.evidence_id} onClick={() => setSelectedEvidence(item.evidence_id)}>{item.evidence_id.slice(0, 8)}…</button>{item.support_references[0]?.excerpt && <span className="table-subtext support-snippet">{item.support_references[0].excerpt}</span>}</td><td>{formatPercent(item.confidence * 100, 0)}<span className="table-subtext">{titleCase(item.provenance.provider)}</span></td></tr>)}</tbody></table></div>}
       </Panel>
+
+      <div className="intelligence-divider"><span>Knowledge graph insights</span></div>
+      <GraphInsightsPanel organization={organization} />
+
       {selectedJob && <JobDetailPanel organization={organization} jobId={selectedJob} onClose={() => setSelectedJob(null)} />}
       {selectedEvidence && <EvidenceDetailPanel organization={organization} evidenceId={selectedEvidence} onClose={() => setSelectedEvidence(null)} onViewJob={(jobId) => { setSelectedEvidence(null); setSelectedJob(jobId); }} />}
     </div>

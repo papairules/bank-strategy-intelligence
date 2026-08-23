@@ -1,9 +1,23 @@
+from __future__ import annotations
+
 import re
-from typing import Protocol
+from pathlib import Path
+from typing import TYPE_CHECKING, Protocol
 import unicodedata
 from uuid import UUID
 
 import networkx as nx
+
+if TYPE_CHECKING:
+    # Deferred to type-checking only: `agents.strategy_agent` depends on this
+    # `hiring.kg` package transitively (via the `agents` package __init__), so
+    # a runtime import here would be circular. Only attribute access is used
+    # below, never isinstance/construction, so the string-annotation deferral
+    # from `from __future__ import annotations` is sufficient.
+    from backend.app.application.agents.strategy_agent.models import (
+        StrategicSignal,
+        StrategyAgentResult,
+    )
 
 from backend.app.application.hiring.analytics import HiringAnalyticsService
 from backend.app.application.hiring.enrichment import (
@@ -22,10 +36,17 @@ from backend.app.domain.intelligence import Evidence
 from backend.app.domain.organization import organization_key
 
 from .models import HiringKGEdgeType, HiringKGNodeType, HiringKnowledgeGraphSummary
+from .storage import graph_file_path, load_graph, save_graph
 
 
 class HiringSignalBoundary(Protocol):
     def generate(self, organization: str) -> HiringSignalGenerationResult: ...
+
+
+class StrategyResearchBoundary(Protocol):
+    def get_latest_for_organization(
+        self, organization: str
+    ) -> tuple[StrategyAgentResult, str] | None: ...
 
 
 def normalized_graph_value(value: str) -> str:
@@ -55,6 +76,7 @@ def concept_node_id(node_type: HiringKGNodeType, organization: str, value: str) 
         HiringKGNodeType.CAPABILITY: "capability",
         HiringKGNodeType.TECHNOLOGY: "technology",
         HiringKGNodeType.SENIORITY: "seniority",
+        HiringKGNodeType.STRATEGIC_THEME: "strategic_theme",
     }
     if node_type not in prefixes:
         raise ValueError("node type is not an organization-qualified concept")
@@ -65,16 +87,31 @@ def signal_node_id(signal_id: UUID | str) -> str:
     return f"hiring_signal:{signal_id}"
 
 
+def strategy_evidence_node_id(organization: str, evidence_id: str) -> str:
+    return f"strategy_evidence:{organization_key(organization)}:{evidence_id}"
+
+
 class HiringKnowledgeGraphService:
     def __init__(
         self,
         read_service: HiringReadServiceProtocol,
         signal_service: HiringSignalBoundary | None = None,
+        graph_directory: Path | None = None,
+        strategy_research: StrategyResearchBoundary | None = None,
     ) -> None:
         self._read = read_service
         self._signals = signal_service or HiringSignalService(
             HiringAnalyticsService(read_service)
         )
+        self._graph_directory = graph_directory
+        self._strategy_research = strategy_research
+
+    def load_or_build_for_organization(self, organization: str) -> nx.MultiDiGraph:
+        if self._graph_directory is not None:
+            cached = load_graph(graph_file_path(self._graph_directory, organization))
+            if cached is not None:
+                return cached
+        return self.build_for_organization(organization)
 
     def build_for_organization(self, organization: str) -> nx.MultiDiGraph:
         organization = organization.strip()
@@ -95,6 +132,7 @@ class HiringKnowledgeGraphService:
         )
         evidence_ids: set[UUID] = set()
         enriched_jobs = 0
+        classified_jobs = 0
         for job in jobs:
             if job.organization != organization:
                 raise ValueError("company-scoped hiring graph received another organization's job")
@@ -108,6 +146,10 @@ class HiringKnowledgeGraphService:
             if enrichment is not None:
                 self._validate_enrichment(job, enrichment)
                 enriched_jobs += 1
+            if job.capability_classifications or (
+                enrichment is not None and enrichment.capability_classifications
+            ):
+                classified_jobs += 1
             self._add_job(graph, org_id, job, evidence, enrichment)
 
         signal_result = self._signals.generate(organization)
@@ -117,13 +159,113 @@ class HiringKnowledgeGraphService:
         for generated in signals:
             self._add_signal(graph, org_id, generated, organization, evidence_ids)
 
+        strategic_themes = self._add_strategic_themes(graph, org_id, organization)
+
         graph.graph.update(
             jobs_read=len(jobs),
             evidence_records_used=len(evidence_ids),
             enriched_jobs_used=enriched_jobs,
+            classified_jobs_used=classified_jobs,
             hiring_signals_used=len(signals),
+            strategic_themes_used=strategic_themes,
         )
+        if self._graph_directory is not None:
+            save_graph(graph, graph_file_path(self._graph_directory, organization))
         return graph
+
+    def _add_strategic_themes(
+        self, graph: nx.MultiDiGraph, org_id: str, organization: str
+    ) -> int:
+        if self._strategy_research is None:
+            return 0
+        cached = self._strategy_research.get_latest_for_organization(organization)
+        if cached is None:
+            return 0
+        result, generated_at = cached
+        if result.organization != organization:
+            raise ValueError(
+                "company-scoped hiring graph received another organization's strategy research"
+            )
+        for signal in result.strategic_signals:
+            self._add_strategic_theme(graph, org_id, signal, organization, result, generated_at)
+        return len(result.strategic_signals)
+
+    def _add_strategic_theme(
+        self,
+        graph: nx.MultiDiGraph,
+        org_id: str,
+        signal: StrategicSignal,
+        organization: str,
+        result: StrategyAgentResult,
+        generated_at: str,
+    ) -> None:
+        theme_id = concept_node_id(HiringKGNodeType.STRATEGIC_THEME, organization, signal.priority)
+        graph.add_node(
+            theme_id,
+            node_type=HiringKGNodeType.STRATEGIC_THEME.value,
+            organization=organization,
+            value=signal.priority,
+            label=signal.priority,
+            direction=signal.direction,
+            hypothesis=signal.hypothesis,
+            business_unit=signal.business_unit,
+            time_horizon=signal.time_horizon,
+            confidence=signal.confidence,
+        )
+        self._add_edge(
+            graph,
+            org_id,
+            theme_id,
+            HiringKGEdgeType.HAS_STRATEGIC_THEME,
+            {
+                "organization": organization,
+                "derivation_type": "cached_strategy_research",
+                "provider": result.provider,
+                "model": result.model,
+                "agent_version": result.agent_version,
+                "generated_at": generated_at,
+                "question": result.question,
+            },
+        )
+        for evidence in signal.evidence:
+            evidence_id = strategy_evidence_node_id(organization, evidence.evidence_id)
+            graph.add_node(
+                evidence_id,
+                node_type=HiringKGNodeType.STRATEGY_EVIDENCE.value,
+                organization=organization,
+                evidence_id=evidence.evidence_id,
+                source_url=evidence.source_url,
+                source_type=evidence.source_type,
+                statement=evidence.statement,
+                publication_date=evidence.publication_date,
+            )
+            self._add_edge(
+                graph,
+                theme_id,
+                evidence_id,
+                HiringKGEdgeType.SUPPORTED_BY,
+                {
+                    "organization": organization,
+                    "derivation_type": "cached_strategy_research",
+                    "generated_at": generated_at,
+                },
+            )
+        if signal.business_unit:
+            business_unit_id = concept_node_id(
+                HiringKGNodeType.BUSINESS_UNIT, organization, signal.business_unit
+            )
+            if business_unit_id in graph:
+                self._add_edge(
+                    graph,
+                    theme_id,
+                    business_unit_id,
+                    HiringKGEdgeType.ABOUT_BUSINESS_UNIT,
+                    {
+                        "organization": organization,
+                        "derivation_type": "cached_strategy_research",
+                        "generated_at": generated_at,
+                    },
+                )
 
     @staticmethod
     def _validate_enrichment(job: JobPosting, enrichment: HiringEnrichmentResult) -> None:
@@ -163,6 +305,16 @@ class HiringKnowledgeGraphService:
             graph, job, evidence, None, job.location, HiringKGNodeType.LOCATION,
             HiringKGEdgeType.LOCATED_IN, "persisted_source",
         )
+        for capability in job.capability_classifications:
+            self._add_concept_edge(
+                graph, job, evidence, None, capability, HiringKGNodeType.CAPABILITY,
+                HiringKGEdgeType.CLASSIFIED_AS, "persisted_source",
+            )
+        for technology in job.technologies:
+            self._add_concept_edge(
+                graph, job, evidence, None, technology, HiringKGNodeType.TECHNOLOGY,
+                HiringKGEdgeType.USES_TECHNOLOGY, "persisted_source_keyword_match",
+            )
         if enrichment is None:
             return
         if enrichment.business_unit:
@@ -347,5 +499,7 @@ def summarize_hiring_knowledge_graph(graph: nx.MultiDiGraph) -> HiringKnowledgeG
         jobs_read=graph.graph.get("jobs_read", 0),
         evidence_records_used=graph.graph.get("evidence_records_used", 0),
         enriched_jobs_used=graph.graph.get("enriched_jobs_used", 0),
+        classified_jobs_used=graph.graph.get("classified_jobs_used", 0),
         hiring_signals_used=graph.graph.get("hiring_signals_used", 0),
+        strategic_themes_used=graph.graph.get("strategic_themes_used", 0),
     )

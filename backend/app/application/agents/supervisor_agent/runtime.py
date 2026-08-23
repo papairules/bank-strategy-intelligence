@@ -8,10 +8,10 @@ import networkx as nx
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from backend.app.application.agents.strategy_agent import (
-    IntegratedStrategyAgentService,
     StrategyAgentRequest,
     StrategyAgentResult,
 )
+from backend.app.application.agents.strategy_agent.cache import StrategyAgentBoundary
 from backend.app.application.hiring import (
     HiringReadServiceProtocol,
     HiringSignalGenerationResult,
@@ -76,6 +76,8 @@ class HiringCoverageMetadata(BaseModel):
     total_jobs: int = Field(ge=0)
     enriched_jobs: int = Field(ge=0)
     enrichment_coverage_percentage: float = Field(ge=0, le=100)
+    classified_jobs: int = Field(ge=0)
+    classification_coverage_percentage: float = Field(ge=0, le=100)
     kg_enriched_job_count: int = Field(ge=0)
     limitations: list[str] = Field(default_factory=list)
 
@@ -191,7 +193,7 @@ class SupervisorAppService:
     def __init__(
         self,
         *,
-        strategy_service: IntegratedStrategyAgentService,
+        strategy_service: StrategyAgentBoundary,
         hiring_signals: HiringSignalBoundary,
         hiring_read: HiringReadServiceProtocol,
         hiring_kg: HiringKnowledgeGraphService,
@@ -277,6 +279,7 @@ class SupervisorAppService:
     def _normalize(self, organization, question, time_horizon, strategy, signals, graph):
         summary = summarize_hiring_knowledge_graph(graph)
         coverage_value = summary.enriched_jobs_used / summary.jobs_read * 100 if summary.jobs_read else 0
+        classification_value = summary.classified_jobs_used / summary.jobs_read * 100 if summary.jobs_read else 0
         limitations = []
         if summary.jobs_read == 0:
             limitations.append(f"No persisted {organization} hiring jobs are available for enrichment coverage.")
@@ -284,13 +287,22 @@ class SupervisorAppService:
             limitations.append(
                 f"Persisted hiring enrichment currently covers {summary.enriched_jobs_used} of "
                 f"{summary.jobs_read} {organization} jobs ({coverage_value:.2f}%); enrichment-derived "
-                "technology/capability relationships should be treated as directional rather than comprehensive."
+                "technology/skills relationships should be treated as directional rather than comprehensive."
+            )
+        if summary.jobs_read and summary.classified_jobs_used > summary.enriched_jobs_used:
+            limitations.append(
+                f"Capability classification (business-area categorization from the source data, not "
+                f"LLM-verified) separately covers {summary.classified_jobs_used} of {summary.jobs_read} "
+                f"{organization} jobs ({classification_value:.2f}%); this is independent of, and typically "
+                "broader than, the technology/skills enrichment coverage above."
             )
         coverage = HiringCoverageMetadata(
             organization=organization,
             total_jobs=summary.jobs_read,
             enriched_jobs=summary.enriched_jobs_used,
             enrichment_coverage_percentage=round(coverage_value, 4),
+            classified_jobs=summary.classified_jobs_used,
+            classification_coverage_percentage=round(classification_value, 4),
             kg_enriched_job_count=summary.enriched_jobs_used,
             limitations=limitations,
         )
@@ -364,7 +376,7 @@ class SupervisorAppService:
                     "company_id": organization,
                     "topic": concept_type,
                     "statement": (
-                        f"Persisted hiring enrichment observed {item.name} across "
+                        f"Persisted hiring data observed {item.name} across "
                         f"{item.job_count} job record(s); this is directional, not comprehensive."
                     ),
                     "confidence": 0.5,

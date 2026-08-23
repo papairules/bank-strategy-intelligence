@@ -57,13 +57,14 @@ class FakeHiringSignals:
 
 
 class FakeKG:
-    def __init__(self, total=1610, enriched=5, organization="Wells Fargo"):
+    def __init__(self, total=1610, enriched=5, classified=None, organization="Wells Fargo"):
         self.graph = nx.MultiDiGraph()
         self.graph.graph.update(
             organization=organization,
             jobs_read=total,
             evidence_records_used=total,
             enriched_jobs_used=enriched,
+            classified_jobs_used=enriched if classified is None else classified,
             hiring_signals_used=0,
         )
         self.calls = []
@@ -139,6 +140,22 @@ def test_complete_coverage_removes_obsolete_sparse_warning_and_keeps_total_jobs(
     assert result.coverage.limitations == []
     assert result.report.total_hiring_jobs == 1610
     assert not any("sparse" in item.casefold() for item in result.report.limitations)
+
+
+def test_full_capability_classification_without_enrichment_is_reported_separately():
+    result = asyncio.run(
+        service(kg=FakeKG(total=1120, enriched=0, classified=1120)).generate_report(
+            SupervisorReportRequest(organization="Wells Fargo")
+        )
+    )
+
+    assert result.coverage.enrichment_coverage_percentage == 0
+    assert result.coverage.classified_jobs == 1120
+    assert result.coverage.classification_coverage_percentage == 100
+    assert any(
+        "capability classification" in item.casefold() and "1120 of 1120" in item
+        for item in result.coverage.limitations
+    )
 
 
 def test_cross_company_question_stops_before_specialists():

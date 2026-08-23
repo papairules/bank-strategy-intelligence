@@ -16,9 +16,15 @@ cover a file that mixes multiple companies.
 
 This writes real JobPosting/Evidence records into the configured database
 (BSI_SQLITE_DATABASE_PATH, default data/hiring-intelligence.sqlite3) using
-the same persistence layer the live Wells Fargo collector uses. It does not
-run classification or enrichment; that happens later via the Hiring Agent or
-the app's enrichment pipeline.
+the same persistence layer the live Wells Fargo collector uses. Two fields
+are derived deterministically, with no LLM call involved:
+  - `role_family` (already a clean, pre-categorized source label) is stored
+    as the job's capability_classifications.
+  - `technologies` is populated via a curated keyword match
+    (backend/app/domain/technology_keywords.py) against the title and
+    description text.
+This script does not run any LLM classification or enrichment; that remains
+a separate, optional step for richer per-job skills extraction.
 """
 from __future__ import annotations
 
@@ -38,6 +44,7 @@ from backend.app.config import HiringSettings  # noqa: E402
 from backend.app.domain.hiring import EmploymentType, JobPosting  # noqa: E402
 from backend.app.domain.intelligence import Evidence  # noqa: E402
 from backend.app.domain.organization import OrganizationIdentity, organization_key  # noqa: E402
+from backend.app.domain.technology_keywords import extract_technologies  # noqa: E402
 from backend.app.infrastructure.persistence.hiring import SQLiteDatabase  # noqa: E402
 
 SOURCE_ID = "csv_import"
@@ -76,11 +83,27 @@ def resolve_organization(company_value: str) -> OrganizationIdentity:
     return _organization_cache[token]
 
 
+# Markers observed in scraped career-site pages that introduce a "recommended
+# jobs" widget appended after the actual posting content (e.g. Citibank's
+# career site appends "Explore More Jobs" followed by 3-4 unrelated job
+# titles to every single posting). Truncating at the first occurrence keeps
+# description text and keyword-matched technologies scoped to the actual job.
+_RELATED_JOBS_WIDGET_MARKERS = ("Explore More Jobs",)
+
+
+def _strip_related_jobs_widget(description: str) -> str:
+    cut_at = min(
+        (index for marker in _RELATED_JOBS_WIDGET_MARKERS if (index := description.find(marker)) != -1),
+        default=-1,
+    )
+    return description[:cut_at].rstrip() if cut_at != -1 else description
+
+
 def build_collected_job(row: dict[str, str]) -> CollectedJob | None:
     company_value = (row.get("company") or "").strip()
     source_job_id = (row.get("source_job_id") or "").strip()
     title = (row.get("title") or "").strip()
-    description = (row.get("description_text") or "").strip()
+    description = _strip_related_jobs_widget((row.get("description_text") or "").strip())
     posting_url = (row.get("posting_url") or "").strip()
     country = (row.get("country") or "").strip()
     if not company_value or not source_job_id or not title or not description or not posting_url or not country:
@@ -97,6 +120,13 @@ def build_collected_job(row: dict[str, str]) -> CollectedJob | None:
 
     location = ", ".join(filter(None, [(row.get("city") or "").strip(), (row.get("state") or "").strip()])) or "Unknown"
     employment_type = EMPLOYMENT_TYPE_MAP.get((row.get("employment_type") or "").strip().casefold())
+    role_family = (row.get("role_family") or "").strip()
+    technologies = extract_technologies(
+        title,
+        description,
+        row.get("qualifications_text"),
+        row.get("responsibilities_text"),
+    )
 
     posting = JobPosting(
         job_id=identity.job_id,
@@ -106,6 +136,8 @@ def build_collected_job(row: dict[str, str]) -> CollectedJob | None:
         description=description,
         location=location,
         country=country,
+        capability_classifications=[role_family] if role_family else [],
+        technologies=technologies,
         posted_date=posted_date,
         employment_type=employment_type,
         source_url=posting_url,

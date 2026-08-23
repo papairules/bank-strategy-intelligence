@@ -119,7 +119,7 @@ class DeterministicReportGenerator:
                 ReportFinding(
                     title=f"Observed technology: {concept.name}",
                     narrative=(
-                        f"Persisted hiring enrichment observed {concept.name} in "
+                        f"Persisted hiring data observed {concept.name} in "
                         f"{concept.job_count} job record(s). This is observed hiring evidence, "
                         "not proof of enterprise-wide investment or causation."
                     ),

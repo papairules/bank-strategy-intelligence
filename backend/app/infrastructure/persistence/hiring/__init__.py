@@ -5,6 +5,7 @@ from backend.app.infrastructure.persistence.hiring.sqlite import (
     SQLiteHiringUnitOfWork,
     SQLiteHiringEnrichmentRepository,
     SQLiteJobPostingRepository,
+    SQLiteStrategyResearchCacheRepository,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "SQLiteHiringUnitOfWork",
     "SQLiteHiringEnrichmentRepository",
     "SQLiteJobPostingRepository",
+    "SQLiteStrategyResearchCacheRepository",
 ]

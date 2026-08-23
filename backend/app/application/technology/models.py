@@ -74,6 +74,8 @@ class TechnologyIntelligenceSnapshot(BaseModel):
     technology_observation_count: int = Field(ge=0)
     unique_technologies: int = Field(ge=0)
     technology_coverage_percentage: float = Field(ge=0, le=100)
+    jobs_with_technology_signal: int = Field(ge=0)
+    technology_signal_coverage_percentage: float = Field(ge=0, le=100)
     observation_start: date | None = None
     observation_end: date | None = None
     generated_at: datetime
@@ -87,6 +89,7 @@ class TopTechnologyAggregate(BaseModel):
     job_count: int = Field(ge=0)
     observation_count: int = Field(ge=0)
     percentage_of_enriched_jobs: float = Field(ge=0, le=100)
+    percentage_of_technology_classified_jobs: float = Field(ge=0, le=100)
     evidence_count: int = Field(ge=0)
     contributing_records: list[TechnologyRecordReference]
 

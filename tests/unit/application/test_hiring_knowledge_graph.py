@@ -159,8 +159,8 @@ def fixture_service(*, include_signal=False):
     plain = job(
         PLAIN_JOB_ID,
         PLAIN_EVIDENCE_ID,
-        capability_classifications=["Raw classification must not enter KG"],
-        technologies=["RawDB"],
+        capability_classifications=["Risk and Compliance"],
+        technologies=["SQL"],
         business_unit="Raw unit",
     )
     read = FakeRead(
@@ -185,11 +185,14 @@ def test_deterministic_company_scoped_nodes_edges_and_latest_enrichment_only():
     assert organization_node_id("Wells Fargo") in first
     assert job_node_id(WELLS_JOB_ID) in first
     assert evidence_node_id(WELLS_EVIDENCE_ID) in first
-    assert get_capabilities_for_organization(first) == ["Cloud & Infrastructure"]
-    assert get_technologies_for_organization(first) == ["AWS", "Python"]
+    # Persisted-source capability_classifications (e.g. a CSV's role_family column)
+    # and persisted-source technologies (keyword-matched from description text)
+    # are trusted directly; only business_unit still requires verified enrichment
+    # before entering the graph.
+    assert get_capabilities_for_organization(first) == ["Cloud & Infrastructure", "Risk and Compliance"]
+    assert get_technologies_for_organization(first) == ["AWS", "Python", "SQL"]
     assert get_business_units_for_organization(first) == ["Technology"]
-    assert "Raw classification must not enter KG" not in get_capabilities_for_organization(first)
-    assert "RawDB" not in get_technologies_for_organization(first)
+    assert "Raw unit" not in get_business_units_for_organization(first)
 
 
 def test_enriched_relationship_provenance_and_query_helpers():
@@ -214,7 +217,7 @@ def test_enriched_relationship_provenance_and_query_helpers():
     assert get_evidence_for_job(graph, WELLS_JOB_ID) == [WELLS_EVIDENCE_ID]
 
 
-def test_unenriched_job_has_only_base_relationships_and_summary_is_safe():
+def test_unenriched_job_has_persisted_source_signals_but_no_llm_derived_relationships():
     graph = fixture_service()[0].build_for_organization("Wells Fargo")
     outgoing = {
         attributes["edge_type"]
@@ -222,13 +225,29 @@ def test_unenriched_job_has_only_base_relationships_and_summary_is_safe():
     }
     summary = summarize_hiring_knowledge_graph(graph)
 
-    assert outgoing == {HiringKGEdgeType.SUPPORTED_BY.value, HiringKGEdgeType.LOCATED_IN.value}
+    assert outgoing == {
+        HiringKGEdgeType.SUPPORTED_BY.value,
+        HiringKGEdgeType.LOCATED_IN.value,
+        HiringKGEdgeType.CLASSIFIED_AS.value,
+        HiringKGEdgeType.USES_TECHNOLOGY.value,
+    }
+    plain_capability_edge = graph.get_edge_data(
+        job_node_id(PLAIN_JOB_ID),
+        concept_node_id(HiringKGNodeType.CAPABILITY, "Wells Fargo", "Risk and Compliance"),
+    )[HiringKGEdgeType.CLASSIFIED_AS.value]
+    assert plain_capability_edge["derivation_type"] == "persisted_source"
+    plain_technology_edge = graph.get_edge_data(
+        job_node_id(PLAIN_JOB_ID),
+        concept_node_id(HiringKGNodeType.TECHNOLOGY, "Wells Fargo", "SQL"),
+    )[HiringKGEdgeType.USES_TECHNOLOGY.value]
+    assert plain_technology_edge["derivation_type"] == "persisted_source_keyword_match"
     assert summary.organization == "Wells Fargo"
     assert summary.jobs_read == 2
     assert summary.evidence_records_used == 2
     assert summary.enriched_jobs_used == 1
     assert summary.node_counts[HiringKGNodeType.JOB] == 2
-    assert summary.edge_counts[HiringKGEdgeType.CLASSIFIED_AS] == 1
+    assert summary.edge_counts[HiringKGEdgeType.CLASSIFIED_AS] == 2
+    assert summary.edge_counts[HiringKGEdgeType.USES_TECHNOLOGY] == 3
     assert "description" not in summary.model_dump_json()
 
 
@@ -275,6 +294,103 @@ def test_cross_company_job_enrichment_and_signal_are_rejected():
             FakeRead([wells_job], [wells_evidence]),
             FakeSignals([generated_signal(organization="BNY")]),
         ).build_for_organization("Wells Fargo")
+
+
+def test_classified_jobs_used_counts_persisted_source_jobs_without_enrichment():
+    persisted_source_only = job(
+        WELLS_JOB_ID, WELLS_EVIDENCE_ID, capability_classifications=["Risk and Compliance"]
+    )
+    unclassified = job(PLAIN_JOB_ID, PLAIN_EVIDENCE_ID)
+    read = FakeRead(
+        [unclassified, persisted_source_only],
+        [
+            evidence(PLAIN_EVIDENCE_ID, PLAIN_JOB_ID),
+            evidence(WELLS_EVIDENCE_ID, WELLS_JOB_ID),
+        ],
+    )
+    summary = summarize_hiring_knowledge_graph(
+        HiringKnowledgeGraphService(read, FakeSignals()).build_for_organization("Wells Fargo")
+    )
+
+    assert summary.jobs_read == 2
+    assert summary.enriched_jobs_used == 0
+    assert summary.classified_jobs_used == 1
+
+
+def test_classified_jobs_used_counts_enrichment_derived_jobs_too():
+    summary = summarize_hiring_knowledge_graph(fixture_service()[0].build_for_organization("Wells Fargo"))
+
+    assert summary.jobs_read == 2
+    assert summary.enriched_jobs_used == 1
+    assert summary.classified_jobs_used == 2
+
+
+def test_persisted_source_and_enrichment_capabilities_coexist_with_distinct_provenance():
+    enriched_with_role_family = job(
+        WELLS_JOB_ID, WELLS_EVIDENCE_ID, capability_classifications=["Software Engineering"]
+    )
+    read = FakeRead(
+        [enriched_with_role_family],
+        [evidence(WELLS_EVIDENCE_ID, WELLS_JOB_ID)],
+        {WELLS_JOB_ID: enrichment(enriched_with_role_family)},
+    )
+    graph = HiringKnowledgeGraphService(read, FakeSignals()).build_for_organization("Wells Fargo")
+
+    role_family_edge = graph.get_edge_data(
+        job_node_id(WELLS_JOB_ID),
+        concept_node_id(HiringKGNodeType.CAPABILITY, "Wells Fargo", "Software Engineering"),
+    )[HiringKGEdgeType.CLASSIFIED_AS.value]
+    enrichment_edge = graph.get_edge_data(
+        job_node_id(WELLS_JOB_ID),
+        concept_node_id(HiringKGNodeType.CAPABILITY, "Wells Fargo", "Cloud & Infrastructure"),
+    )[HiringKGEdgeType.CLASSIFIED_AS.value]
+
+    assert role_family_edge["derivation_type"] == "persisted_source"
+    assert enrichment_edge["derivation_type"] == "latest_persisted_enrichment"
+    assert get_capabilities_for_organization(graph) == ["Cloud & Infrastructure", "Software Engineering"]
+
+
+def test_build_for_organization_persists_graph_when_directory_configured(tmp_path):
+    read = FakeRead(
+        [job(WELLS_JOB_ID, WELLS_EVIDENCE_ID)],
+        [evidence(WELLS_EVIDENCE_ID, WELLS_JOB_ID)],
+    )
+    service = HiringKnowledgeGraphService(read, FakeSignals(), graph_directory=tmp_path)
+
+    graph = service.build_for_organization("Wells Fargo")
+
+    persisted = tmp_path / "wells_fargo.json"
+    assert persisted.is_file()
+    assert organization_node_id("Wells Fargo") in graph
+
+
+def test_load_or_build_for_organization_reads_cache_without_hitting_read_service(tmp_path):
+    read = FakeRead(
+        [job(WELLS_JOB_ID, WELLS_EVIDENCE_ID)],
+        [evidence(WELLS_EVIDENCE_ID, WELLS_JOB_ID)],
+    )
+    service = HiringKnowledgeGraphService(read, FakeSignals(), graph_directory=tmp_path)
+    service.build_for_organization("Wells Fargo")
+    assert read.latest_calls, "sanity check: the initial build should read the job"
+    read.latest_calls.clear()
+
+    cached = service.load_or_build_for_organization("Wells Fargo")
+
+    assert organization_node_id("Wells Fargo") in cached
+    assert read.latest_calls == []
+
+
+def test_load_or_build_for_organization_falls_back_to_build_when_uncached(tmp_path):
+    read = FakeRead(
+        [job(WELLS_JOB_ID, WELLS_EVIDENCE_ID)],
+        [evidence(WELLS_EVIDENCE_ID, WELLS_JOB_ID)],
+    )
+    service = HiringKnowledgeGraphService(read, FakeSignals(), graph_directory=tmp_path)
+
+    graph = service.load_or_build_for_organization("Wells Fargo")
+
+    assert organization_node_id("Wells Fargo") in graph
+    assert (tmp_path / "wells_fargo.json").is_file()
 
 
 def test_signal_cannot_reference_evidence_outside_company_graph():

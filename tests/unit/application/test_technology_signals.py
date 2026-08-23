@@ -44,6 +44,8 @@ def make_analytics(*, organization="Wells Fargo", total_jobs=10, enriched_jobs=5
         technology_observation_count=observations,
         unique_technologies=2 if job_count else 0,
         technology_coverage_percentage=(enriched_jobs / total_jobs * 100 if total_jobs else 0),
+        jobs_with_technology_signal=enriched_jobs,
+        technology_signal_coverage_percentage=(enriched_jobs / total_jobs * 100 if total_jobs else 0),
         observation_start=date(2026, 7, 1) if total_jobs else None,
         observation_end=date(2026, 8, 20) if total_jobs else None,
         generated_at=NOW,
@@ -52,7 +54,7 @@ def make_analytics(*, organization="Wells Fargo", total_jobs=10, enriched_jobs=5
         return TechnologyAnalyticsResult(snapshot=snapshot, top_technologies=[], categories=[], business_unit_technologies=[], geography_technologies=[], seniority_technologies=[])
     return TechnologyAnalyticsResult(
         snapshot=snapshot,
-        top_technologies=[TopTechnologyAggregate(technology="Python", category=TechnologyCategory.PROGRAMMING_LANGUAGE, job_count=job_count, observation_count=job_count, percentage_of_enriched_jobs=job_count / enriched_jobs * 100, evidence_count=job_count, contributing_records=aggregate_refs)],
+        top_technologies=[TopTechnologyAggregate(technology="Python", category=TechnologyCategory.PROGRAMMING_LANGUAGE, job_count=job_count, observation_count=job_count, percentage_of_enriched_jobs=job_count / enriched_jobs * 100, percentage_of_technology_classified_jobs=job_count / enriched_jobs * 100, evidence_count=job_count, contributing_records=aggregate_refs)],
         categories=[TechnologyCategoryAggregate(category=TechnologyCategory.PROGRAMMING_LANGUAGE, unique_technology_count=3, observation_count=max(5, job_count), job_count=job_count, contributing_records=aggregate_refs)],
         business_unit_technologies=[BusinessUnitTechnologyAggregate(business_unit="Analytics", technology="Python", job_count=job_count, contributing_records=aggregate_refs)],
         geography_technologies=[GeographyTechnologyAggregate(location="Charlotte, NC", technology="Python", job_count=job_count, contributing_records=aggregate_refs)],

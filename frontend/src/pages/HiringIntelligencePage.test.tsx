@@ -20,6 +20,7 @@ describe("HiringIntelligencePage", () => {
       if (url.includes("/summary")) return response(summaryFixture);
       if (url.includes("/analytics")) return response(analyticsFixture);
       if (url.includes("/signals")) return response(signalsFixture);
+      if (url.includes("/graph-insights/")) return response({ organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 0, classified_jobs_used: 0, enriched_jobs_used: 0, hiring_signals_used: 0, strategic_themes_used: 0, top_capabilities: [], top_technologies: [], strategic_themes: [] });
       return response(jobsFixture);
     }));
     render(withOrg(<HiringIntelligencePage />));

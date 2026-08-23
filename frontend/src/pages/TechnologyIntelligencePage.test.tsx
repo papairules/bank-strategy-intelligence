@@ -8,9 +8,10 @@ function withOrg(children: ReactNode) {
   return <OrganizationProvider value={{ organization: "Wells Fargo", setOrganization: vi.fn() }}>{children}</OrganizationProvider>;
 }
 
-const snapshot = { organization: "Wells Fargo", total_jobs: 19, enriched_jobs: 1, technology_observation_count: 2, unique_technologies: 2, technology_coverage_percentage: 5.26, observation_start: "2026-08-01", observation_end: "2026-08-20", generated_at: "2026-08-21T12:00:00Z" };
+const snapshot = { organization: "Wells Fargo", total_jobs: 19, enriched_jobs: 1, technology_observation_count: 2, unique_technologies: 2, technology_coverage_percentage: 5.26, jobs_with_technology_signal: 1, technology_signal_coverage_percentage: 5.26, observation_start: "2026-08-01", observation_end: "2026-08-20", generated_at: "2026-08-21T12:00:00Z" };
 const reference = { job_id: "job-1", evidence_id: "evidence-1" };
 const observation = { technology: "PowerBI", normalized_technology: "Power BI", category: "BI / Visualization", organization: "Wells Fargo", job_id: "job-1", job_title: "Senior Analytics Consultant", evidence_id: "evidence-1", source_type: "career_site", observation_date: "2026-08-20", location: "Charlotte, NC", business_unit: "Consumer Banking", seniority: "senior", confidence: 1, provenance: { provider: "vertex_gemini", model: "gemini-2.5-flash", prompt_schema_version: "hiring-enrichment-v3", enrichment_timestamp: "2026-08-21T12:00:00Z" }, support_references: [{ evidence_id: "evidence-1", excerpt: "Power BI" }] };
+const graphInsights = { organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 0, classified_jobs_used: 0, enriched_jobs_used: 0, hiring_signals_used: 0, strategic_themes_used: 0, top_capabilities: [], top_technologies: [], strategic_themes: [] };
 
 function ok(body: unknown) { return Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } })); }
 
@@ -21,13 +22,14 @@ describe("TechnologyIntelligencePage", () => {
     vi.stubGlobal("fetch", vi.fn((input: RequestInfo | URL) => {
       const url = String(input);
       if (url.includes("/summary")) return ok({ snapshot, coverage_limitation: "Limited coverage." });
-      if (url.includes("/analytics")) return ok({ snapshot, top_technologies: [{ technology: "Power BI", category: "BI / Visualization", job_count: 1, observation_count: 1, percentage_of_enriched_jobs: 100, evidence_count: 1, contributing_records: [reference] }], categories: [{ category: "BI / Visualization", unique_technology_count: 1, observation_count: 1, job_count: 1, contributing_records: [reference] }], business_unit_technologies: [], geography_technologies: [], seniority_technologies: [] });
+      if (url.includes("/analytics")) return ok({ snapshot, top_technologies: [{ technology: "Power BI", category: "BI / Visualization", job_count: 1, observation_count: 1, percentage_of_enriched_jobs: 100, percentage_of_technology_classified_jobs: 100, evidence_count: 1, contributing_records: [reference] }], categories: [{ category: "BI / Visualization", unique_technology_count: 1, observation_count: 1, job_count: 1, contributing_records: [reference] }], business_unit_technologies: [], geography_technologies: [], seniority_technologies: [] });
       if (url.includes("/signals")) return ok({ organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", total_jobs: 19, enriched_jobs: 1, enrichment_coverage: 1 / 19, technology_observation_count: 2, generated_signal_count: 0, signals: [], limitations: ["Low enrichment coverage."] });
+      if (url.includes("/graph-insights/")) return ok(graphInsights);
       return ok({ items: [observation], total: 1, limit: 25, offset: 0, returned_count: 1 });
     }));
     render(withOrg(<TechnologyIntelligencePage />));
     expect(screen.getByText("Loading technology coverage…")).toBeInTheDocument();
-    expect(await screen.findByText("Technology classifications are available for 1 of 19 observed hiring records.")).toBeInTheDocument();
+    expect(await screen.findByText((_, element) => element?.textContent === "An observed technology signal (LLM-verified enrichment or a deterministic keyword match) is available for 1 of 19 observed hiring records (1 of which are LLM-verified).")).toBeInTheDocument();
     expect(screen.getAllByText("Power BI").length).toBeGreaterThan(0);
     expect(screen.getByText("Senior Analytics Consultant")).toBeInTheDocument();
     expect(screen.getByText("evidence…")).toBeInTheDocument();
@@ -40,6 +42,7 @@ describe("TechnologyIntelligencePage", () => {
       if (url.includes("/summary")) return ok({ snapshot: { ...snapshot, total_jobs: 10, enriched_jobs: 5, technology_coverage_percentage: 50 }, coverage_limitation: "Limited coverage." });
       if (url.includes("/analytics")) return ok({ snapshot, top_technologies: [], categories: [], business_unit_technologies: [], geography_technologies: [], seniority_technologies: [] });
       if (url.includes("/signals")) return ok({ organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", total_jobs: 10, enriched_jobs: 5, enrichment_coverage: 0.5, technology_observation_count: 10, generated_signal_count: 1, signals: [{ signal_id: "signal-1", organization: "Wells Fargo", signal_type: "technology_concentration", title: "Observed hiring concentration for Python", summary: "Within the currently enriched hiring sample, Python appears in 3 enriched job records.", subject: "Python", observation_start: "2026-07-01", observation_end: "2026-08-20", confidence: 0.75, strength: 0.6, evidence_coverage: 1, supporting_job_ids: ["job-1"], supporting_evidence_ids: ["evidence-1"], limitations: ["Hiring evidence does not prove deployment."], provenance: { generator: "TechnologySignalService", configuration_version: "technology-signals-v1", deterministic: true } }], limitations: [] });
+      if (url.includes("/graph-insights/")) return ok(graphInsights);
       return ok({ items: [], total: 0, limit: 25, offset: 0, returned_count: 0 });
     }));
     render(withOrg(<TechnologyIntelligencePage />));

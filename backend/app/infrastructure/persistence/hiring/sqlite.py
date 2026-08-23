@@ -6,6 +6,7 @@ from pathlib import Path
 from types import TracebackType
 from uuid import UUID
 
+from backend.app.application.agents.strategy_agent.models import StrategyAgentResult
 from backend.app.application.hiring.observability import CollectionRun
 from backend.app.application.hiring.enrichment import HiringEnrichmentResult
 from backend.app.application.hiring.persistence import PersistenceError
@@ -114,6 +115,21 @@ CREATE INDEX IF NOT EXISTS idx_collection_runs_completed_at
 
 CREATE INDEX IF NOT EXISTS idx_collection_runs_organization_completed_at
     ON collection_runs(organization, completed_at DESC);
+
+CREATE TABLE IF NOT EXISTS strategy_research_cache (
+    organization TEXT NOT NULL,
+    question_key TEXT NOT NULL,
+    time_horizon TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    model TEXT NOT NULL,
+    agent_version TEXT NOT NULL,
+    generated_at TEXT NOT NULL,
+    result_json TEXT NOT NULL,
+    PRIMARY KEY (organization, question_key, time_horizon, provider, model, agent_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_strategy_research_cache_generated_at
+    ON strategy_research_cache(organization, generated_at DESC);
 """
 
 
@@ -793,3 +809,94 @@ def _hiring_enrichment_from_row(row: sqlite3.Row) -> HiringEnrichmentResult:
             },
         }
     )
+
+
+class SQLiteStrategyResearchCacheRepository:
+    """Persists Strategy Agent research so repeated (organization, question,
+    time_horizon) requests can be served without re-running the live web-search
+    pipeline. Keyed by provider/model/agent_version too, so a model or agent
+    upgrade naturally invalidates stale cached research."""
+
+    def __init__(self, database: SQLiteDatabase) -> None:
+        self._database = database
+
+    def get(
+        self,
+        *,
+        organization: str,
+        question_key: str,
+        time_horizon: str,
+        provider: str,
+        model: str,
+        agent_version: str,
+    ) -> tuple[StrategyAgentResult, str] | None:
+        with self._database.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT generated_at, result_json FROM strategy_research_cache
+                WHERE organization = ? AND question_key = ? AND time_horizon = ?
+                  AND provider = ? AND model = ? AND agent_version = ?
+                """,
+                (organization, question_key, time_horizon, provider, model, agent_version),
+            ).fetchone()
+        if row is None:
+            return None
+        return StrategyAgentResult.model_validate_json(row["result_json"]), row["generated_at"]
+
+    def get_latest_for_organization(
+        self, organization: str
+    ) -> tuple[StrategyAgentResult, str] | None:
+        """Return the most recently generated cached research for this
+        organization, regardless of which question produced it. Used to feed
+        the knowledge graph with whatever Strategy Agent research already
+        exists, without triggering a new live run."""
+        with self._database.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT generated_at, result_json FROM strategy_research_cache
+                WHERE organization = ?
+                ORDER BY generated_at DESC
+                LIMIT 1
+                """,
+                (organization,),
+            ).fetchone()
+        if row is None:
+            return None
+        return StrategyAgentResult.model_validate_json(row["result_json"]), row["generated_at"]
+
+    def save(
+        self,
+        *,
+        organization: str,
+        question_key: str,
+        time_horizon: str,
+        provider: str,
+        model: str,
+        agent_version: str,
+        generated_at: str,
+        result: StrategyAgentResult,
+    ) -> None:
+        with self._database.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO strategy_research_cache (
+                    organization, question_key, time_horizon, provider, model,
+                    agent_version, generated_at, result_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(organization, question_key, time_horizon, provider, model, agent_version)
+                DO UPDATE SET
+                    generated_at = excluded.generated_at,
+                    result_json = excluded.result_json
+                """,
+                (
+                    organization,
+                    question_key,
+                    time_horizon,
+                    provider,
+                    model,
+                    agent_version,
+                    generated_at,
+                    result.model_dump_json(),
+                ),
+            )
+            connection.commit()

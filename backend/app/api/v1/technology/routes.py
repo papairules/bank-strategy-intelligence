@@ -37,10 +37,11 @@ def get_technology_summary(
 ) -> TechnologySummaryResponse:
     snapshot = service.analytics(organization).snapshot
     limitation = None
-    if snapshot.enriched_jobs < snapshot.total_jobs:
+    if snapshot.jobs_with_technology_signal < snapshot.total_jobs:
         limitation = (
-            "Technology intelligence reflects enriched hiring records only and "
-            "must not be interpreted as organization-wide technology strategy."
+            "Technology intelligence reflects jobs with an observed technology signal only "
+            "(LLM-verified enrichment or a deterministic keyword match) and must not be "
+            "interpreted as organization-wide technology strategy."
         )
     return TechnologySummaryResponse(snapshot=snapshot, coverage_limitation=limitation)
 

@@ -13,6 +13,8 @@ class HiringKGNodeType(StrEnum):
     TECHNOLOGY = "Technology"
     SENIORITY = "Seniority"
     HIRING_SIGNAL = "HiringSignal"
+    STRATEGIC_THEME = "StrategicTheme"
+    STRATEGY_EVIDENCE = "StrategyEvidence"
 
 
 class HiringKGEdgeType(StrEnum):
@@ -27,6 +29,7 @@ class HiringKGEdgeType(StrEnum):
     ABOUT_CAPABILITY = "ABOUT_CAPABILITY"
     ABOUT_BUSINESS_UNIT = "ABOUT_BUSINESS_UNIT"
     RELATED_TECHNOLOGY = "RELATED_TECHNOLOGY"
+    HAS_STRATEGIC_THEME = "HAS_STRATEGIC_THEME"
 
 
 class HiringKnowledgeGraphSummary(BaseModel):
@@ -40,4 +43,6 @@ class HiringKnowledgeGraphSummary(BaseModel):
     jobs_read: int = Field(ge=0)
     evidence_records_used: int = Field(ge=0)
     enriched_jobs_used: int = Field(ge=0)
+    classified_jobs_used: int = Field(ge=0)
     hiring_signals_used: int = Field(ge=0)
+    strategic_themes_used: int = Field(ge=0)

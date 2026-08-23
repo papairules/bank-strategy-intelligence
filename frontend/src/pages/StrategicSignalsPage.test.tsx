@@ -26,8 +26,12 @@ afterEach(() => {
 });
 
 describe("StrategicSignalsPage", () => {
-  it("makes Ask Strategy primary without loading deterministic signals", () => {
-    const fetchMock = vi.fn();
+  it("makes Ask Strategy primary without loading deterministic signals", async () => {
+    const fetchMock = vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+      organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 0,
+      classified_jobs_used: 0, enriched_jobs_used: 0, hiring_signals_used: 0,
+      strategic_themes_used: 0, top_capabilities: [], top_technologies: [], strategic_themes: [],
+    }), { status: 200, headers: { "Content-Type": "application/json" } })));
     vi.stubGlobal("fetch", fetchMock);
     renderPage();
 
@@ -38,7 +42,11 @@ describe("StrategicSignalsPage", () => {
     expect(screen.queryByText("Cross-domain strategic signals")).not.toBeInTheDocument();
     expect(screen.queryByText(/hiring contributors/)).not.toBeInTheDocument();
     expect(screen.queryByText("Relevant Hiring Jobs")).not.toBeInTheDocument();
-    expect(fetchMock).not.toHaveBeenCalled();
+    // Only the cheap, disk-cached graph-insights read is fetched on mount;
+    // deterministic hiring/strategy signal generation is never triggered here.
+    await screen.findByText(/No Strategy Agent research is cached/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0][0])).toContain("/graph-insights/");
     expect(apiMock).not.toHaveBeenCalled();
   });
 

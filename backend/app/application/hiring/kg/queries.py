@@ -6,6 +6,22 @@ from .builder import concept_node_id, evidence_node_id, job_node_id, signal_node
 from .models import HiringKGEdgeType, HiringKGNodeType
 
 
+def get_strategic_themes_for_organization(graph: nx.MultiDiGraph) -> list[str]:
+    return _organization_concepts(graph, HiringKGNodeType.STRATEGIC_THEME)
+
+
+def get_evidence_for_strategic_theme(graph: nx.MultiDiGraph, theme: str) -> list[str]:
+    target = concept_node_id(HiringKGNodeType.STRATEGIC_THEME, graph.graph["organization"], theme)
+    if target not in graph:
+        return []
+    return sorted(
+        graph.nodes[node]["evidence_id"]
+        for _, node, attributes in graph.out_edges(target, data=True)
+        if attributes.get("edge_type") == HiringKGEdgeType.SUPPORTED_BY.value
+        and graph.nodes[node].get("node_type") == HiringKGNodeType.STRATEGY_EVIDENCE.value
+    )
+
+
 def _job_ids_for_concept(
     graph: nx.MultiDiGraph,
     node_type: HiringKGNodeType,
