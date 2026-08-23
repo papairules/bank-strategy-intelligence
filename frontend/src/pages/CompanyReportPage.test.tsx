@@ -1,7 +1,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { OrganizationProvider } from "../context/OrganizationContext";
 import { CompanyReportPage } from "./CompanyReportPage";
 
@@ -42,6 +42,7 @@ function setup(payload = response(), qaPayload: object = qaResponse, qaStatus = 
   return fetch;
 }
 
+beforeEach(() => window.sessionStorage.clear());
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 it("renders the API-backed multi-row outlook with exactly seven columns", async () => {

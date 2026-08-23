@@ -2,12 +2,13 @@ import { FormEvent, useState } from "react";
 import { supervisorReportApi } from "../api/supervisorReport";
 import { ApiError } from "../api/hiring";
 import { useOrganization } from "../context/OrganizationContext";
+import { useSessionState } from "../hooks/useSessionState";
 import type { IntelligenceOutlookRow, ReportQuestionAnswer, ReportReference, SupervisorReportAnswer } from "../types/supervisorReport";
 
 export function CompanyReportPage() {
   const { organization } = useOrganization();
   const [question, setQuestion] = useState("");
-  const [result, setResult] = useState<SupervisorReportAnswer | null>(null);
+  const [result, setResult] = useSessionState<SupervisorReportAnswer | null>(`bsi:company-report:${organization}`, null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +67,7 @@ const suggestedQuestions = [
 
 function ReportQA({ report }: { report: SupervisorReportAnswer }) {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState<ReportQuestionAnswer | null>(null);
+  const [answer, setAnswer] = useSessionState<ReportQuestionAnswer | null>(`bsi:company-report-qa:${report.report.organization}`, null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 

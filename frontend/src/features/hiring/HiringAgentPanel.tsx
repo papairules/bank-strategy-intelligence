@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { hiringAgentApi } from "../../api/hiringAgent";
 import { ApiError } from "../../api/hiring";
+import { useSessionState } from "../../hooks/useSessionState";
 import type { HiringAgentAnswer, HiringAgentSignal } from "../../types/hiringAgent";
 import { formatPercent, titleCase } from "../../utils/format";
 
 export function HiringAgentPanel({ organization }: { organization: string }) {
-  const [answer, setAnswer] = useState<HiringAgentAnswer | null>(null);
+  const [answer, setAnswer] = useSessionState<HiringAgentAnswer | null>(`bsi:hiring-agent:${organization}`, null);
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 

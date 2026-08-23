@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { AVAILABLE_ORGANIZATIONS, DEFAULT_ORGANIZATION, type Organization } from "../config/organization";
+import { AVAILABLE_ORGANIZATIONS, readStoredOrganization, writeStoredOrganization, type Organization } from "../config/organization";
 import { OrganizationProvider } from "../context/OrganizationContext";
+import { OrganizationPicker } from "./OrganizationPicker";
 
 const navigation = [
   { label: "Overview", path: "/", mark: "OV", group: "Workspace" },
@@ -15,12 +16,22 @@ const navigation = [
 ];
 
 export function AppShell() {
-  const [organization, setOrganization] = useState<Organization>(DEFAULT_ORGANIZATION);
+  const [organization, setOrganizationState] = useState<Organization | null>(() => readStoredOrganization());
   const location = useLocation();
   const current = navigation.find((item) => item.path === `${location.pathname}${location.hash}`)?.label
     ?? navigation.find((item) => !item.path.includes("#") && item.path === location.pathname)?.label
     ?? "Overview";
   const groups = Array.from(new Set(navigation.map((item) => item.group)));
+
+  const setOrganization = (next: Organization) => {
+    writeStoredOrganization(next);
+    setOrganizationState(next);
+  };
+
+  if (organization === null) {
+    return <OrganizationPicker onSelect={setOrganization} />;
+  }
+
   return (
     <OrganizationProvider value={{ organization, setOrganization }}>
     <div className="app-shell">

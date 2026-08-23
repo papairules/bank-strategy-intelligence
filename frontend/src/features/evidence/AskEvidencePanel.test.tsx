@@ -1,6 +1,6 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../../api/hiring";
 import { evidenceAgentApi } from "../../api/evidenceAgent";
 import type { EvidenceAgentAnswer } from "../../types/evidenceAgent";
@@ -25,6 +25,7 @@ const answer: EvidenceAgentAnswer = {
 
 const apiMock = vi.mocked(evidenceAgentApi.answer);
 
+beforeEach(() => window.sessionStorage.clear());
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
 async function submit() {

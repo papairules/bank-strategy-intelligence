@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { evidenceAgentApi } from "../../api/evidenceAgent";
 import { ApiError } from "../../api/hiring";
+import { useSessionState } from "../../hooks/useSessionState";
 import type { EvidenceAgentAnswer, EvidenceAgentCitation } from "../../types/evidenceAgent";
 import { formatPercent, titleCase } from "../../utils/format";
 
@@ -8,7 +9,7 @@ interface Props { organization: string; onViewEvidence: (evidenceId: string) => 
 
 export function AskEvidencePanel({ organization, onViewEvidence }: Props) {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState<EvidenceAgentAnswer | null>(null);
+  const [answer, setAnswer] = useSessionState<EvidenceAgentAnswer | null>(`bsi:evidence-agent:${organization}`, null);
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const submit = async (event: FormEvent) => {

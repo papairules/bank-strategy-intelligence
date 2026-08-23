@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../../api/hiring";
 import { strategyAgentApi } from "../../api/strategyAgent";
 import type { StrategyAgentAnswer } from "../../types/strategyAgent";
@@ -23,6 +23,7 @@ const answer: StrategyAgentAnswer = {
 };
 const apiMock = vi.mocked(strategyAgentApi.answer);
 
+beforeEach(() => window.sessionStorage.clear());
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 function renderPanel() { return render(<MemoryRouter><AskStrategyPanel organization="Wells Fargo" /></MemoryRouter>); }
 async function submit() { const user = userEvent.setup(); await user.type(screen.getByLabelText("Strategic question"), "What is supported?"); await user.click(screen.getByRole("button", { name: "Analyze" })); return user; }

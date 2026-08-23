@@ -1,11 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { OrganizationProvider } from "../context/OrganizationContext";
 import { StrategicSignalsPage } from "./StrategicSignalsPage";
 
 const context = { total_jobs: 19, jobs_with_evidence: 19, hiring_evidence_coverage: 1, enriched_jobs: 1, enrichment_coverage: 1 / 19, hiring_signal_count: 3, technology_observation_count: 10, technology_signal_count: 0, observation_start: "2026-08-20", observation_end: "2026-08-21" };
 function ok(body: unknown) { return Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } })); }
-function renderPage() { return render(<MemoryRouter><StrategicSignalsPage /></MemoryRouter>); }
+function renderPage() { return render(<OrganizationProvider value={{ organization: "Wells Fargo", setOrganization: vi.fn() }}><MemoryRouter><StrategicSignalsPage /></MemoryRouter></OrganizationProvider>); }
 afterEach(() => vi.unstubAllGlobals());
 
 describe("StrategicSignalsPage", () => {

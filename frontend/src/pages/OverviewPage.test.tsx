@@ -1,8 +1,14 @@
 import { render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { OrganizationProvider } from "../context/OrganizationContext";
 import { OverviewPage } from "./OverviewPage";
 import { summaryFixture } from "../test/fixtures";
+
+function withOrg(children: ReactNode) {
+  return <OrganizationProvider value={{ organization: "Wells Fargo", setOrganization: vi.fn() }}><MemoryRouter>{children}</MemoryRouter></OrganizationProvider>;
+}
 
 function ok(body: unknown) {
   return Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } }));
@@ -24,7 +30,7 @@ describe("OverviewPage", () => {
       if (url.includes("/evidence/") && url.includes("/summary")) return ok(evidenceSummary);
       return ok(strategyResult);
     }));
-    render(<MemoryRouter><OverviewPage /></MemoryRouter>);
+    render(withOrg(<OverviewPage />));
     expect(screen.getByText("Loading executive intelligence…")).toBeInTheDocument();
     expect(await screen.findByText("What the current evidence supports")).toBeInTheDocument();
     expect(screen.getAllByText("100%").length).toBeGreaterThanOrEqual(2);
@@ -37,7 +43,7 @@ describe("OverviewPage", () => {
 
   it("renders a safe integrated error state", async () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("Backend unavailable"))));
-    render(<MemoryRouter><OverviewPage /></MemoryRouter>);
+    render(withOrg(<OverviewPage />));
     expect(await screen.findByText("One or more intelligence domains could not be loaded.")).toBeInTheDocument();
   });
 });

@@ -2,13 +2,14 @@ import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { strategyAgentApi } from "../../api/strategyAgent";
 import { ApiError } from "../../api/hiring";
+import { useSessionState } from "../../hooks/useSessionState";
 import type { StrategyAgentAnswer, StrategySupportClass } from "../../types/strategyAgent";
 import { formatPercent, titleCase } from "../../utils/format";
 
 export function AskStrategyPanel({ organization }: { organization: string }) {
   const [question, setQuestion] = useState("");
   const [timeHorizon, setTimeHorizon] = useState("");
-  const [answer, setAnswer] = useState<StrategyAgentAnswer | null>(null);
+  const [answer, setAnswer] = useSessionState<StrategyAgentAnswer | null>(`bsi:strategy-agent:${organization}`, null);
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 

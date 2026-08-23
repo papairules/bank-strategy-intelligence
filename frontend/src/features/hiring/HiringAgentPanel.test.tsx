@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../../api/hiring";
 import { hiringAgentApi } from "../../api/hiringAgent";
 import type { HiringAgentAnswer } from "../../types/hiringAgent";
@@ -36,6 +36,7 @@ const answer: HiringAgentAnswer = {
 };
 const apiMock = vi.mocked(hiringAgentApi.answer);
 
+beforeEach(() => window.sessionStorage.clear());
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 function renderPanel() { return render(<HiringAgentPanel organization="Wells Fargo" />); }
 async function run() { const user = userEvent.setup(); await user.click(screen.getByRole("button", { name: "Run analysis" })); return user; }

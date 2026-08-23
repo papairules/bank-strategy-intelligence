@@ -2,11 +2,26 @@ import { useEffect, useState } from "react";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useOrganization } from "../context/OrganizationContext";
 import { AppShell } from "./AppShell";
 
+const ORGANIZATION_STORAGE_KEY = "bsi:selected-organization";
+
+function createMemoryStorage(): Storage {
+  const store = new Map<string, string>();
+  return {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => void store.set(key, value),
+    removeItem: (key: string) => void store.delete(key),
+    clear: () => store.clear(),
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    get length() { return store.size; },
+  };
+}
+
 afterEach(cleanup);
+beforeEach(() => vi.stubGlobal("localStorage", createMemoryStorage()));
 
 function renderShell(apiRequest = vi.fn(), agentRequest = vi.fn()) {
   function TestPage() {
@@ -29,24 +44,55 @@ function renderShell(apiRequest = vi.fn(), agentRequest = vi.fn()) {
   return { apiRequest, agentRequest };
 }
 
-describe("AppShell organization selector", () => {
-  it("defaults to Wells Fargo and changes API scope to BNY without invoking an agent", async () => {
+describe("AppShell organization selection", () => {
+  it("shows a picker and requests nothing when no organization is stored", () => {
+    const { apiRequest } = renderShell();
+
+    expect(screen.getByRole("heading", { name: "Select a bank to continue" })).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "Organization" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "BNY" })).toBeInTheDocument();
+    expect(apiRequest).not.toHaveBeenCalled();
+  });
+
+  it("reveals the shell scoped to the picked bank and persists the choice", async () => {
+    const user = userEvent.setup();
+    const { apiRequest } = renderShell();
+
+    await user.click(screen.getByRole("button", { name: "Wells Fargo" }));
+
+    expect(screen.queryByRole("heading", { name: "Select a bank to continue" })).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Organization" })).toHaveValue("Wells Fargo");
+    await waitFor(() => expect(apiRequest).toHaveBeenCalledWith("Wells Fargo"));
+    expect(window.localStorage.getItem(ORGANIZATION_STORAGE_KEY)).toBe("Wells Fargo");
+  });
+
+  it("skips the picker when an organization is already stored", () => {
+    window.localStorage.setItem(ORGANIZATION_STORAGE_KEY, "BNY");
+    const { apiRequest } = renderShell();
+
+    expect(screen.queryByRole("heading", { name: "Select a bank to continue" })).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Organization" })).toHaveValue("BNY");
+    expect(apiRequest).toHaveBeenCalledWith("BNY");
+  });
+
+  it("changes API scope to BNY, persists it, and invokes no agent", async () => {
+    window.localStorage.setItem(ORGANIZATION_STORAGE_KEY, "Wells Fargo");
     const user = userEvent.setup();
     const { apiRequest, agentRequest } = renderShell();
     const selector = screen.getByRole("combobox", { name: "Organization" });
 
-    expect(selector).toHaveValue("Wells Fargo");
-    expect(screen.getByRole("option", { name: "BNY" })).toBeInTheDocument();
     await waitFor(() => expect(apiRequest).toHaveBeenCalledWith("Wells Fargo"));
 
     await user.selectOptions(selector, "BNY");
 
     expect(selector).toHaveValue("BNY");
     await waitFor(() => expect(apiRequest).toHaveBeenCalledWith("BNY"));
+    expect(window.localStorage.getItem(ORGANIZATION_STORAGE_KEY)).toBe("BNY");
     expect(agentRequest).not.toHaveBeenCalled();
   });
 
   it("clears page-local detail and agent-result state when organization changes", async () => {
+    window.localStorage.setItem(ORGANIZATION_STORAGE_KEY, "Wells Fargo");
     const user = userEvent.setup();
     const { agentRequest } = renderShell();
 
