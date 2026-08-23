@@ -42,6 +42,9 @@ _ORGANIZATION_ALIASES = {
     "Wells Fargo": ("wells fargo",),
     "Goldman Sachs": ("goldman sachs", "goldman"),
     "BNY": ("bank of new york mellon", "bny mellon", "bny"),
+    "Citibank": ("citibank", "citi", "citigroup"),
+    "Morgan Stanley": ("morgan stanley",),
+    "Barclays": ("barclays",),
 }
 
 

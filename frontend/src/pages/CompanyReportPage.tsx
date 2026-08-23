@@ -27,8 +27,8 @@ export function CompanyReportPage() {
     }
   };
 
-  return <div className="page-stack">
-    <header className="page-header"><span className="eyebrow">Combined intelligence</span><h1>Company Report</h1><p>Evidence-aware Strategy, Hiring, and Hiring KG synthesis for {organization}.</p></header>
+  return <div className="page">
+    <div className="page-heading"><div><span className="eyebrow">Combined intelligence</span><h1>Company Report</h1><p>Evidence-aware Strategy, Hiring, and Hiring KG synthesis for {organization}.</p></div></div>
     <section className="panel ask-strategy">
       <form className="ask-strategy__form" onSubmit={submit}>
         <label htmlFor="report-question">Report focus <span>(optional)</span></label>
@@ -142,15 +142,15 @@ function OutlookRow({ row }: { row: IntelligenceOutlookRow }) {
 }
 
 function HorizonCell({ value }: { value?: string | null }) {
-  return <td>{value?.trim() || "No strong signal yet"}</td>;
+  return <td>{value?.trim() || "No action needed"}</td>;
 }
 
 function Sources({ references }: { references: ReportReference[] }) {
   const [expanded, setExpanded] = useState(false);
   const webSources = Array.from(new Map(references.filter((item) => item.source_url).map((item) => [item.source_url, item])).values());
   const sources = [...webSources, { reference_id: "hiring-dataset", domain: "hiring", evidence_ids: [], job_ids: [], source_url: null }];
-  const visible = expanded ? sources : sources.slice(0, 8);
-  return <section><span className="strategy-answer__label">Sources</span>{visible.length > 0 ? <><div className="report-table-scroll"><table className="report-table report-table--sources"><thead><tr><th>Source</th><th>Used For</th></tr></thead><tbody>{visible.map((source) => <tr key={source.source_url ?? source.reference_id}><td>{source.source_url ? <a href={source.source_url} target="_blank" rel="noreferrer">{sourceName(source.source_url)}</a> : "Hiring dataset"}</td><td>{source.domain === "hiring" ? "Hiring intelligence" : "Strategy evidence"}</td></tr>)}</tbody></table></div>{sources.length > 8 && <button className="report-sources-toggle" type="button" onClick={() => setExpanded((value) => !value)}>{expanded ? "Show less" : `Show all sources (${sources.length})`}</button>}</> : <p className="report-empty">No source references are available.</p>}</section>;
+  const visible = expanded ? sources : sources.slice(0, 3);
+  return <section><span className="strategy-answer__label">Sources</span>{visible.length > 0 ? <><div className="report-table-scroll"><table className="report-table report-table--sources"><thead><tr><th>Source</th><th>Used For</th></tr></thead><tbody>{visible.map((source) => <tr key={source.source_url ?? source.reference_id}><td>{source.source_url ? <a href={source.source_url} target="_blank" rel="noreferrer">{sourceName(source.source_url)}</a> : "Hiring dataset"}</td><td>{source.domain === "hiring" ? "Hiring intelligence" : "Strategy evidence"}</td></tr>)}</tbody></table></div>{sources.length > 3 && <button className="report-sources-toggle" type="button" onClick={() => setExpanded((value) => !value)}>{expanded ? "Show less" : `Show all sources (${sources.length})`}</button>}</> : <p className="report-empty">No source references are available.</p>}</section>;
 }
 
 function sourceName(url: string) {

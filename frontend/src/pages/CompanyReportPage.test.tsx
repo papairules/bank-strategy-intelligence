@@ -63,7 +63,7 @@ it("renders the API-backed multi-row outlook with exactly seven columns", async 
   expect(within(outlook).getByText("1,203")).toBeInTheDocument();
   expect(within(outlook).getByText("—")).toBeInTheDocument();
   expect(within(outlook).getByText("Validate the modernization roadmap")).toBeInTheDocument();
-  expect(within(outlook).getAllByText("No strong signal yet").length).toBeGreaterThan(0);
+  expect(within(outlook).getAllByText("No action needed").length).toBeGreaterThan(0);
 });
 
 it("shows the outlook empty state without restoring the company-level row", async () => {
@@ -78,6 +78,8 @@ it("renders deduplicated sources, hiring dataset, and expansion controls", async
   await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   expect(await screen.findByRole("link", { name: "source0.example.com" })).toHaveAttribute("href", "https://source0.example.com/report");
   expect(screen.getAllByRole("link", { name: "source0.example.com" })).toHaveLength(1);
+  expect(screen.getByRole("link", { name: "source2.example.com" })).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "source3.example.com" })).not.toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "source8.example.com" })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("button", { name: "Show all sources (10)" }));
   expect(screen.getByRole("link", { name: "source8.example.com" })).toBeInTheDocument();

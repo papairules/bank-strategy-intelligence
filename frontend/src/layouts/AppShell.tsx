@@ -6,11 +6,11 @@ import { OrganizationProvider } from "../context/OrganizationContext";
 const navigation = [
   { label: "Overview", path: "/", mark: "OV", group: "Workspace" },
   { label: "Hiring Intelligence", path: "/hiring", mark: "HI", group: "Intelligence" },
-  { label: "Technology Intelligence", path: "/technology", mark: "TI", group: "Intelligence" },
+  // { label: "Technology Intelligence", path: "/technology", mark: "TI", group: "Intelligence" },
   { label: "Strategic Signals", path: "/signals", mark: "SS", group: "Intelligence" },
-  { label: "Evidence Explorer", path: "/evidence", mark: "EV", group: "Evidence" },
-  { label: "Ask Evidence", path: "/evidence#ask-evidence", mark: "AE", group: "Governed AI" },
-  { label: "Ask Strategy", path: "/signals#ask-strategy", mark: "AS", group: "Governed AI" },
+  // { label: "Evidence Explorer", path: "/evidence", mark: "EV", group: "Evidence" },
+  // { label: "Ask Evidence", path: "/evidence#ask-evidence", mark: "AE", group: "Governed AI" },
+  // { label: "Ask Strategy", path: "/signals#ask-strategy", mark: "AS", group: "Governed AI" },
   { label: "Company Report", path: "/report", mark: "CR", group: "Governed AI" },
 ];
 

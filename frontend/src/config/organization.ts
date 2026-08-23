@@ -1,4 +1,4 @@
-export const AVAILABLE_ORGANIZATIONS = ["Wells Fargo", "BNY", "Goldman Sachs"] as const;
+export const AVAILABLE_ORGANIZATIONS = ["Wells Fargo", "BNY", "Goldman Sachs", "Citibank", "Morgan Stanley", "Barclays"] as const;
 
 export type Organization = (typeof AVAILABLE_ORGANIZATIONS)[number];
 
