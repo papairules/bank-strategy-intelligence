@@ -23,13 +23,24 @@ export function GraphInsightsPanel({ organization }: { organization: string }) {
           <StrategicThemes themes={insights.data.strategic_themes} />
           <div className="graph-insights__grid">
             <div>
+              <h3>Geographic concentration</h3>
+              <RankedBars
+                emptyMessage="No hiring locations are available in the graph yet."
+                items={insights.data.top_locations.map((item) => ({
+                  label: item.name,
+                  count: item.job_count,
+                  percentage: insights.data!.jobs_read ? (item.job_count / insights.data!.jobs_read) * 100 : 0,
+                }))}
+              />
+            </div>
+            <div>
               <h3>Top capabilities</h3>
               <RankedBars
                 emptyMessage="No capabilities are classified in the graph yet."
                 items={insights.data.top_capabilities.map((item) => ({
                   label: item.name,
                   count: item.job_count,
-                  percentage: insights.data!.jobs_read ? (item.job_count / insights.data!.jobs_read) * 100 : 0,
+                  percentage: insights.data!.classified_jobs_used ? (item.job_count / insights.data!.classified_jobs_used) * 100 : 0,
                 }))}
               />
             </div>

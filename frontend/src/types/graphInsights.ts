@@ -23,5 +23,6 @@ export interface GraphInsightsSnapshot {
   strategic_themes_used: number;
   top_capabilities: GraphInsightConcept[];
   top_technologies: GraphInsightConcept[];
+  top_locations: GraphInsightConcept[];
   strategic_themes: GraphInsightStrategicTheme[];
 }

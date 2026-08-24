@@ -16,7 +16,7 @@ def test_root():
         assert "text/html" in response.headers["content-type"]
     else:
         assert response.json() == {
-            "name": "Bank Strategy Intelligence API",
+            "name": "Account Growth Intelligence API",
             "version": "0.1.0",
             "status": "running",
         }

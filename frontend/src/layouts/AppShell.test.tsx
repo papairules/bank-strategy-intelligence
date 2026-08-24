@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useOrganization } from "../context/OrganizationContext";
 import { AVAILABLE_ORGANIZATIONS, ORGANIZATION_STORAGE_KEY } from "../config/organization";
@@ -32,6 +32,7 @@ function renderShell(apiRequest = vi.fn(), agentRequest = vi.fn()) {
 
     return <div>
       <span>Scoped to {organization}</span>
+      <Link to="/hiring">Go to hiring</Link>
       <button onClick={() => setDetailOpen(true)}>Open detail</button>
       <button onClick={() => { agentRequest(organization); setAgentResult(true); }}>Submit agent</button>
       {detailOpen && <span>Open record detail</span>}
@@ -118,7 +119,7 @@ describe("AppShell organization selection", () => {
     await user.click(screen.getByRole("button", { name: "Enter Workspace" }));
     expect(screen.getByText("Scoped to Goldman Sachs")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("link", { name: /Hiring Intelligence/ }));
+    await user.click(screen.getByRole("link", { name: "Go to hiring" }));
 
     expect(screen.queryByRole("heading", { name: "Select a company" })).not.toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Organization" })).toHaveValue("Goldman Sachs");

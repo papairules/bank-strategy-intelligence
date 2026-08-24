@@ -1,6 +1,5 @@
 import { useOrganization } from "../context/OrganizationContext";
 import { AskStrategyPanel } from "../features/strategy/AskStrategyPanel";
-import { GraphInsightsPanel } from "../features/insights/GraphInsightsPanel";
 
 export function StrategicSignalsPage() {
   const { organization } = useOrganization();
@@ -14,8 +13,5 @@ export function StrategicSignalsPage() {
       </div>
     </div>
     <div id="ask-strategy"><AskStrategyPanel organization={organization} /></div>
-
-    <div className="intelligence-divider"><span>Knowledge graph insights</span></div>
-    <GraphInsightsPanel organization={organization} />
   </div>;
 }

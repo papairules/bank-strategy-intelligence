@@ -12,7 +12,7 @@ export function OrganizationPicker({ onSelect }: { onSelect: (organization: Orga
   return (
     <div className="org-picker">
       <div className="org-picker__card">
-        <span className="eyebrow">Bank Strategy Intelligence</span>
+        <span className="eyebrow">Account Growth Intelligence</span>
         <h1>Select a company</h1>
         <p>Select a company to explore its intelligence workspace.</p>
         <form className="org-picker__form" onSubmit={submit}>

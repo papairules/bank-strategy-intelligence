@@ -19085,79 +19085,79 @@
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "BNY",
       "provider": "openai",
       "question": "Generate a company intelligence report for BNY.",
       "source": "org:bny",
-      "target": "strategic_theme:bny:custody_and_clearing_platform_modernization"
+      "target": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "BNY",
       "provider": "openai",
       "question": "Generate a company intelligence report for BNY.",
       "source": "org:bny",
-      "target": "strategic_theme:bny:payments_and_fx_infrastructure_modernization"
+      "target": "strategic_theme:bny:client_solution_expansion_and_organic_growth"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "BNY",
       "provider": "openai",
       "question": "Generate a company intelligence report for BNY.",
       "source": "org:bny",
-      "target": "strategic_theme:bny:expansion_into_higher_growth_client_segments"
+      "target": "strategic_theme:bny:technology_and_ai_enabled_product_innovation"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "BNY",
       "provider": "openai",
       "question": "Generate a company intelligence report for BNY.",
       "source": "org:bny",
-      "target": "strategic_theme:bny:collateral_management_product_innovation"
+      "target": "strategic_theme:bny:efficiency_savings_and_operating_leverage"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "BNY",
       "provider": "openai",
       "question": "Generate a company intelligence report for BNY.",
       "source": "org:bny",
-      "target": "strategic_theme:bny:treasury_services_and_wealth_platform_growth"
+      "target": "strategic_theme:bny:growth_investments_in_product_and_acquisitions"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "BNY",
       "provider": "openai",
       "question": "Generate a company intelligence report for BNY.",
       "source": "org:bny",
-      "target": "strategic_theme:bny:profitability_and_margin_improvement"
+      "target": "strategic_theme:bny:capital_planning_and_resiliency_management"
     },
     {
       "derivation_type": "persisted_source",
@@ -156618,182 +156618,290 @@
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:custody_and_clearing_platform_modernization",
+      "source": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition",
       "target": "strategy_evidence:bny:EV_001"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:custody_and_clearing_platform_modernization",
-      "target": "strategy_evidence:bny:EV_009"
+      "source": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition",
+      "target": "strategy_evidence:bny:EV_013"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:payments_and_fx_infrastructure_modernization",
-      "target": "strategy_evidence:bny:EV_003"
+      "source": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition",
+      "target": "strategy_evidence:bny:EV_015"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:payments_and_fx_infrastructure_modernization",
-      "target": "strategy_evidence:bny:EV_011"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:payments_and_fx_infrastructure_modernization",
-      "target": "strategy_evidence:bny:EV_012"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:payments_and_fx_infrastructure_modernization",
+      "source": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition",
       "target": "strategy_evidence:bny:EV_031"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:payments_and_fx_infrastructure_modernization",
-      "target": "strategy_evidence:bny:EV_032"
+      "source": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition",
+      "target": "strategy_evidence:bny:EV_039"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:expansion_into_higher_growth_client_segments",
+      "source": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition",
+      "target": "strategy_evidence:bny:EV_043"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:client_solution_expansion_and_organic_growth",
       "target": "strategy_evidence:bny:EV_002"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:expansion_into_higher_growth_client_segments",
-      "target": "strategy_evidence:bny:EV_008"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:collateral_management_product_innovation",
-      "target": "strategy_evidence:bny:EV_004"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:collateral_management_product_innovation",
-      "target": "strategy_evidence:bny:EV_030"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:treasury_services_and_wealth_platform_growth",
-      "target": "strategy_evidence:bny:EV_005"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:treasury_services_and_wealth_platform_growth",
-      "target": "strategy_evidence:bny:EV_009"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:treasury_services_and_wealth_platform_growth",
-      "target": "strategy_evidence:bny:EV_026"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:treasury_services_and_wealth_platform_growth",
-      "target": "strategy_evidence:bny:EV_028"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:profitability_and_margin_improvement",
-      "target": "strategy_evidence:bny:EV_006"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:profitability_and_margin_improvement",
-      "target": "strategy_evidence:bny:EV_007"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "BNY",
-      "source": "strategic_theme:bny:profitability_and_margin_improvement",
+      "source": "strategic_theme:bny:client_solution_expansion_and_organic_growth",
       "target": "strategy_evidence:bny:EV_010"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:profitability_and_margin_improvement",
-      "target": "strategy_evidence:bny:EV_018"
+      "source": "strategic_theme:bny:client_solution_expansion_and_organic_growth",
+      "target": "strategy_evidence:bny:EV_011"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:48.221119+00:00",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
       "key": "SUPPORTED_BY",
       "organization": "BNY",
-      "source": "strategic_theme:bny:profitability_and_margin_improvement",
+      "source": "strategic_theme:bny:client_solution_expansion_and_organic_growth",
+      "target": "strategy_evidence:bny:EV_025"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:client_solution_expansion_and_organic_growth",
+      "target": "strategy_evidence:bny:EV_029"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:client_solution_expansion_and_organic_growth",
       "target": "strategy_evidence:bny:EV_020"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "target": "strategy_evidence:bny:EV_008"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "target": "strategy_evidence:bny:EV_009"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "target": "strategy_evidence:bny:EV_016"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "target": "strategy_evidence:bny:EV_026"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "target": "strategy_evidence:bny:EV_027"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "target": "strategy_evidence:bny:EV_037"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "target": "strategy_evidence:bny:EV_042"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:efficiency_savings_and_operating_leverage",
+      "target": "strategy_evidence:bny:EV_014"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:efficiency_savings_and_operating_leverage",
+      "target": "strategy_evidence:bny:EV_017"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:efficiency_savings_and_operating_leverage",
+      "target": "strategy_evidence:bny:EV_024"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:growth_investments_in_product_and_acquisitions",
+      "target": "strategy_evidence:bny:EV_007"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:growth_investments_in_product_and_acquisitions",
+      "target": "strategy_evidence:bny:EV_030"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:growth_investments_in_product_and_acquisitions",
+      "target": "strategy_evidence:bny:EV_035"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:growth_investments_in_product_and_acquisitions",
+      "target": "strategy_evidence:bny:EV_036"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:growth_investments_in_product_and_acquisitions",
+      "target": "strategy_evidence:bny:EV_028"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:capital_planning_and_resiliency_management",
+      "target": "strategy_evidence:bny:EV_023"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:capital_planning_and_resiliency_management",
+      "target": "strategy_evidence:bny:EV_032"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:capital_planning_and_resiliency_management",
+      "target": "strategy_evidence:bny:EV_033"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:capital_planning_and_resiliency_management",
+      "target": "strategy_evidence:bny:EV_034"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:41:30.753442+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "BNY",
+      "source": "strategic_theme:bny:capital_planning_and_resiliency_management",
+      "target": "strategy_evidence:bny:EV_044"
     }
   ],
   "graph": {
@@ -175561,16 +175669,16 @@
       "strength": 1.0
     },
     {
-      "business_unit": "Pershing",
+      "business_unit": null,
       "confidence": 0.5,
-      "direction": "increase_investment",
-      "hypothesis": "BNY appears to be increasing investment in custody and clearing capabilities through platform upgrades and client-experience improvements to support future growth.",
-      "id": "strategic_theme:bny:custody_and_clearing_platform_modernization",
-      "label": "custody and clearing platform modernization",
+      "direction": "transform",
+      "hypothesis": "BNY is prioritizing a transition to a more unified platforms operating model to simplify execution, improve interoperability, and better integrate client delivery across businesses.",
+      "id": "strategic_theme:bny:enterprise_operating_model_modernization_and_platform_transition",
+      "label": "Enterprise operating model modernization and platform transition",
       "node_type": "StrategicTheme",
       "organization": "BNY",
-      "time_horizon": "multi-year",
-      "value": "custody and clearing platform modernization"
+      "time_horizon": "2025-2026",
+      "value": "Enterprise operating model modernization and platform transition"
     },
     {
       "evidence_id": "EV_001",
@@ -175578,61 +175686,29 @@
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "quarterly_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/quarterly-financial-highlights-4q-2023.pdf",
-      "statement": "BNY said its 4Q 2023 financial highlights centered on self-funded investments to grow custody and clearing through multi-year core-platform investments and client experience improvements."
-    },
-    {
-      "evidence_id": "EV_009",
-      "id": "strategy_evidence:bny:EV_009",
-      "node_type": "StrategyEvidence",
-      "organization": "BNY",
-      "publication_date": null,
       "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/letter-from-robin-vince-2023-JA.pdf",
-      "statement": "BNY highlighted Pershing\u2019s execution, clearing, and custody capabilities."
+      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2024.pdf",
+      "statement": "BNY said it doubled down on execution in 2024 and described ongoing transformation around a more unified 'one BNY' operating model."
     },
     {
-      "business_unit": null,
-      "confidence": 0.5,
-      "direction": "transform",
-      "hypothesis": "BNY appears to be transforming its payments infrastructure, including FX payments and reporting workflows, to improve functionality and operational efficiency.",
-      "id": "strategic_theme:bny:payments_and_fx_infrastructure_modernization",
-      "label": "payments and FX infrastructure modernization",
-      "node_type": "StrategicTheme",
-      "organization": "BNY",
-      "time_horizon": null,
-      "value": "payments and FX infrastructure modernization"
-    },
-    {
-      "evidence_id": "EV_003",
-      "id": "strategy_evidence:bny:EV_003",
+      "evidence_id": "EV_013",
+      "id": "strategy_evidence:bny:EV_013",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "quarterly_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/quarterly-financial-highlights-4q-2023.pdf",
-      "statement": "BNY said it was completing the payments platform uplift and enhancing FX payments."
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000139077726000033/bk-20251231.htm",
+      "statement": "BNY's 2025 Form 10-K said forward-looking statements cover transition to a platforms operating model."
     },
     {
-      "evidence_id": "EV_011",
-      "id": "strategy_evidence:bny:EV_011",
+      "evidence_id": "EV_015",
+      "id": "strategy_evidence:bny:EV_015",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2022.pdf.coredownload.pdf",
-      "statement": "BNY described future-oriented investments in real-time payments."
-    },
-    {
-      "evidence_id": "EV_012",
-      "id": "strategy_evidence:bny:EV_012",
-      "node_type": "StrategyEvidence",
-      "organization": "BNY",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2022.pdf.coredownload.pdf",
-      "statement": "BNY said it intended to continue investing in request-for-payment technology."
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000139077726000004/ex993_quarterlyupdatepre.htm",
+      "statement": "BNY's quarterly update deck described a transition to a platforms operating model."
     },
     {
       "evidence_id": "EV_031",
@@ -175640,31 +175716,41 @@
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "other",
-      "source_url": "https://marketplace.bnymellon.com/treasury/api-library/reports",
-      "statement": "BNY said its Global Payments & Trade API report centralizes payment transaction and account reporting."
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included a transition to a platform operating model as a strategic priority."
     },
     {
-      "evidence_id": "EV_032",
-      "id": "strategy_evidence:bny:EV_032",
+      "evidence_id": "EV_039",
+      "id": "strategy_evidence:bny:EV_039",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "other",
-      "source_url": "https://marketplace.bnymellon.com/treasury/api-library/reports",
-      "statement": "BNY said its Global Payments & Trade API report helps improve efficiency by reducing manual steps and time spent producing reports."
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/quarterly-presentation-4q-2024.pdf",
+      "statement": "BNY's 4Q24 investor presentation listed a platforms operating model as a 2025 strategic priority."
+    },
+    {
+      "evidence_id": "EV_043",
+      "id": "strategy_evidence:bny:EV_043",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.bny.com/corporate/global/en/investor-relations/annual-report-2025.html",
+      "statement": "BNY's 2025 annual report landing page emphasized interoperability as part of its strategy."
     },
     {
       "business_unit": null,
-      "confidence": 0.5,
+      "confidence": 0.6,
       "direction": "grow",
-      "hypothesis": "BNY appears focused on expanding into higher-growth client segments where it sees opportunity to accelerate growth.",
-      "id": "strategic_theme:bny:expansion_into_higher_growth_client_segments",
-      "label": "expansion into higher-growth client segments",
+      "hypothesis": "BNY appears to be focusing on organic growth through stronger client experience and differentiated solutions, supported by repeated management emphasis on client-centric priorities and broad-based business growth.",
+      "id": "strategic_theme:bny:client_solution_expansion_and_organic_growth",
+      "label": "Client solution expansion and organic growth",
       "node_type": "StrategicTheme",
       "organization": "BNY",
-      "time_horizon": null,
-      "value": "expansion into higher-growth client segments"
+      "time_horizon": "2025-2026",
+      "value": "Client solution expansion and organic growth"
     },
     {
       "evidence_id": "EV_002",
@@ -175672,9 +175758,71 @@
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "quarterly_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/quarterly-financial-highlights-4q-2023.pdf",
-      "statement": "BNY said it planned to expand into higher-growth client segments."
+      "source_type": "annual_report",
+      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2024.pdf",
+      "statement": "BNY framed its strategy around three pillars including 'be more for clients'."
+    },
+    {
+      "evidence_id": "EV_010",
+      "id": "strategy_evidence:bny:EV_010",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": "2026-07-15",
+      "source_type": "sec_filing",
+      "source_url": "https://content-archive.fast-edgar.com/20260715/A822422CZ22XC2Z2222D224Z8J4KJZD25282/ex991_earningsreleasex2q26.htm",
+      "statement": "BNY said growth was broad-based across Securities Services, Market and Wealth Services, and Investment and Wealth Management in Q2 2026."
+    },
+    {
+      "evidence_id": "EV_011",
+      "id": "strategy_evidence:bny:EV_011",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": "2026-07-15",
+      "source_type": "sec_filing",
+      "source_url": "https://content-archive.fast-edgar.com/20260715/A822422CZ22XC2Z2222D224Z8J4KJZD25282/ex991_earningsreleasex2q26.htm",
+      "statement": "BNY attributed Q2 2026 performance to client activity, continuous investments, and strategic actions to enable differentiated client solutions."
+    },
+    {
+      "evidence_id": "EV_025",
+      "id": "strategy_evidence:bny:EV_025",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included organic growth as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_029",
+      "id": "strategy_evidence:bny:EV_029",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included client experience as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_020",
+      "id": "strategy_evidence:bny:EV_020",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": "2025-10-16",
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000139077725000144/ex991_earningsreleasex3q25.htm",
+      "statement": "BNY said its strategy is working in the 3Q25 earnings release."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.5,
+      "direction": "increase_investment",
+      "hypothesis": "BNY appears to be increasing investment in technology, AI, and product development to expand employee capacity and improve client solutions across its platform.",
+      "id": "strategic_theme:bny:technology_and_ai_enabled_product_innovation",
+      "label": "Technology and AI-enabled product innovation",
+      "node_type": "StrategicTheme",
+      "organization": "BNY",
+      "time_horizon": "2025-2026",
+      "value": "Technology and AI-enabled product innovation"
     },
     {
       "evidence_id": "EV_008",
@@ -175683,62 +175831,28 @@
       "organization": "BNY",
       "publication_date": null,
       "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/letter-from-robin-vince-2023-JA.pdf",
-      "statement": "BNY said it had clarified where it sees strength and where it sees opportunity to accelerate growth."
+      "source_url": "https://www.bny.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2025.pdf",
+      "statement": "BNY said its enterprise AI platform, Eliza, has unlocked capacity for employees."
     },
     {
-      "business_unit": null,
-      "confidence": 0.5,
-      "direction": "transform",
-      "hypothesis": "BNY appears to be continuing product innovation and enterprise optimization in collateral management.",
-      "id": "strategic_theme:bny:collateral_management_product_innovation",
-      "label": "collateral management product innovation",
-      "node_type": "StrategicTheme",
-      "organization": "BNY",
-      "time_horizon": null,
-      "value": "collateral management product innovation"
-    },
-    {
-      "evidence_id": "EV_004",
-      "id": "strategy_evidence:bny:EV_004",
+      "evidence_id": "EV_009",
+      "id": "strategy_evidence:bny:EV_009",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "quarterly_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/quarterly-financial-highlights-4q-2023.pdf",
-      "statement": "BNY emphasized product innovation in collateral management."
+      "source_type": "annual_report",
+      "source_url": "https://www.bny.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2025.pdf",
+      "statement": "BNY said its enterprise AI platform, Eliza, is enabling improved client solutions."
     },
     {
-      "evidence_id": "EV_030",
-      "id": "strategy_evidence:bny:EV_030",
+      "evidence_id": "EV_016",
+      "id": "strategy_evidence:bny:EV_016",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://bk.bnymellon.com/CCM-ECPOConnect.html?cid=MWS_OSM_NAMWSMCMWSCCM2408950_SimonSquire_BK_BD_GP_GL_LIN_PM__BT_PS_1080x1920",
-      "statement": "BNY described ECPO as an integrated end-to-end enterprise optimization solution for collateral management."
-    },
-    {
-      "business_unit": "Pershing",
-      "confidence": 0.5,
-      "direction": "grow",
-      "hypothesis": "BNY appears to be using Pershing and treasury services capabilities to deepen client growth and expand offerings.",
-      "id": "strategic_theme:bny:treasury_services_and_wealth_platform_growth",
-      "label": "treasury services and wealth platform growth",
-      "node_type": "StrategicTheme",
-      "organization": "BNY",
-      "time_horizon": null,
-      "value": "treasury services and wealth platform growth"
-    },
-    {
-      "evidence_id": "EV_005",
-      "id": "strategy_evidence:bny:EV_005",
-      "node_type": "StrategyEvidence",
-      "organization": "BNY",
-      "publication_date": null,
-      "source_type": "quarterly_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/quarterly-financial-highlights-4q-2023.pdf",
-      "statement": "BNY highlighted market-share gains in treasury services."
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000139077726000004/ex993_quarterlyupdatepre.htm",
+      "statement": "BNY's quarterly update deck said it was increasing technology investment."
     },
     {
       "evidence_id": "EV_026",
@@ -175746,41 +175860,93 @@
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://bk.bnymellon.com/wealth-solutions-2022-lp.html?cid=PER_DI_ID005572_PageGrabMobileAmbition_RIA_BD_PC_NA_UND_____",
-      "statement": "BNY said it is investing in innovation, technology, and hands-on consulting in its wealth and advisory platform."
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included technology and product investment as a strategic priority."
     },
     {
-      "evidence_id": "EV_028",
-      "id": "strategy_evidence:bny:EV_028",
+      "evidence_id": "EV_027",
+      "id": "strategy_evidence:bny:EV_027",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included AI as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_037",
+      "id": "strategy_evidence:bny:EV_037",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/quarterly-presentation-4q-2024.pdf",
+      "statement": "BNY's 4Q24 investor presentation listed digitization and AI as a 2025 strategic priority."
+    },
+    {
+      "evidence_id": "EV_042",
+      "id": "strategy_evidence:bny:EV_042",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
       "source_type": "company_announcement",
-      "source_url": "https://bk.bnymellon.com/wealth-solutions-2022-lp.html?cid=PER_DI_ID005572_PageGrabMobileAmbition_RIA_BD_PC_NA_UND_____",
-      "statement": "BNY said its wealth and advisory platform aims to help firms grow assets and expand offerings."
+      "source_url": "https://www.bny.com/corporate/global/en/investor-relations/annual-report-2025.html",
+      "statement": "BNY's 2025 annual report landing page emphasized AI-driven product innovation and efficiency."
     },
     {
       "business_unit": null,
       "confidence": 0.5,
       "direction": "optimize",
-      "hypothesis": "BNY appears to have a medium-term focus on improving profitability and margins through stronger operating execution and investment discipline.",
-      "id": "strategic_theme:bny:profitability_and_margin_improvement",
-      "label": "profitability and margin improvement",
+      "hypothesis": "BNY is likely continuing to prioritize efficiency savings and operating leverage as part of disciplined execution alongside growth initiatives.",
+      "id": "strategic_theme:bny:efficiency_savings_and_operating_leverage",
+      "label": "Efficiency savings and operating leverage",
       "node_type": "StrategicTheme",
       "organization": "BNY",
-      "time_horizon": "medium-term",
-      "value": "profitability and margin improvement"
+      "time_horizon": "2025-2026",
+      "value": "Efficiency savings and operating leverage"
     },
     {
-      "evidence_id": "EV_006",
-      "id": "strategy_evidence:bny:EV_006",
+      "evidence_id": "EV_014",
+      "id": "strategy_evidence:bny:EV_014",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2024.pdf",
-      "statement": "BNY said it communicates medium-term financial targets to improve pre-tax margin."
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000139077726000033/bk-20251231.htm",
+      "statement": "BNY's 2025 Form 10-K said forward-looking statements cover efficiency savings."
+    },
+    {
+      "evidence_id": "EV_017",
+      "id": "strategy_evidence:bny:EV_017",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000139077726000004/ex993_quarterlyupdatepre.htm",
+      "statement": "BNY's quarterly update deck referenced the Project Catalyst efficiency program."
+    },
+    {
+      "evidence_id": "EV_024",
+      "id": "strategy_evidence:bny:EV_024",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included efficiency savings and operating leverage as strategic priorities."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.5,
+      "direction": "reallocate",
+      "hypothesis": "BNY appears to be reallocating resources toward selected growth areas, including product scaling and targeted acquisitions that extend capabilities and reach.",
+      "id": "strategic_theme:bny:growth_investments_in_product_and_acquisitions",
+      "label": "Growth investments in product and acquisitions",
+      "node_type": "StrategicTheme",
+      "organization": "BNY",
+      "time_horizon": "2025-2026",
+      "value": "Growth investments in product and acquisitions"
     },
     {
       "evidence_id": "EV_007",
@@ -175789,38 +175955,110 @@
       "organization": "BNY",
       "publication_date": null,
       "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/annual-report-2024.pdf",
-      "statement": "BNY said it communicates medium-term financial targets to expand profitability."
+      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/notice-of-2025-annual-meeting-of-stockholders.pdf",
+      "statement": "BNY said 2024 strategy execution included the acquisition of Archer Holdco."
     },
     {
-      "evidence_id": "EV_010",
-      "id": "strategy_evidence:bny:EV_010",
-      "node_type": "StrategyEvidence",
-      "organization": "BNY",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/letter-from-robin-vince-2023-JA.pdf",
-      "statement": "BNY said it had higher investments and revenue-related expenses in 2023."
-    },
-    {
-      "evidence_id": "EV_018",
-      "id": "strategy_evidence:bny:EV_018",
-      "node_type": "StrategyEvidence",
-      "organization": "BNY",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/finann2015.pdf.coredownload.pdf",
-      "statement": "BNY Mellon said it was transforming operations, technology, and corporate services to increase productivity and reduce the growth rate of expenses."
-    },
-    {
-      "evidence_id": "EV_020",
-      "id": "strategy_evidence:bny:EV_020",
+      "evidence_id": "EV_030",
+      "id": "strategy_evidence:bny:EV_030",
       "node_type": "StrategyEvidence",
       "organization": "BNY",
       "publication_date": null,
       "source_type": "investor_presentation",
-      "source_url": "https://www.bnymellon.com/content/dam/bnymellon/documents/pdf/investor-relations/investor-relations-innovation-center-experience-august-2016.pdf",
-      "statement": "BNY\u2019s investor-relations presentation identified executing on business improvement as a strategic priority."
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included acquisitions as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_035",
+      "id": "strategy_evidence:bny:EV_035",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/quarterly-presentation-4q-2024.pdf",
+      "statement": "BNY's 4Q24 investor presentation explicitly identified growth investments as a 2025 strategic priority."
+    },
+    {
+      "evidence_id": "EV_036",
+      "id": "strategy_evidence:bny:EV_036",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/quarterly-presentation-4q-2024.pdf",
+      "statement": "BNY said it planned to scale investments in Wove, Archer, ETFs, alternatives, and global clearing."
+    },
+    {
+      "evidence_id": "EV_028",
+      "id": "strategy_evidence:bny:EV_028",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included digital assets as a strategic priority."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.5,
+      "direction": "maintain",
+      "hypothesis": "BNY appears to be maintaining focus on capital planning, resiliency, risk profile, and human capital as enabling capabilities for its broader strategy and operating model transition.",
+      "id": "strategic_theme:bny:capital_planning_and_resiliency_management",
+      "label": "Capital planning and resiliency management",
+      "node_type": "StrategicTheme",
+      "organization": "BNY",
+      "time_horizon": "2026-forward",
+      "value": "Capital planning and resiliency management"
+    },
+    {
+      "evidence_id": "EV_023",
+      "id": "strategy_evidence:bny:EV_023",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included capital plans as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_032",
+      "id": "strategy_evidence:bny:EV_032",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included resiliency as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_033",
+      "id": "strategy_evidence:bny:EV_033",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included risk profile as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_034",
+      "id": "strategy_evidence:bny:EV_034",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.bny.com/assets/corporate/documents/pdf/investor-relations/earnings/quarterly-update-presentation-1q-2026.pdf",
+      "statement": "BNY's Q1 2026 presentation included human capital management as a strategic priority."
+    },
+    {
+      "evidence_id": "EV_044",
+      "id": "strategy_evidence:bny:EV_044",
+      "node_type": "StrategyEvidence",
+      "organization": "BNY",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.bny.com/corporate/global/en/investor-relations/annual-report-2025.html",
+      "statement": "BNY's 2025 annual report landing page described culture as a core leadership principle."
     }
   ]
 }

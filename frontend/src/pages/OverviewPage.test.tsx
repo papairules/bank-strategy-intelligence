@@ -1,11 +1,11 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { OrganizationProvider, useOrganization } from "../context/OrganizationContext";
+import { MemoryRouter } from "react-router-dom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { OrganizationProvider } from "../context/OrganizationContext";
 import { OverviewPage } from "./OverviewPage";
-import { summaryFixture } from "../test/fixtures";
+import { analyticsFixture, summaryFixture } from "../test/fixtures";
 
 function withOrg(children: ReactNode) {
   return <OrganizationProvider value={{ organization: "Wells Fargo", setOrganization: vi.fn() }}><MemoryRouter>{children}</MemoryRouter></OrganizationProvider>;
@@ -15,73 +15,76 @@ function ok(body: unknown) {
   return Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } }));
 }
 
-const technologySnapshot = { organization: "Wells Fargo", total_jobs: 19, enriched_jobs: 19, technology_observation_count: 24, unique_technologies: 23, technology_coverage_percentage: 100, observation_start: "2026-08-20", observation_end: "2026-08-21", generated_at: "2026-08-21T12:00:00Z" };
-const evidenceSummary = { organization: "Wells Fargo", total_evidence_records: 19, total_jobs: 19, jobs_with_evidence: 19, evidence_coverage: 100, enriched_evidence_count: 19, enrichment_coverage: 100, evidence_supporting_hiring_signals: 19, evidence_supporting_technology_observations: 5, evidence_supporting_technology_signals: 4, source_distribution: [{ source: "Workday", source_type: "career_site", evidence_count: 19 }], observation_start: "2026-08-20", observation_end: "2026-08-21", generated_at: "2026-08-21T12:00:00Z" };
-const strategyResult = { organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", generated_signal_count: 0, coverage_context: { total_jobs: 19, jobs_with_evidence: 19, hiring_evidence_coverage: 1, enriched_jobs: 19, enrichment_coverage: 1, hiring_signal_count: 3, technology_observation_count: 24, technology_signal_count: 2, observation_start: "2026-08-20", observation_end: "2026-08-21" }, signals: [], limitations: ["The observation period is shorter than the configured minimum.", "Evidence currently derives from a single public hiring source."] };
-const graphInsights = { organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 0, classified_jobs_used: 0, enriched_jobs_used: 0, hiring_signals_used: 0, strategic_themes_used: 0, top_capabilities: [], top_technologies: [], strategic_themes: [] };
+const graphInsights = {
+  organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 19, classified_jobs_used: 19, enriched_jobs_used: 0, hiring_signals_used: 0, strategic_themes_used: 0,
+  top_capabilities: [{ name: "Risk & Compliance", job_count: 12 }],
+  top_technologies: [{ name: "Python", job_count: 8 }],
+  top_locations: [{ name: "Charlotte, NC", job_count: 9 }],
+  strategic_themes: [],
+};
+const supervisorReportResponse = {
+  organization: "Wells Fargo", strategy_signal_count: 0, hiring_signal_count: 0,
+  coverage: { total_jobs: 19, enriched_jobs: 19, enrichment_coverage_percentage: 100, kg_enriched_job_count: 0, limitations: [] },
+  report: {
+    organization: "Wells Fargo", total_hiring_jobs: 19, executive_summary: "Evidence supports a focused hiring pattern.", strategic_priorities: [], hiring_intelligence: [], cross_domain_alignment: [], business_areas_to_watch: [], opportunity_horizons: [],
+    intelligence_outlook_rows: [], evidence_traceability: [], limitations: [],
+  }, provider: "openai", model: "test-model",
+};
 
 function stubOverviewFetch() {
-  const fetch = vi.fn((input: RequestInfo | URL) => {
+  const fetch = vi.fn((input: RequestInfo | URL, _init?: RequestInit) => {
     const url = String(input);
+    if (url.includes("/agents/supervisor/report")) return ok(supervisorReportResponse);
     if (url.includes("/hiring/") && url.includes("/summary")) return ok({ ...summaryFixture, total_observed_jobs: 19, jobs_with_evidence: 19, evidence_coverage: 100, enriched_job_count: 19, enrichment_coverage: 100, signal_count: 3, observation_start: "2026-08-20", observation_end: "2026-08-21" });
-    if (url.includes("/technology/") && url.includes("/summary")) return ok({ snapshot: technologySnapshot, coverage_limitation: null });
-    if (url.includes("/technology/") && url.includes("/signals")) return ok({ organization: "Wells Fargo", generated_at: "2026-08-21T12:00:00Z", total_jobs: 19, enriched_jobs: 19, enrichment_coverage: 1, technology_observation_count: 24, generated_signal_count: 2, signals: [], limitations: [] });
-    if (url.includes("/evidence/") && url.includes("/summary")) return ok(evidenceSummary);
+    if (url.includes("/hiring/") && url.includes("/analytics")) return ok(analyticsFixture);
     if (url.includes("/graph-insights/")) return ok(graphInsights);
-    return ok(strategyResult);
+    return Promise.reject(new Error(`unexpected fetch: ${url}`));
   });
   vi.stubGlobal("fetch", fetch);
   return fetch;
 }
 
+beforeEach(() => window.sessionStorage.clear());
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe("OverviewPage", () => {
-  it("renders the compact dynamic executive overview", async () => {
+  it("renders every section as a single scroll, in order, with no header banner or jump nav", async () => {
     const fetch = stubOverviewFetch();
     render(withOrg(<OverviewPage />));
-    expect(screen.getByText("Loading executive intelligence…")).toBeInTheDocument();
-    expect(await screen.findByText("What the current evidence supports")).toBeInTheDocument();
-    const context = screen.getByLabelText("Intelligence context");
-    expect(within(context).getByText("Organization")).toBeInTheDocument();
-    expect(within(context).getByText("Wells Fargo")).toBeInTheDocument();
-    expect(within(context).getByText("Observation period")).toBeInTheDocument();
-    expect(within(context).getByText("Source evidence coverage")).toBeInTheDocument();
-    expect(within(context).getByText("AI enrichment coverage")).toBeInTheDocument();
-    expect(within(context).getAllByText("100%")).toHaveLength(2);
 
-    const snapshot = screen.getByText("What the current evidence supports").closest("section")!;
-    for (const label of ["Observed jobs", "Hiring signals", "Strategic signals"]) expect(within(snapshot).getByText(label)).toBeInTheDocument();
-    expect(within(snapshot).getByText("19")).toBeInTheDocument();
-    expect(within(snapshot).getByText("3")).toBeInTheDocument();
-    expect(screen.getByText("Hiring activity in context")).toBeInTheDocument();
-    expect(screen.getByText("Cross-domain conclusions are withheld")).toBeInTheDocument();
-    expect(screen.getByText("Evidence-backed company outlook")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /View Hiring Intelligence/ })).toHaveAttribute("href", "/hiring");
-    expect(screen.getByRole("link", { name: /View Strategic Signals/ })).toHaveAttribute("href", "/signals");
-    expect(screen.getByRole("link", { name: /View Company Report/ })).toHaveAttribute("href", "/report");
-    expect(screen.getAllByRole("link")).toHaveLength(3);
+    expect(screen.queryByText("Loading executive intelligence…")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Intelligence context")).not.toBeInTheDocument();
+    expect(screen.queryByText("What the current evidence supports")).not.toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "Report sections" })).not.toBeInTheDocument();
+
+    expect(await screen.findByText("Observed jobs")).toBeInTheDocument();
+    expect(await screen.findByText("Observed hiring cadence")).toBeInTheDocument();
+    expect(screen.getByText("No report request is made until you select Generate Report.")).toBeInTheDocument();
+    expect(await screen.findByText("Charlotte, NC")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Strategic question")).not.toBeInTheDocument();
+
+    const dividers = Array.from(document.querySelectorAll(".intelligence-divider span")).map((item) => item.textContent);
+    expect(dividers).toEqual(["Hiring intelligence", "Company report", "Knowledge graph insights"]);
+
     expect(fetch.mock.calls.some(([input]) => String(input).includes("/agents/supervisor/report"))).toBe(false);
-
-    for (const removed of ["Evidence records", "Unique technologies", "Technology observations", "Evidence & traceability", "Supports observations", "Supports tech signals", "A bounded technology footprint"]) expect(screen.queryByText(removed, { exact: false })).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Intelligence provenance flow")).not.toBeInTheDocument();
+    expect(fetch.mock.calls.some(([input]) => String(input).includes("/agents/strategy/answer"))).toBe(false);
   });
 
-  it("preserves selected-company scope when opening Company Report", async () => {
-    stubOverviewFetch();
-    function ReportScope() {
-      return <span>Report scope: {useOrganization().organization}</span>;
-    }
-    render(<OrganizationProvider value={{ organization: "BNY", setOrganization: vi.fn() }}><MemoryRouter><Routes><Route index element={<OverviewPage />} /><Route path="report" element={<ReportScope />} /></Routes></MemoryRouter></OrganizationProvider>);
+  it("generates the company report inline, scoped to the current organization", async () => {
+    const fetch = stubOverviewFetch();
+    render(withOrg(<OverviewPage />));
+    await screen.findByText("Observed jobs");
 
-    await userEvent.click(await screen.findByRole("link", { name: /View Company Report/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
 
-    expect(screen.getByText("Report scope: BNY")).toBeInTheDocument();
+    const reportCall = fetch.mock.calls.find(([input]) => String(input).includes("/agents/supervisor/report"));
+    expect(reportCall).toBeDefined();
+    expect(JSON.parse(String(reportCall![1]?.body))).toEqual({ organization: "Wells Fargo" });
   });
 
-  it("renders a safe integrated error state", async () => {
+  it("shows each section's own error state when the backend is unavailable", async () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("Backend unavailable"))));
     render(withOrg(<OverviewPage />));
-    expect(await screen.findByText("One or more intelligence domains could not be loaded.")).toBeInTheDocument();
+    expect((await screen.findAllByText("Backend unavailable")).length).toBeGreaterThan(0);
   });
 });

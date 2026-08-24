@@ -1,65 +1,93 @@
-# Bank Strategy Intelligence
+# Account Growth Intelligence
 
-Bank Strategy Intelligence is a backend platform for researching banking organizations and producing traceable intelligence signals. The V1 vertical implements Hiring Intelligence for public Wells Fargo job postings, with deterministic collection, normalization, persistence, run auditing, scheduling foundations, and a read-only API.
+Account Growth Intelligence turns public hiring evidence into a governed, evidence-traceable account-growth report for banking organizations. It combines deterministic hiring analytics, an LLM-assisted knowledge graph, and a set of governed AI agents (including one with live web search) into a single consolidated per-organization workspace: the "Company Report" you'd use to find where a bank account is worth pursuing next, backed by hiring signals rather than guesswork.
 
-## V1 Scope
+This document reflects the current (v2) state of the project — a full-stack app (FastAPI + React/Vite) with multi-bank coverage, LLM enrichment, deterministic signal generation, a knowledge graph, and five governed agents. It supersedes the original V1 scope, which was a Wells-Fargo-only, backend-only collection pipeline with no frontend or AI.
 
-The current implementation provides:
+## Current State
 
-- Public Wells Fargo Workday job search and detail collection.
-- Source-neutral pagination, record limits, cursor protection, and partial-failure handling.
-- Deterministic Wells Fargo normalization into `JobPosting` and `Evidence` domain models.
-- SQLite persistence with idempotent job upserts.
-- `CollectionRun` audit records for completed, partial, and failed runs.
-- A source-neutral execution service and in-memory interval scheduler.
-- A versioned, read-only FastAPI API for persisted jobs, evidence, and runs.
+- **Multi-bank coverage.** Six organizations are supported end-to-end: Wells Fargo, BNY, Goldman Sachs, Citibank, Morgan Stanley, and Barclays (`frontend/src/config/organization.ts`). Wells Fargo has a live public-source collector (`infrastructure/collectors/hiring/sources/wells_fargo`); the other five organizations' job postings were imported from per-organization CSV snapshots (`data/csv/active_jobs_<org>_<timestamp>.csv`) into the same canonical `JobPosting`/`Evidence` domain models, not a live scheduled crawl.
+- **Deterministic ingestion, still intact from V1.** Source-neutral pagination, cursor protection, partial-failure handling, `CollectionRun` audit records, and SQLite persistence with idempotent upserts.
+- **LLM-assisted enrichment.** Per-job capability/skills/technology/seniority classification (`application/hiring/enrichment.py`), with every extracted value checked against the actual source text before being trusted — ungrounded model output is dropped, not displayed.
+- **Deterministic analytics and signal generation (no LLM).** Hiring concentration signals (geography, capability, leadership, volume, trend), technology observations (LLM-enriched *and* zero-cost keyword-matched), and cross-domain signals that require the *same* job IDs to independently support both a hiring and a technology finding before a pattern is surfaced.
+- **A per-organization knowledge graph.** `application/hiring/kg/` builds a disk-cached NetworkX graph (jobs, evidence, capabilities, technologies, locations, business units, strategic themes) and exposes a cheap read model for the UI.
+- **Five governed agents**, each with a distinct role — see [Agents](#agents) below.
+- **A consolidated React/Vite frontend** — a single "Workspace" page per organization (see [Frontend](#frontend-workspace)).
+- **Cloud Run deployment** — the backend serves the built frontend as a single service (`Procfile`, `.gcloudignore`).
 
-V1 does not include enrichment, AI/LLM processing, strategy analysis, multi-agent orchestration, authentication, a frontend, or additional banks.
+## Agents
+
+| Agent | What it does | Live web search? | Endpoint |
+|---|---|---|---|
+| **Evidence Agent** | Answers grounded questions strictly over persisted evidence, via tool calls with citation validation against what the tools actually returned. | No | `POST /api/v1/agents/evidence/answer` |
+| **Hiring Agent** | LLM-assisted classification of persisted jobs into capability/business-unit/seniority hiring signals — an alternate, LLM-driven view distinct from the deterministic signal generator. | No | `POST /api/v1/agents/hiring/answer` |
+| **Strategy Agent** | A 7-stage LangGraph pipeline: plans research queries, runs real OpenAI web search, extracts evidence, drafts strategic signals, runs a quality-review pass, and scores confidence. Cached per (organization, question, time horizon). | **Yes** | `POST /api/v1/agents/strategy/answer` |
+| **Supervisor Agent** | Orchestrates report generation: calls the Strategy Agent, rebuilds the knowledge graph, regenerates deterministic hiring signals, then validates/scores/combines everything into 30/60/90/180/360-day opportunity horizons. Runs no research of its own. | No (delegates to Strategy Agent) | `POST /api/v1/agents/supervisor/report` |
+| **Report QA** | Single structured LLM call answering a follow-up question strictly from an already-generated report payload; its response schema is dynamically constrained so it cannot cite a reference that isn't in that report. | No | `POST /api/v1/agents/supervisor/report/answer` |
+
+## Frontend (Workspace)
+
+The frontend is a single consolidated page per organization (`frontend/src/pages/OverviewPage.tsx`), reached via the sidebar's "Workspace" entry. In order:
+
+1. **Hiring Intelligence** — observed-jobs metrics, top hiring geography/capability, and a weekly hiring-cadence chart.
+2. **Company Report** — the primary deliverable: generate an evidence-backed account report (executive summary, opportunity outlook table, sources, methodology/limitations) plus a report-scoped Q&A chat.
+3. **Knowledge Graph** — geographic concentration, top capabilities, and top technologies read from the cached per-organization graph.
+
+A fourth section, **Strategic Signals** (an open-ended, live-web-search chat via the Strategy Agent), was removed from the Workspace page by product decision but the component (`features/strategy/AskStrategyPanel.tsx`) and its standalone route (`/signals`) are still in the codebase, just unlinked from navigation.
 
 ## Architecture
 
 ```text
-Public Wells Fargo Workday CXS endpoints
-    -> WellsFargoSourceAdapter
-    -> PaginatedJobCollector
-    -> WellsFargoJobNormalizer
-    -> JobPosting + Evidence
-    -> HiringCollectionExecutionService
-    -> SQLite persistence
-    -> CollectionRun observability
-    -> HiringCollectionScheduler
-    -> FastAPI read API
+Public source (Wells Fargo Workday CXS) / imported records (other 5 banks)
+    -> Source adapter / import -> PaginatedJobCollector -> Normalizer
+    -> JobPosting + Evidence (SQLite, CollectionRun audit)
+    -> HiringEnrichmentService (LLM, grounded against source text)
+    -> Deterministic analytics & signal generation
+         (HiringAnalyticsService, HiringSignalService,
+          TechnologyAnalyticsService, CrossDomainStrategicSignalService)
+    -> HiringKnowledgeGraphService (per-org, disk-cached graph)
+    -> Agents (Evidence, Hiring, Strategy, Supervisor, Report QA)
+    -> FastAPI read + agent API (/api/v1/*)
+    -> React/Vite frontend (single-page Workspace)
 ```
 
-The core boundaries are source-neutral. Wells Fargo and Workday-specific parsing is isolated under infrastructure, while domain models, execution, scheduling, and persistence protocols do not depend on that source.
+Source-specific parsing stays isolated under `infrastructure/`; domain models, execution, scheduling, and persistence protocols do not depend on any one source.
 
 ## Package Structure
 
 ```text
 backend/app/
-├── api/                         # FastAPI dependencies and versioned read routes
-│   └── v1/hiring/
-├── application/hiring/          # Collection contracts, execution, queries, auditing, scheduling
-├── domain/hiring/                # JobPosting and hiring enums
-├── domain/intelligence/          # Evidence and intelligence signal contracts
-├── infrastructure/collectors/    # Generic collector plus source adapters/normalizers
-│   └── hiring/sources/wells_fargo/
-├── infrastructure/composition/   # Wells Fargo execution and scheduler wiring
-├── infrastructure/persistence/   # SQLite repositories and schema
-├── config.py                     # Environment-backed settings
-└── main.py                       # FastAPI application entry point
+├── api/v1/                        # FastAPI routes: hiring, technology, evidence, strategy, graph_insights, agents
+├── application/
+│   ├── agents/                    # evidence_agent, hiring_agent, strategy_agent, supervisor_agent
+│   ├── hiring/                    # collection, enrichment, analytics, signal_generation, kg/
+│   ├── technology/                # technology observation/analytics/signals
+│   ├── evidence/                  # unified evidence read model
+│   └── strategy/                  # cross-domain deterministic signal service
+├── domain/                        # JobPosting, Evidence, intelligence signal contracts
+├── infrastructure/
+│   ├── collectors/hiring/         # PaginatedJobCollector + source adapters (wells_fargo)
+│   ├── composition/                # DI wiring, one file per agent/service
+│   ├── llm/                        # openai/ and vertex/ provider clients
+│   └── persistence/hiring/         # SQLite repositories
+├── config.py                      # BSI_-prefixed environment settings
+└── main.py                        # FastAPI entry point; serves frontend/dist when built
 
-tests/
-├── api/
-└── unit/
+frontend/src/
+├── pages/                         # OverviewPage (Workspace) + unlinked standalone pages
+├── features/                      # hiring/, report/, strategy/, insights/, evidence/
+├── api/, components/, context/, hooks/, layouts/, types/, utils/
+
+tests/                             # backend: api/, unit/
 ```
 
 ## Requirements
 
-- Python 3.13 or newer
-- `pip`
+- Python 3.13+
+- Node.js 18+ and `npm`
+- An OpenAI API key to exercise any LLM-backed feature (enrichment, agents) — everything else runs without one
 
-SQLite is provided by Python's standard library. No external database service is required for local V1 use.
+SQLite is provided by Python's standard library; no external database service is required.
 
 ## Setup
 
@@ -67,213 +95,117 @@ SQLite is provided by Python's standard library. No external database service is
 git clone <repository-url>
 cd bank-strategy-intelligence
 python3.13 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate   # or .venv\Scripts\activate on Windows
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
+
+cd frontend
+npm install
 ```
+
+Create a `.env` at the repo root for local secrets (never commit it) — see [Configuration](#configuration).
 
 ## Run Tests
 
 ```bash
-pytest
+pytest                # backend, fully offline
+cd frontend && npm test   # frontend (Vitest)
 ```
 
-The suite is fully offline. Wells Fargo HTTP behavior is tested with synthetic fixtures and `httpx.MockTransport`; tests do not crawl or contact Workday.
+## Run Locally
 
-## Run FastAPI Locally
+**Split dev mode** (hot reload on both sides):
 
 ```bash
-uvicorn backend.app.main:app --reload
+uvicorn backend.app.main:app --reload      # backend on :8000
+cd frontend && npm run dev                 # frontend on :5173 (or next free port)
 ```
 
-Useful local URLs:
-
-- API root: <http://127.0.0.1:8000/>
-- Health check: <http://127.0.0.1:8000/health>
-- Swagger UI: <http://127.0.0.1:8000/docs>
-- OpenAPI JSON: <http://127.0.0.1:8000/openapi.json>
-
-Importing or starting the FastAPI application does not start the scheduler, execute collection, or make network requests.
-
-## Run the Frontend Locally
-
-The initial dashboard uses React, TypeScript, and Vite. It reads the versioned
-FastAPI endpoints and does not trigger collection or LLM enrichment.
+**Combined mode** (matches production/Cloud Run — one process serves both):
 
 ```bash
-cd frontend
-npm install
-npm run dev
+cd frontend && npm run build
+uvicorn backend.app.main:app --reload      # serves frontend/dist at "/"
 ```
 
-The Vite development server runs at <http://localhost:5173>. The API defaults to
-<http://localhost:8000>; override it when needed:
+Useful local URLs: API root `http://127.0.0.1:8000/`, health check `/health`, Swagger UI `/docs`.
 
-```bash
-VITE_API_BASE_URL=http://localhost:8000 npm run dev
-```
+## API Surface
 
-Frontend validation commands:
+| Route group | Purpose |
+|---|---|
+| `GET /api/v1/hiring/...` | Read-only jobs, evidence links, collection runs, summary/analytics/signals |
+| `GET /api/v1/technology/...` | Technology observation summary/analytics/signals |
+| `GET /api/v1/evidence/...` | Unified evidence records and summary |
+| `GET /api/v1/strategy/organizations/{organization}/signals` | Deterministic cross-domain signals (not the Strategy Agent) |
+| `GET /api/v1/graph-insights/organizations/{organization}` | Cached knowledge-graph read model |
+| `POST /api/v1/agents/*` | The five governed agents — see [Agents](#agents) |
 
-```bash
-npm run build
-npm run lint
-npm test
-```
-
-## Read API
-
-All V1 Hiring Intelligence routes are read-only:
-
-| Method | Endpoint | Behavior |
-|---|---|---|
-| `GET` | `/api/v1/hiring/jobs` | Lists jobs with optional `organization`, `country`, and `employment_type` filters plus `limit`/`offset` pagination. |
-| `GET` | `/api/v1/hiring/jobs/{job_id}` | Returns one persisted job or `404`. |
-| `GET` | `/api/v1/hiring/jobs/{job_id}/evidence` | Returns evidence linked through the job's persisted `evidence_id`. |
-| `GET` | `/api/v1/hiring/runs` | Lists recent collection runs with optional `organization` and `limit`. |
-| `GET` | `/api/v1/hiring/runs/{run_id}` | Returns one collection run or `404`. |
-
-Job list defaults are `limit=25` and `offset=0`; the maximum limit is 100. Run lists default to 20 with a maximum of 100. Invalid UUIDs, enums, limits, and offsets return `422` through FastAPI validation.
-
-The API exposes normalized domain records only. It does not expose raw Workday search or detail payloads.
+All non-agent routes are read-only. Job list defaults are `limit=25`/`offset=0` (max 100); invalid UUIDs/enums/limits return `422`.
 
 ## Configuration
 
-Settings use the `BSI_` environment prefix.
+All settings use the `BSI_` environment prefix (`backend/app/config.py`).
 
 | Environment variable | Default | Purpose |
 |---|---:|---|
-| `BSI_SQLITE_DATABASE_PATH` | `data/hiring-intelligence.sqlite3` | Local SQLite database location. |
+| `BSI_SQLITE_DATABASE_PATH` | `data/hiring-intelligence.sqlite3` | SQLite database location. |
+| `BSI_HIRING_KG_GRAPH_DIRECTORY` | `data/graphs` | Disk cache for per-organization knowledge graphs. |
 | `BSI_WELLS_FARGO_REQUEST_TIMEOUT_SECONDS` | `20.0` | Timeout for public Workday requests. |
-| `BSI_WELLS_FARGO_RETRY_COUNT` | `2` | Retry count for rate limits and transient server errors. |
-| `BSI_WELLS_FARGO_SCHEDULE_ENABLED` | `false` | Enables the configured scheduled job when the scheduler is explicitly invoked. |
-| `BSI_WELLS_FARGO_SCHEDULE_INTERVAL_SECONDS` | `86400` | Interval measured from the previous run's completion. |
-| `BSI_WELLS_FARGO_SCHEDULE_MAX_PAGES` | `1` | Maximum pages per scheduled run. |
-| `BSI_WELLS_FARGO_SCHEDULE_MAX_RECORDS` | `20` | Maximum records processed per scheduled run. |
-| `BSI_STRATEGY_AGENT_ENABLED` | `false` | Enables the interactive LangGraph Strategy Agent POST endpoint. |
-| `BSI_STRATEGY_AGENT_PROVIDER` | `openai_web` | Provider selector for the interactive Strategy Agent. |
-| `BSI_OPENAI_API_KEY` | unset | OpenAI credential used by live strategy research. |
-| `BSI_OPENAI_MODEL` | `gpt-5.4-mini` | OpenAI model used for planning, extraction, inference, and quality review. |
+| `BSI_WELLS_FARGO_RETRY_COUNT` | `2` | Retry count for rate limits/transient errors. |
+| `BSI_WELLS_FARGO_SCHEDULE_ENABLED` | `false` | Enables the scheduled collection job when explicitly invoked. |
+| `BSI_WELLS_FARGO_SCHEDULE_INTERVAL_SECONDS` | `86400` | Interval from the previous run's completion. |
+| `BSI_WELLS_FARGO_SCHEDULE_MAX_PAGES` / `_MAX_RECORDS` | `1` / `20` | Per-run scheduled limits. |
+| `BSI_HIRING_ENRICHMENT_ENABLED` | `false` | Enables LLM-assisted per-job enrichment. |
+| `BSI_HIRING_LLM_PROVIDER` | `vertex_gemini` | Enrichment provider. |
+| `BSI_GEMINI_MODEL` | `gemini-2.5-flash` | Model for Gemini-backed enrichment. |
+| `BSI_EVIDENCE_AGENT_ENABLED` | `false` | Enables the Evidence Agent. |
+| `BSI_EVIDENCE_AGENT_MODEL` | `gemini-2.5-flash` | Evidence Agent model. |
+| `BSI_STRATEGY_AGENT_ENABLED` | `false` | Enables the live-web-search Strategy Agent. |
+| `BSI_STRATEGY_AGENT_PROVIDER` | `openai_web` | Strategy Agent provider. |
+| `BSI_STRATEGY_AGENT_CACHE_TTL_HOURS` | `24.0` | How long an identical (org, question, time horizon) answer is reused before re-researching. |
+| `BSI_HIRING_AGENT_ENABLED` | `false` | Enables the LLM-assisted Hiring Agent. |
+| `BSI_HIRING_AGENT_MAX_JOBS` | unset | Caps jobs classified per Hiring Agent run. |
+| `BSI_SUPERVISOR_AGENT_ENABLED` | `false` | Enables Company Report generation. |
+| `BSI_REPORT_QA_ENABLED` | `false` | Enables the report Q&A chat. |
+| `BSI_OPENAI_API_KEY` | unset | OpenAI credential used by the Strategy Agent, Supervisor, and Report QA. |
+| `BSI_OPENAI_MODEL` | `gpt-5.4-mini` | Model used by OpenAI-backed agents. |
 
-Example:
-
-```bash
-export BSI_SQLITE_DATABASE_PATH=data/local-hiring.sqlite3
-export BSI_WELLS_FARGO_REQUEST_TIMEOUT_SECONDS=20
-export BSI_WELLS_FARGO_RETRY_COUNT=0
-```
-
-Do not commit `.env` files, credentials, or local databases. The public Workday source does not require credentials.
-
-To enable the interactive Strategy Agent locally, set the server-side variables before starting FastAPI:
+Example minimal local setup with agents enabled:
 
 ```bash
 export BSI_STRATEGY_AGENT_ENABLED=true
+export BSI_SUPERVISOR_AGENT_ENABLED=true
+export BSI_REPORT_QA_ENABLED=true
+export BSI_HIRING_AGENT_ENABLED=true
 export BSI_OPENAI_API_KEY=<your-key>
-export BSI_OPENAI_MODEL=gpt-5.4-mini
-uvicorn backend.app.main:app --reload
 ```
 
-`POST /api/v1/agents/strategy/answer` accepts `organization`, `question`, and an optional `time_horizon`. Its response retains the legacy summary and findings fields and adds canonical `strategic_signals` with confidence, evidence IDs, and source URLs. The deterministic `GET /api/v1/strategy/organizations/{organization}/signals` flow is separate.
+Do not commit `.env` files or credentials. Note: unlike a typical setup, `data/` (the SQLite database, per-organization knowledge-graph cache, CSV snapshots, and the Hiring Agent's job-page fetch cache) is currently checked into this repo rather than gitignored — the relevant `.gitignore` rules exist but are commented out. Worth revisiting before this grows further.
 
-## SQLite Persistence
+## Deployment (Cloud Run)
 
-The configured database is initialized lazily by the read API or explicitly by a composition factory. Local database files under `data/` are ignored by Git.
-
-The schema stores:
-
-- Normalized `JobPosting` records.
-- `Evidence` records and provenance metadata.
-- `CollectionRun` audit records.
-
-Jobs are upserted using `(organization, source_job_id)`, so collecting the same Wells Fargo requisition again updates the existing record instead of creating a duplicate. Evidence linkage is enforced with `JobPosting.evidence_id`. Raw Workday payload archival is intentionally separate and is not implemented in V1.
-
-## Evidence and Provenance
-
-Every normalized job has a linked `Evidence` record containing:
-
-- Public source URL and source title.
-- Career-site source type.
-- Retrieval timestamp.
-- A deterministic, bounded source excerpt.
-- Stable raw reference such as `workday:wf:WellsFargoJobs:<jobReqId>`.
-- Collector identity and JSON-compatible provenance metadata.
-
-The normalizer guarantees that `JobPosting.evidence_id` exactly matches `Evidence.evidence_id`. Business unit, capability, skill, technology, seniority, and leadership fields remain unpopulated unless supported by later deterministic or enrichment stages.
-
-## Collection and Failure Behavior
-
-`PaginatedJobCollector` processes opaque cursors sequentially, respects page and record limits, detects repeated cursors, and continues when individual records fail.
-
-- Clean natural completion produces `completed`.
-- Valid records mixed with record/detail failures produce `partial`; valid jobs are still persisted.
-- A page failure after prior success produces `partial`.
-- An initial source failure with no jobs produces `failed` and persists no fake jobs.
-- Known persistence failures produce typed execution failures and attempt to preserve a failed run audit.
-- Unexpected programming errors are not silently converted by the collection or execution layers.
-
-Every execution uses its pipeline-generated `run_id` for `CollectionRun` observability.
-
-## Scheduling
-
-The scheduler is an in-memory, source-neutral interval scheduler. It invokes `HiringCollectionExecutionService`; it does not contain collector, normalization, SQL, or source-specific logic.
-
-Scheduling is disabled by default and never starts on import. Enabling the setting alone does not start a background task. A host process must explicitly call `run_due_jobs()` or `start()` and must close the composition during shutdown.
-
-For one tightly controlled scheduled execution using conservative limits:
+The backend serves the built frontend as a single service — no separate frontend host is required.
 
 ```bash
-export BSI_WELLS_FARGO_SCHEDULE_ENABLED=true
-export BSI_WELLS_FARGO_SCHEDULE_MAX_PAGES=1
-export BSI_WELLS_FARGO_SCHEDULE_MAX_RECORDS=20
-export BSI_WELLS_FARGO_RETRY_COUNT=0
-
-python - <<'PY'
-import asyncio
-
-from backend.app.infrastructure.composition.hiring_scheduling import (
-    create_wells_fargo_scheduled_hiring_composition,
-)
-
-
-async def main():
-    composition = create_wells_fargo_scheduled_hiring_composition()
-    try:
-        outcomes = await composition.scheduler.run_due_jobs()
-        for outcome in outcomes:
-            print(outcome.model_dump(mode="json"))
-    finally:
-        await composition.close()
-
-
-asyncio.run(main())
-PY
+cd frontend && npm run build      # produces frontend/dist
+gcloud run deploy <service-name> --source . --region <your-region>
 ```
 
-This command makes live public Workday requests when enabled. Review Wells Fargo's current public access rules before running it. For a long-running service, application lifecycle integration should explicitly call `scheduler.start()` and `scheduler.stop()`; that integration is intentionally not present in `main.py` yet.
-
-## Wells Fargo Source Safety
-
-The adapter uses the public Wells Fargo Workday CXS job search and job-detail endpoints only. Operate conservatively:
-
-- Request a small number of pages and records.
-- Respect `403`, `429`, rate limits, robots guidance, and applicable terms.
-- Stop on restrictions; do not bypass authentication, CAPTCHAs, Cloudflare, or bot protections.
-- Do not use proxies, rotating user agents, browser impersonation, or candidate/application endpoints.
-- Do not submit data or crawl the full job inventory.
-- Keep deterministic parsing and normalization free of LLM behavior.
+`Procfile` (`web: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT`) and `.gcloudignore` are already configured for buildpack-based deploys. Deploy with `--no-traffic` and a `--tag` to preview a new revision before shifting production traffic.
 
 ## Current Limitations
 
-- Wells Fargo is the only live source.
-- SQLite and in-memory scheduling are intended for a local POC, not distributed production deployment.
-- Scheduler state does not survive process restarts; `CollectionRun` remains the durable audit history.
-- No authentication, authorization, API rate limiting, or write API exists.
-- Query filters are exact and case-sensitive; pagination does not report a total match count.
-- No schema migration framework or raw-source archive exists.
-- No historical change analytics, hiring concentration analysis, enrichment, or signal scoring exists yet.
-- No Strategy, Technology, Organization, Financial, News, Supervisor, or Opportunity agents are implemented.
+- SQLite and in-memory scheduling remain a local/single-service POC scope, not a distributed production deployment.
+- Only Wells Fargo has a live, scheduled public-source collector; the other five organizations rely on imported snapshots.
+- Enrichment coverage varies significantly by organization — reports for low-coverage organizations will have noticeably thinner hiring/technology findings.
+- Cross-domain deterministic signals require fairly strict minimums (jobs, enrichment coverage, observation window) and commonly read `0` on smaller datasets — this is expected, not a bug.
+- Company Report generation is not itself cached — regenerating the same report re-runs the full Supervisor synthesis every time, even though the Strategy Agent's own sub-call is cached.
+- No authentication, authorization, or write API exists.
+- No report export/print/share mechanism — a generated report only persists in the browser's session storage.
 
-## Logical Next Phase
+## Known Gaps / Improvement Ideas
 
-The next platform phase should add deterministic intelligence-signal generation and additional research verticals, beginning with Strategy Intelligence and Organization Intelligence. Those capabilities can then feed a Supervisor Agent for cross-domain correlation. Consulting opportunity hypotheses should remain isolated in a later Opportunity Agent and should be generated only from correlated, traceable evidence—not independently by research agents.
+- The Company Report's `strategic_priorities`, `cross_domain_alignment`, `business_areas_to_watch`, and `opportunity_horizons` fields are already generated by `DeterministicReportGenerator` but are not yet rendered in `CompanyReportBody.tsx` — the outlook table and executive summary are the only parts of that data currently surfaced to the user.
+- Report-level caching (beyond the existing Strategy Agent cache) would make repeat views of the same account meaningfully cheaper and faster.
+- A basic export/copy action for a generated report would materially improve its usefulness for the account-growth workflow this tool is built around.

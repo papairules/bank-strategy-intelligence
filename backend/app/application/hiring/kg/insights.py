@@ -6,7 +6,9 @@ from .queries import (
     get_capabilities_for_organization,
     get_evidence_for_strategic_theme,
     get_jobs_for_capability,
+    get_jobs_for_location,
     get_jobs_for_technology,
+    get_locations_for_organization,
     get_strategic_themes_for_organization,
     get_technologies_for_organization,
 )
@@ -44,6 +46,7 @@ class GraphInsightsSnapshot(BaseModel):
     strategic_themes_used: int = Field(ge=0)
     top_capabilities: list[GraphInsightConcept]
     top_technologies: list[GraphInsightConcept]
+    top_locations: list[GraphInsightConcept]
     strategic_themes: list[GraphInsightStrategicTheme]
 
 
@@ -65,6 +68,9 @@ class GraphInsightsService:
         technologies = self._ranked_concepts(
             get_technologies_for_organization(graph), lambda name: get_jobs_for_technology(graph, name)
         )
+        locations = self._ranked_concepts(
+            get_locations_for_organization(graph), lambda name: get_jobs_for_location(graph, name)
+        )
         return GraphInsightsSnapshot(
             organization=organization,
             node_count=graph.number_of_nodes(),
@@ -76,6 +82,7 @@ class GraphInsightsService:
             strategic_themes_used=summary.strategic_themes_used,
             top_capabilities=capabilities[: self._top_n],
             top_technologies=technologies[: self._top_n],
+            top_locations=locations[: self._top_n],
             strategic_themes=self._strategic_themes(graph, organization),
         )
 

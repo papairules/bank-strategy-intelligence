@@ -15906,66 +15906,27 @@
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Morgan Stanley",
       "provider": "openai",
       "question": "Generate a company intelligence report for Morgan Stanley.",
       "source": "org:morgan_stanley",
-      "target": "strategic_theme:morgan_stanley:integrated_platform_transformation_and_monetization"
+      "target": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Morgan Stanley",
       "provider": "openai",
       "question": "Generate a company intelligence report for Morgan Stanley.",
       "source": "org:morgan_stanley",
-      "target": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Morgan Stanley",
-      "provider": "openai",
-      "question": "Generate a company intelligence report for Morgan Stanley.",
-      "source": "org:morgan_stanley",
-      "target": "strategic_theme:morgan_stanley:institutional_securities_revenue_momentum"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Morgan Stanley",
-      "provider": "openai",
-      "question": "Generate a company intelligence report for Morgan Stanley.",
-      "source": "org:morgan_stanley",
-      "target": "strategic_theme:morgan_stanley:investment_management_as_an_asset_led_growth_contributor"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Morgan Stanley",
-      "provider": "openai",
-      "question": "Generate a company intelligence report for Morgan Stanley.",
-      "source": "org:morgan_stanley",
-      "target": "strategic_theme:morgan_stanley:firmwide_operating_efficiency_and_profitability"
+      "target": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy"
     },
     {
       "derivation_type": "persisted_source",
@@ -129118,173 +129079,146 @@
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:integrated_platform_transformation_and_monetization",
-      "target": "strategy_evidence:morgan_stanley:EV_005"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:integrated_platform_transformation_and_monetization",
-      "target": "strategy_evidence:morgan_stanley:EV_017"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:integrated_platform_transformation_and_monetization",
-      "target": "strategy_evidence:morgan_stanley:EV_031"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "target": "strategy_evidence:morgan_stanley:EV_009"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "target": "strategy_evidence:morgan_stanley:EV_010"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "target": "strategy_evidence:morgan_stanley:EV_011"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "target": "strategy_evidence:morgan_stanley:EV_022"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "target": "strategy_evidence:morgan_stanley:EV_023"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "target": "strategy_evidence:morgan_stanley:EV_028"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "target": "strategy_evidence:morgan_stanley:EV_029"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:institutional_securities_revenue_momentum",
-      "target": "strategy_evidence:morgan_stanley:EV_012"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:institutional_securities_revenue_momentum",
-      "target": "strategy_evidence:morgan_stanley:EV_018"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:institutional_securities_revenue_momentum",
-      "target": "strategy_evidence:morgan_stanley:EV_025"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:investment_management_as_an_asset_led_growth_contributor",
+      "source": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline",
       "target": "strategy_evidence:morgan_stanley:EV_014"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:investment_management_as_an_asset_led_growth_contributor",
-      "target": "strategy_evidence:morgan_stanley:EV_019"
+      "source": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline",
+      "target": "strategy_evidence:morgan_stanley:EV_015"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:investment_management_as_an_asset_led_growth_contributor",
+      "source": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline",
+      "target": "strategy_evidence:morgan_stanley:EV_017"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline",
+      "target": "strategy_evidence:morgan_stanley:EV_020"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline",
+      "target": "strategy_evidence:morgan_stanley:EV_021"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline",
       "target": "strategy_evidence:morgan_stanley:EV_024"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:investment_management_as_an_asset_led_growth_contributor",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_032"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_033"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_039"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_040"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_041"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_026"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
       "target": "strategy_evidence:morgan_stanley:EV_027"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:firmwide_operating_efficiency_and_profitability",
-      "target": "strategy_evidence:morgan_stanley:EV_002"
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_028"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:53:15.109911+00:00",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Morgan Stanley",
-      "source": "strategic_theme:morgan_stanley:firmwide_operating_efficiency_and_profitability",
-      "target": "strategy_evidence:morgan_stanley:EV_003"
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_029"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:49:14.090087+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Morgan Stanley",
+      "source": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "target": "strategy_evidence:morgan_stanley:EV_030"
     }
   ],
   "graph": {
@@ -129294,7 +129228,7 @@
     "hiring_signals_used": 5,
     "jobs_read": 933,
     "organization": "Morgan Stanley",
-    "strategic_themes_used": 5
+    "strategic_themes_used": 2
   },
   "multigraph": true,
   "nodes": [
@@ -146013,201 +145947,65 @@
     },
     {
       "business_unit": null,
-      "confidence": 0.6,
-      "direction": "transform",
-      "hypothesis": "Morgan Stanley appears to be continuing to transform and monetize its integrated Wealth Management, Investment Management, and Institutional Securities platform, with management describing the combined model as a durable strategic advantage and linking it to future client growth and monetization opportunities.",
-      "id": "strategic_theme:morgan_stanley:integrated_platform_transformation_and_monetization",
-      "label": "Integrated platform transformation and monetization",
+      "confidence": 0.85,
+      "direction": "optimize",
+      "hypothesis": "Morgan Stanley appears to be prioritizing operating leverage and cost discipline, as the efficiency ratio improved in FY 2024 and remained near that level in 2025 while management outlined further efficiency improvement.",
+      "id": "strategic_theme:morgan_stanley:firmwide_efficiency_and_expense_discipline",
+      "label": "Firmwide efficiency and expense discipline",
       "node_type": "StrategicTheme",
       "organization": "Morgan Stanley",
-      "time_horizon": "current and future",
-      "value": "Integrated platform transformation and monetization"
-    },
-    {
-      "evidence_id": "EV_005",
-      "id": "strategy_evidence:morgan_stanley:EV_005",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2024ams/2024_Shareholder_Letter.pdf",
-      "statement": "Morgan Stanley described its combined Wealth Management, Investment Management, and Institutional Securities platform as a 'class of one' business model with scale and durability."
-    },
-    {
-      "evidence_id": "EV_017",
-      "id": "strategy_evidence:morgan_stanley:EV_017",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000114036125012302/ny20039620x1_def14a.pdf",
-      "statement": "Morgan Stanley said its strategy and balanced business model enabled strong results in 2024."
-    },
-    {
-      "evidence_id": "EV_031",
-      "id": "strategy_evidence:morgan_stanley:EV_031",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": "2026-08-10",
-      "source_type": "company_announcement",
-      "source_url": "https://www.morganstanley.com/press-releases/morgan-stanley-launches-the-us-innovation-infrastructure-initiative",
-      "statement": "Morgan Stanley said the initiative brings together advisory, capital markets, wealth management, and investment management capabilities to support clients across key stages of growth."
-    },
-    {
-      "business_unit": "Wealth Management",
-      "confidence": 0.6,
-      "direction": "grow",
-      "hypothesis": "Wealth Management appears to remain a key growth priority, supported by strong client asset accumulation and management-described capability buildouts in alternatives, private markets, tax-efficient investing, digital assets, family office, and tailored lending.",
-      "id": "strategic_theme:morgan_stanley:wealth_management_expansion_through_client_assets_and_product_breadth",
-      "label": "Wealth management expansion through client assets and product breadth",
-      "node_type": "StrategicTheme",
-      "organization": "Morgan Stanley",
-      "time_horizon": "FY2024 through future",
-      "value": "Wealth management expansion through client assets and product breadth"
-    },
-    {
-      "evidence_id": "EV_009",
-      "id": "strategy_evidence:morgan_stanley:EV_009",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2026ams/2026_Shareholder_Letter.pdf",
-      "statement": "Wealth Management client assets reached $7.4 trillion at year-end."
-    },
-    {
-      "evidence_id": "EV_010",
-      "id": "strategy_evidence:morgan_stanley:EV_010",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2026ams/2026_Shareholder_Letter.pdf",
-      "statement": "Morgan Stanley said Wealth Management added more than $1.6 trillion of net new assets over five years."
-    },
-    {
-      "evidence_id": "EV_011",
-      "id": "strategy_evidence:morgan_stanley:EV_011",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2026ams/2026_Shareholder_Letter.pdf",
-      "statement": "Morgan Stanley listed alternatives, private markets, tax-efficient investing, digitized assets, family office, and tailored lending as capability buildouts for future growth."
-    },
-    {
-      "evidence_id": "EV_022",
-      "id": "strategy_evidence:morgan_stanley:EV_022",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/10q0924.pdf",
-      "statement": "Wealth Management added $64 billion in net new assets in 3Q24."
-    },
-    {
-      "evidence_id": "EV_023",
-      "id": "strategy_evidence:morgan_stanley:EV_023",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/10q0924.pdf",
-      "statement": "Wealth Management reached $6 trillion in total client assets as of September 30, 2024."
-    },
-    {
-      "evidence_id": "EV_028",
-      "id": "strategy_evidence:morgan_stanley:EV_028",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": "2026-01-15",
-      "source_type": "investor_presentation",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/4q2025-strategic-update.pdf",
-      "statement": "Morgan Stanley said Wealth Management's strategy is delivering results and is aligned to future growth."
-    },
-    {
-      "evidence_id": "EV_029",
-      "id": "strategy_evidence:morgan_stanley:EV_029",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": "2026-01-15",
-      "source_type": "investor_presentation",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/4q2025-strategic-update.pdf",
-      "statement": "Morgan Stanley referenced alternatives, private markets, tax-efficient investing, crypto, and tokenization as priorities for future expansion in Wealth Management."
-    },
-    {
-      "business_unit": "Institutional Securities",
-      "confidence": 0.5,
-      "direction": "grow",
-      "hypothesis": "Institutional Securities appears to remain an important franchise Morgan Stanley is growing, with sustained revenue momentum across FY2024 and 2Q25 indicating continued emphasis on this business line.",
-      "id": "strategic_theme:morgan_stanley:institutional_securities_revenue_momentum",
-      "label": "Institutional securities revenue momentum",
-      "node_type": "StrategicTheme",
-      "organization": "Morgan Stanley",
-      "time_horizon": "FY2024 through 2Q25",
-      "value": "Institutional securities revenue momentum"
-    },
-    {
-      "evidence_id": "EV_012",
-      "id": "strategy_evidence:morgan_stanley:EV_012",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000089542125000304/ms-20241231.htm",
-      "statement": "Institutional Securities net revenues were $28.080 billion in 2024, up 22% year over year."
-    },
-    {
-      "evidence_id": "EV_018",
-      "id": "strategy_evidence:morgan_stanley:EV_018",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000114036125012302/ny20039620x1_def14a.pdf",
-      "statement": "Institutional Securities net revenues were $28.1 billion in 2024, up 22% from 2023."
-    },
-    {
-      "evidence_id": "EV_025",
-      "id": "strategy_evidence:morgan_stanley:EV_025",
-      "node_type": "StrategyEvidence",
-      "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/finsup2q2025/finsup2q2025.pdf",
-      "statement": "Institutional Securities net revenues were $7,643 million in 2Q25."
-    },
-    {
-      "business_unit": "Investment Management",
-      "confidence": 0.5,
-      "direction": "grow",
-      "hypothesis": "Investment Management appears to be a continuing growth contributor within Morgan Stanley's asset-led strategy, with higher revenues and ongoing monetization tied to average AUM and broader client asset expansion.",
-      "id": "strategic_theme:morgan_stanley:investment_management_as_an_asset_led_growth_contributor",
-      "label": "Investment management as an asset-led growth contributor",
-      "node_type": "StrategicTheme",
-      "organization": "Morgan Stanley",
-      "time_horizon": "FY2024 through 2Q25",
-      "value": "Investment management as an asset-led growth contributor"
+      "time_horizon": "FY 2024 to FY 2025",
+      "value": "Firmwide efficiency and expense discipline"
     },
     {
       "evidence_id": "EV_014",
       "id": "strategy_evidence:morgan_stanley:EV_014",
       "node_type": "StrategyEvidence",
       "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000089542125000304/ms-20241231.htm",
-      "statement": "Investment Management net revenues were $5.861 billion in 2024, up 9% year over year."
+      "publication_date": "2025-01-16",
+      "source_type": "earnings_release",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/4q2024.pdf",
+      "statement": "Morgan Stanley reported a full-year 2024 expense efficiency ratio of 71%, compared with 77% in the prior year."
     },
     {
-      "evidence_id": "EV_019",
-      "id": "strategy_evidence:morgan_stanley:EV_019",
+      "evidence_id": "EV_015",
+      "id": "strategy_evidence:morgan_stanley:EV_015",
       "node_type": "StrategyEvidence",
       "organization": "Morgan Stanley",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000114036125012302/ny20039620x1_def14a.pdf",
-      "statement": "Morgan Stanley said Investment Management is helping deliver the firm's asset-led strategy."
+      "publication_date": "2025-01-16",
+      "source_type": "earnings_release",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/4q2024.pdf",
+      "statement": "Morgan Stanley attributed its improved 2024 expense efficiency ratio to higher revenues and expense discipline."
+    },
+    {
+      "evidence_id": "EV_017",
+      "id": "strategy_evidence:morgan_stanley:EV_017",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": "2025-07-16",
+      "source_type": "earnings_release",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000089542125000419/a2q25msearningsrelease.htm",
+      "statement": "Morgan Stanley reported an expense efficiency ratio of 71% in Q2 2025."
+    },
+    {
+      "evidence_id": "EV_020",
+      "id": "strategy_evidence:morgan_stanley:EV_020",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": "2025-02-24",
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000089542125000304/ms-20241231.htm",
+      "statement": "Morgan Stanley reported a full-year 2024 expense efficiency ratio of 71%, versus 77% in the prior year."
+    },
+    {
+      "evidence_id": "EV_021",
+      "id": "strategy_evidence:morgan_stanley:EV_021",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": "2025-02-24",
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/895421/000089542125000304/ms-20241231.htm",
+      "statement": "Morgan Stanley said its improved 2024 expense efficiency ratio reflected higher revenues and expense discipline."
     },
     {
       "evidence_id": "EV_024",
@@ -146215,9 +146013,81 @@
       "node_type": "StrategyEvidence",
       "organization": "Morgan Stanley",
       "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/10q0924.pdf",
-      "statement": "Investment Management net revenues were $1.5 billion in 3Q24, mainly driven by increased asset management revenues on higher average AUM."
+      "source_type": "investor_presentation",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/4q2025-strategic-update.pdf",
+      "statement": "Morgan Stanley\u2019s 4Q25 strategic update targets a 70% efficiency ratio."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.5,
+      "direction": "transform",
+      "hypothesis": "Morgan Stanley appears to be continuing its integrated firm model, linking Wealth Management, Investment Management, and Institutional Securities under a unified client and platform strategy with active board oversight.",
+      "id": "strategic_theme:morgan_stanley:integrated_wealth_and_platform_strategy",
+      "label": "Integrated wealth and platform strategy",
+      "node_type": "StrategicTheme",
+      "organization": "Morgan Stanley",
+      "time_horizon": "2025",
+      "value": "Integrated wealth and platform strategy"
+    },
+    {
+      "evidence_id": "EV_032",
+      "id": "strategy_evidence:morgan_stanley:EV_032",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2025ams/2025_Shareholder_Letter.pdf",
+      "statement": "Morgan Stanley\u2019s 2025 shareholder letter says the firm will serve clients through an Integrated Firm model combining Wealth Management, Investment Management, and Institutional Securities."
+    },
+    {
+      "evidence_id": "EV_033",
+      "id": "strategy_evidence:morgan_stanley:EV_033",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2025ams/2025_Shareholder_Letter.pdf",
+      "statement": "Morgan Stanley\u2019s 2025 shareholder letter says the firm is supported by four pillars: strategy, culture, financial strength, and growth."
+    },
+    {
+      "evidence_id": "EV_039",
+      "id": "strategy_evidence:morgan_stanley:EV_039",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2024ams/2024_Proxy_Statement.pdf",
+      "statement": "Morgan Stanley\u2019s proxy statement says the board oversees the company\u2019s strategy, capital, and annual business plans."
+    },
+    {
+      "evidence_id": "EV_040",
+      "id": "strategy_evidence:morgan_stanley:EV_040",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2024ams/2024_Proxy_Statement.pdf",
+      "statement": "Morgan Stanley\u2019s proxy statement says the board conducts an annual strategy offsite with the CEO and senior management."
+    },
+    {
+      "evidence_id": "EV_041",
+      "id": "strategy_evidence:morgan_stanley:EV_041",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.morganstanley.com/about-us-governance/cgpolicies",
+      "statement": "Morgan Stanley\u2019s board governance policies page says the board oversees the company\u2019s strategic, capital, and annual business plans."
+    },
+    {
+      "evidence_id": "EV_026",
+      "id": "strategy_evidence:morgan_stanley:EV_026",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2025ams/2025_Proxy_Statement.pdf",
+      "statement": "Morgan Stanley\u2019s 2025 proxy statement says board evaluation led to enhancements in executive succession planning."
     },
     {
       "evidence_id": "EV_027",
@@ -146226,40 +146096,38 @@
       "organization": "Morgan Stanley",
       "publication_date": null,
       "source_type": "investor_presentation",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/finsup2q2025/finsup2q2025.pdf",
-      "statement": "Investment Management net revenues were $1,552 million in 2Q25."
+      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-2025ams/2025_Proxy_Statement.pdf",
+      "statement": "Morgan Stanley\u2019s 2025 proxy statement says the board prioritized agendas for strategy, regulatory matters, and key risks."
     },
     {
-      "business_unit": null,
-      "confidence": 0.85,
-      "direction": "optimize",
-      "hypothesis": "Morgan Stanley appears to be optimizing operating efficiency while sustaining strong profitability, as reflected in management's reporting of improved expense efficiency and robust ROTCE.",
-      "id": "strategic_theme:morgan_stanley:firmwide_operating_efficiency_and_profitability",
-      "label": "Firmwide operating efficiency and profitability",
-      "node_type": "StrategicTheme",
-      "organization": "Morgan Stanley",
-      "time_horizon": "FY2024 through 4Q25",
-      "value": "Firmwide operating efficiency and profitability"
-    },
-    {
-      "evidence_id": "EV_002",
-      "id": "strategy_evidence:morgan_stanley:EV_002",
+      "evidence_id": "EV_028",
+      "id": "strategy_evidence:morgan_stanley:EV_028",
       "node_type": "StrategyEvidence",
       "organization": "Morgan Stanley",
-      "publication_date": "2025-01-16",
-      "source_type": "earnings_release",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/4q2024.pdf",
-      "statement": "Morgan Stanley reported ROTCE of 18.8% for full-year 2024."
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://sp.morganstanley.com/download/prospectus/6cd53abc-01bd-4039-b5ed-92de78741c7e/",
+      "statement": "Morgan Stanley\u2019s 2025 proxy materials page notes substantial board refreshment."
     },
     {
-      "evidence_id": "EV_003",
-      "id": "strategy_evidence:morgan_stanley:EV_003",
+      "evidence_id": "EV_029",
+      "id": "strategy_evidence:morgan_stanley:EV_029",
       "node_type": "StrategyEvidence",
       "organization": "Morgan Stanley",
-      "publication_date": "2026-01-15",
-      "source_type": "earnings_release",
-      "source_url": "https://www.morganstanley.com/content/dam/msdotcom/en/about-us-ir/shareholder/4q2025.pdf",
-      "statement": "Morgan Stanley said its firm expense efficiency ratio was 68% in 4Q25 versus 71% a year ago."
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://sp.morganstanley.com/download/prospectus/6cd53abc-01bd-4039-b5ed-92de78741c7e/",
+      "statement": "Morgan Stanley\u2019s 2025 proxy materials page says the board has an independent lead director with expansive duties."
+    },
+    {
+      "evidence_id": "EV_030",
+      "id": "strategy_evidence:morgan_stanley:EV_030",
+      "node_type": "StrategyEvidence",
+      "organization": "Morgan Stanley",
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://sp.morganstanley.com/download/prospectus/6cd53abc-01bd-4039-b5ed-92de78741c7e/",
+      "statement": "Morgan Stanley\u2019s 2025 proxy materials page says lead director and committee chairs are expected to serve about three to five years to rotate leadership."
     }
   ]
 }

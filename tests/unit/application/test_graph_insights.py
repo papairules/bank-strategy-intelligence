@@ -123,7 +123,7 @@ def build_service(*, jobs, strategy_research=None):
     return GraphInsightsService(kg)
 
 
-def test_insights_include_top_capabilities_and_technologies_ranked_by_job_count():
+def test_insights_include_top_capabilities_technologies_and_locations_ranked_by_job_count():
     jobs = [
         job(1, 11, capability="Risk and Compliance", technologies=["SQL"]),
         job(2, 12, capability="Risk and Compliance", technologies=["SQL"]),
@@ -137,6 +137,8 @@ def test_insights_include_top_capabilities_and_technologies_ranked_by_job_count(
     assert insights.top_capabilities[0].job_count == 2
     assert insights.top_technologies[0].name == "SQL"
     assert insights.top_technologies[0].job_count == 2
+    assert insights.top_locations[0].name == "Charlotte, NC"
+    assert insights.top_locations[0].job_count == 3
     assert insights.jobs_read == 3
     assert insights.classified_jobs_used == 3
 

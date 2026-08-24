@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { OrganizationProvider } from "../context/OrganizationContext";
 import { HiringIntelligencePage } from "./HiringIntelligencePage";
-import { analyticsFixture, jobsFixture, signalsFixture, summaryFixture } from "../test/fixtures";
+import { analyticsFixture, summaryFixture } from "../test/fixtures";
 
 function withOrg(children: ReactNode) {
   return <OrganizationProvider value={{ organization: "Wells Fargo", setOrganization: vi.fn() }}>{children}</OrganizationProvider>;
@@ -14,20 +14,28 @@ function response(body: unknown) { return Promise.resolve(new Response(JSON.stri
 afterEach(() => vi.unstubAllGlobals());
 
 describe("HiringIntelligencePage", () => {
-  it("renders the real API summary and jobs", async () => {
-    vi.stubGlobal("fetch", vi.fn((input: RequestInfo | URL) => {
+  it("renders the real API summary and analytics only", async () => {
+    const fetchMock = vi.fn((input: RequestInfo | URL) => {
       const url = String(input);
       if (url.includes("/summary")) return response(summaryFixture);
       if (url.includes("/analytics")) return response(analyticsFixture);
-      if (url.includes("/signals")) return response(signalsFixture);
-      if (url.includes("/graph-insights/")) return response({ organization: "Wells Fargo", node_count: 0, edge_count: 0, jobs_read: 0, classified_jobs_used: 0, enriched_jobs_used: 0, hiring_signals_used: 0, strategic_themes_used: 0, top_capabilities: [], top_technologies: [], strategic_themes: [] });
-      return response(jobsFixture);
-    }));
+      return Promise.reject(new Error(`unexpected fetch: ${url}`));
+    });
+    vi.stubGlobal("fetch", fetchMock);
     render(withOrg(<HiringIntelligencePage />));
     expect(screen.getByText("Loading executive summary…")).toBeInTheDocument();
     expect(await screen.findByText("Observed jobs")).toBeInTheDocument();
-    expect(screen.getByText("Senior Analytics Consultant")).toBeInTheDocument();
-    expect(screen.getByText("No intelligence signals generated for the current observation period.")).toBeInTheDocument();
+    expect(await screen.findByText("Observed hiring cadence")).toBeInTheDocument();
+    // Strategic hiring signals, job explorer, knowledge graph, and the hiring agent
+    // no longer render on this page. Geographic and capability concentration moved
+    // into the Knowledge Graph section on the Overview page.
+    expect(screen.queryByText("Strategic hiring signals")).not.toBeInTheDocument();
+    expect(screen.queryByText("Job explorer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cross-domain graph insights")).not.toBeInTheDocument();
+    expect(screen.queryByText("Classify Hiring Signals")).not.toBeInTheDocument();
+    expect(screen.queryByText("Geographic concentration")).not.toBeInTheDocument();
+    expect(screen.queryByText("Capability concentration")).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("renders a safe error state", async () => {

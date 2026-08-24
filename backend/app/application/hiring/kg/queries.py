@@ -52,6 +52,12 @@ def get_jobs_for_technology(graph: nx.MultiDiGraph, technology: str) -> list[UUI
     )
 
 
+def get_jobs_for_location(graph: nx.MultiDiGraph, location: str) -> list[UUID]:
+    return _job_ids_for_concept(
+        graph, HiringKGNodeType.LOCATION, location, HiringKGEdgeType.LOCATED_IN
+    )
+
+
 def _organization_concepts(graph: nx.MultiDiGraph, node_type: HiringKGNodeType) -> list[str]:
     return sorted(
         {
@@ -69,6 +75,10 @@ def get_capabilities_for_organization(graph: nx.MultiDiGraph) -> list[str]:
 
 def get_technologies_for_organization(graph: nx.MultiDiGraph) -> list[str]:
     return _organization_concepts(graph, HiringKGNodeType.TECHNOLOGY)
+
+
+def get_locations_for_organization(graph: nx.MultiDiGraph) -> list[str]:
+    return _organization_concepts(graph, HiringKGNodeType.LOCATION)
 
 
 def get_business_units_for_organization(graph: nx.MultiDiGraph) -> list[str]:

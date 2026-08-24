@@ -37,7 +37,6 @@ export function AskStrategyPanel({ organization }: { organization: string }) {
   return <section className="ask-strategy" aria-labelledby="ask-strategy-title">
     <div className="ask-strategy__intro">
       <div><span className="eyebrow">Governed Strategy Agent</span><h2 id="ask-strategy-title">Ask Strategy</h2></div>
-      <p>Ask about strategic priorities, technology direction, business initiatives, or recent developments. Results are grounded in cited external evidence and governed application validation.</p>
     </div>
     <form className="ask-strategy__form" onSubmit={submit}>
       <label htmlFor="strategy-question">Strategic question</label>
@@ -46,7 +45,7 @@ export function AskStrategyPanel({ organization }: { organization: string }) {
       <input id="strategy-time-horizon" value={timeHorizon} onChange={(event) => setTimeHorizon(event.target.value)} maxLength={100} placeholder="e.g. 2025–2027" disabled={submitting} />
       <div><span>{question.length}/2000</span><button className="primary-button" type="submit" disabled={submitting || !question.trim()}>{submitting ? "Analyzing intelligence…" : "Analyze"}</button></div>
     </form>
-    {!answer && !error && !submitting && <div className="ask-strategy__idle">No Strategy Agent request is made until you explicitly submit a question.</div>}
+    {!answer && !error && !submitting && <div className="ask-strategy__idle">This runs a live web search for your specific question. No Strategy Agent request is made until you explicitly submit a question.</div>}
     {submitting && <div className="ask-strategy__state" role="status"><span className="spinner" /> Reviewing approved intelligence sources…</div>}
     {error && <StrategyError code={error.code} message={error.message} />}
     {answer && <StrategyAnswer answer={answer} />}

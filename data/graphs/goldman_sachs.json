@@ -12872,66 +12872,27 @@
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
+      "generated_at": "2026-08-24T18:18:32.397680+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Goldman Sachs",
       "provider": "openai",
       "question": "Generate a company intelligence report for Goldman Sachs.",
       "source": "org:goldman_sachs",
-      "target": "strategic_theme:goldman_sachs:simplified_strategy_and_operating_model_simplification"
+      "target": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
+      "generated_at": "2026-08-24T18:18:32.397680+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Goldman Sachs",
       "provider": "openai",
       "question": "Generate a company intelligence report for Goldman Sachs.",
       "source": "org:goldman_sachs",
-      "target": "strategic_theme:goldman_sachs:technology_modernization_and_ai_enabled_workflow_automation"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Goldman Sachs",
-      "provider": "openai",
-      "question": "Generate a company intelligence report for Goldman Sachs.",
-      "source": "org:goldman_sachs",
-      "target": "strategic_theme:goldman_sachs:expense_and_headcount_efficiency"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Goldman Sachs",
-      "provider": "openai",
-      "question": "Generate a company intelligence report for Goldman Sachs.",
-      "source": "org:goldman_sachs",
-      "target": "strategic_theme:goldman_sachs:client_franchise_expansion_and_market_share_gains"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Goldman Sachs",
-      "provider": "openai",
-      "question": "Generate a company intelligence report for Goldman Sachs.",
-      "source": "org:goldman_sachs",
-      "target": "strategic_theme:goldman_sachs:durable_revenue_stream_and_capital_solutions_growth"
+      "target": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion"
     },
     {
       "derivation_type": "persisted_source",
@@ -105891,173 +105852,38 @@
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
+      "generated_at": "2026-08-24T18:18:32.397680+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:simplified_strategy_and_operating_model_simplification",
-      "target": "strategy_evidence:goldman_sachs:EV_001"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:simplified_strategy_and_operating_model_simplification",
-      "target": "strategy_evidence:goldman_sachs:EV_028"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:simplified_strategy_and_operating_model_simplification",
-      "target": "strategy_evidence:goldman_sachs:EV_032"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:technology_modernization_and_ai_enabled_workflow_automation",
-      "target": "strategy_evidence:goldman_sachs:EV_005"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:technology_modernization_and_ai_enabled_workflow_automation",
-      "target": "strategy_evidence:goldman_sachs:EV_006"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:technology_modernization_and_ai_enabled_workflow_automation",
-      "target": "strategy_evidence:goldman_sachs:EV_030"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:technology_modernization_and_ai_enabled_workflow_automation",
-      "target": "strategy_evidence:goldman_sachs:EV_031"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:expense_and_headcount_efficiency",
-      "target": "strategy_evidence:goldman_sachs:EV_004"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:expense_and_headcount_efficiency",
-      "target": "strategy_evidence:goldman_sachs:EV_025"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:expense_and_headcount_efficiency",
-      "target": "strategy_evidence:goldman_sachs:EV_029"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:client_franchise_expansion_and_market_share_gains",
+      "source": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery",
       "target": "strategy_evidence:goldman_sachs:EV_012"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
+      "generated_at": "2026-08-24T18:18:32.397680+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:client_franchise_expansion_and_market_share_gains",
+      "source": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery",
       "target": "strategy_evidence:goldman_sachs:EV_016"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
+      "generated_at": "2026-08-24T18:18:32.397680+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:client_franchise_expansion_and_market_share_gains",
-      "target": "strategy_evidence:goldman_sachs:EV_034"
+      "source": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion",
+      "target": "strategy_evidence:goldman_sachs:EV_011"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
+      "generated_at": "2026-08-24T18:18:32.397680+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:client_franchise_expansion_and_market_share_gains",
-      "target": "strategy_evidence:goldman_sachs:EV_037"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:durable_revenue_stream_and_capital_solutions_growth",
-      "target": "strategy_evidence:goldman_sachs:EV_022"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:durable_revenue_stream_and_capital_solutions_growth",
-      "target": "strategy_evidence:goldman_sachs:EV_015"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:durable_revenue_stream_and_capital_solutions_growth",
-      "target": "strategy_evidence:goldman_sachs:EV_033"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:durable_revenue_stream_and_capital_solutions_growth",
-      "target": "strategy_evidence:goldman_sachs:EV_034"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:42:06.465435+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:durable_revenue_stream_and_capital_solutions_growth",
-      "target": "strategy_evidence:goldman_sachs:EV_036"
+      "source": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion",
+      "target": "strategy_evidence:goldman_sachs:EV_018"
     }
   ],
   "graph": {
@@ -106067,7 +105893,7 @@
     "hiring_signals_used": 4,
     "jobs_read": 755,
     "organization": "Goldman Sachs",
-    "strategic_themes_used": 5
+    "strategic_themes_used": 2
   },
   "multigraph": true,
   "nodes": [
@@ -118996,244 +118822,68 @@
       "strength": 0.3974
     },
     {
-      "business_unit": null,
-      "confidence": 0.85,
-      "direction": "transform",
-      "hypothesis": "Goldman Sachs is continuing a multi-year simplification of its strategy and operating model, with management directing efforts toward streamlining functions and rationalizing expenses to support execution.",
-      "id": "strategic_theme:goldman_sachs:simplified_strategy_and_operating_model_simplification",
-      "label": "Simplified strategy and operating model simplification",
-      "node_type": "StrategicTheme",
-      "organization": "Goldman Sachs",
-      "time_horizon": "2024 and beyond",
-      "value": "Simplified strategy and operating model simplification"
-    },
-    {
-      "evidence_id": "EV_001",
-      "id": "strategy_evidence:goldman_sachs:EV_001",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2024-01-16",
-      "source_type": "earnings_release",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/2024/2024-01-16-q4-results.html",
-      "statement": "Goldman Sachs said it updated progress on its simplified strategy and laid out key objectives for 2024 and beyond."
-    },
-    {
-      "evidence_id": "EV_028",
-      "id": "strategy_evidence:goldman_sachs:EV_028",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2026-01-15",
-      "source_type": "sec_filing",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/8k/2026/8k-01-15-26.pdf",
-      "statement": "Goldman Sachs said its One Goldman Sachs 3.0 operating model is intended to rationalize expenses."
-    },
-    {
-      "evidence_id": "EV_032",
-      "id": "strategy_evidence:goldman_sachs:EV_032",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2025-01-15",
-      "source_type": "company_announcement",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/2025/2025-01-15-q4-results",
-      "statement": "Goldman Sachs said its 2024 results update progress on its simplified strategy and laid out key objectives for 2025 and beyond."
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.85,
-      "direction": "increase_investment",
-      "hypothesis": "Goldman Sachs appears to be prioritizing technology modernization, including a simpler tech stack and broader AI and automation adoption to improve business technology execution.",
-      "id": "strategic_theme:goldman_sachs:technology_modernization_and_ai_enabled_workflow_automation",
-      "label": "Technology modernization and AI-enabled workflow automation",
-      "node_type": "StrategicTheme",
-      "organization": "Goldman Sachs",
-      "time_horizon": "2025 and beyond",
-      "value": "Technology modernization and AI-enabled workflow automation"
-    },
-    {
-      "evidence_id": "EV_005",
-      "id": "strategy_evidence:goldman_sachs:EV_005",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2025-01-15",
-      "source_type": "earnings_release",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/current/pdfs/2024-q4-earnings-results-presentation.pdf",
-      "statement": "Goldman Sachs plans to simplify and modernize its technology stack."
-    },
-    {
-      "evidence_id": "EV_006",
-      "id": "strategy_evidence:goldman_sachs:EV_006",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2025-01-15",
-      "source_type": "earnings_release",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/current/pdfs/2024-q4-earnings-results-presentation.pdf",
-      "statement": "Goldman Sachs plans to leverage AI solutions to accelerate business technology."
-    },
-    {
-      "evidence_id": "EV_030",
-      "id": "strategy_evidence:goldman_sachs:EV_030",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2026-01-15",
-      "source_type": "sec_filing",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/8k/2026/8k-01-15-26.pdf",
-      "statement": "Goldman Sachs said its One Goldman Sachs 3.0 operating model is intended to automate error-prone workflows."
-    },
-    {
-      "evidence_id": "EV_031",
-      "id": "strategy_evidence:goldman_sachs:EV_031",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2026-01-15",
-      "source_type": "sec_filing",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/8k/2026/8k-01-15-26.pdf",
-      "statement": "Goldman Sachs said its One Goldman Sachs 3.0 operating model is intended to accelerate AI adoption across the employee base."
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.85,
-      "direction": "optimize",
-      "hypothesis": "Goldman Sachs is focused on optimizing operating costs through expense discipline, workflow simplification, and headcount optimization as part of its future operating model.",
-      "id": "strategic_theme:goldman_sachs:expense_and_headcount_efficiency",
-      "label": "Expense and headcount efficiency",
-      "node_type": "StrategicTheme",
-      "organization": "Goldman Sachs",
-      "time_horizon": "2025 and beyond",
-      "value": "Expense and headcount efficiency"
-    },
-    {
-      "evidence_id": "EV_004",
-      "id": "strategy_evidence:goldman_sachs:EV_004",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2025-01-15",
-      "source_type": "earnings_release",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/current/pdfs/2024-q4-earnings-results-presentation.pdf",
-      "statement": "Goldman Sachs plans to optimize transaction-based expenses."
-    },
-    {
-      "evidence_id": "EV_025",
-      "id": "strategy_evidence:goldman_sachs:EV_025",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/886982/000088698225000005/gs-20241231.htm",
-      "statement": "Goldman Sachs\u2019 2024 SEC filing discusses expense savings as part of its future plans and strategic initiatives."
-    },
-    {
-      "evidence_id": "EV_029",
-      "id": "strategy_evidence:goldman_sachs:EV_029",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2026-01-15",
-      "source_type": "sec_filing",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/8k/2026/8k-01-15-26.pdf",
-      "statement": "Goldman Sachs said its One Goldman Sachs 3.0 operating model is intended to optimize headcount."
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.6,
+      "business_unit": "Global Banking & Markets",
+      "confidence": 0.5,
       "direction": "grow",
-      "hypothesis": "Goldman Sachs is seeking to strengthen its client franchise by improving client service, expanding durable revenue streams, and closing share gaps in targeted products and client segments.",
-      "id": "strategic_theme:goldman_sachs:client_franchise_expansion_and_market_share_gains",
-      "label": "Client franchise expansion and market share gains",
+      "hypothesis": "Goldman Sachs appears to be prioritizing growth in investment banking, supported by forward-looking backlog discussion and improving fee performance in debt and equity underwriting.",
+      "id": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery",
+      "label": "Investment banking franchise recovery",
       "node_type": "StrategicTheme",
       "organization": "Goldman Sachs",
-      "time_horizon": "2024 and beyond",
-      "value": "Client franchise expansion and market share gains"
+      "time_horizon": "Forward-looking / Q3 2024 to 2025",
+      "value": "Investment banking franchise recovery"
     },
     {
       "evidence_id": "EV_012",
       "id": "strategy_evidence:goldman_sachs:EV_012",
       "node_type": "StrategyEvidence",
       "organization": "Goldman Sachs",
-      "publication_date": "2025-03-14",
-      "source_type": "annual_report",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/current/annual-reports/2024-annual-report",
-      "statement": "Goldman Sachs emphasized continued investment in the franchise and stronger client service."
+      "publication_date": null,
+      "source_type": "investor_presentation",
+      "source_url": "https://www.goldmansachs.com/investor-relations/presentations/2024/gs-presentation-at-barclays-22nd-annual-global-financial-services-conference",
+      "statement": "Goldman Sachs identified investment banking backlog as a forward-looking topic in David Solomon's September 9, 2024 investor presentation materials."
     },
     {
       "evidence_id": "EV_016",
       "id": "strategy_evidence:goldman_sachs:EV_016",
       "node_type": "StrategyEvidence",
       "organization": "Goldman Sachs",
-      "publication_date": "2026-03-20",
-      "source_type": "annual_report",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/current/annual-reports/2025-annual-report",
-      "statement": "Goldman Sachs said it is working to close share gaps with insurers, wealth managers, RIAs, and in corporate derivatives."
-    },
-    {
-      "evidence_id": "EV_034",
-      "id": "strategy_evidence:goldman_sachs:EV_034",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2025-03-17",
-      "source_type": "company_announcement",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/2025/creation-of-capital-solutions-group",
-      "statement": "Goldman Sachs said the new Capital Solutions Group is intended to better serve corporate and investor clients."
-    },
-    {
-      "evidence_id": "EV_037",
-      "id": "strategy_evidence:goldman_sachs:EV_037",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
       "publication_date": null,
-      "source_type": "other",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/proxy-statements/2024/2024-proxy-statement-pdf.pdf",
-      "statement": "Goldman Sachs said it is harnessing One Goldman Sachs to serve clients with excellence."
+      "source_type": "company_announcement",
+      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/current/pdfs/2024-q3-results.pdf?os=wtmbZEgMu5Hw",
+      "statement": "Goldman Sachs said investment banking fees were up 20% in third quarter 2024, driven by stronger debt underwriting and equity underwriting."
     },
     {
-      "business_unit": null,
-      "confidence": 0.6,
+      "business_unit": "Asset & Wealth Management",
+      "confidence": 0.5,
       "direction": "grow",
-      "hypothesis": "Goldman Sachs appears to be prioritizing growth in durable revenue streams, including financing businesses and capital solutions tied to private credit and private equity.",
-      "id": "strategic_theme:goldman_sachs:durable_revenue_stream_and_capital_solutions_growth",
-      "label": "Durable revenue stream and capital solutions growth",
+      "hypothesis": "Goldman Sachs appears to be positioning Asset & Wealth Management for continued growth, supported by forward-looking fundraising emphasis and revenue improvement in the segment.",
+      "id": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion",
+      "label": "Asset and wealth management expansion",
       "node_type": "StrategicTheme",
       "organization": "Goldman Sachs",
-      "time_horizon": "2024 to 2025 and beyond",
-      "value": "Durable revenue stream and capital solutions growth"
+      "time_horizon": "Forward-looking / Q3 2024 to 2025",
+      "value": "Asset and wealth management expansion"
     },
     {
-      "evidence_id": "EV_022",
-      "id": "strategy_evidence:goldman_sachs:EV_022",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2024-03-15",
-      "source_type": "annual_report",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/current/annual-reports/2023-annual-report",
-      "statement": "Goldman Sachs said it entered 2024 focused on growing durable revenue streams."
-    },
-    {
-      "evidence_id": "EV_015",
-      "id": "strategy_evidence:goldman_sachs:EV_015",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2026-03-20",
-      "source_type": "annual_report",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/current/annual-reports/2025-annual-report",
-      "statement": "Goldman Sachs said durable FICC and Equities financing revenues reached a record $11.4 billion in 2025."
-    },
-    {
-      "evidence_id": "EV_033",
-      "id": "strategy_evidence:goldman_sachs:EV_033",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": "2025-03-17",
-      "source_type": "company_announcement",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/2025/creation-of-capital-solutions-group",
-      "statement": "Goldman Sachs announced a new Capital Solutions Group to grow in private credit and private equity."
-    },
-    {
-      "evidence_id": "EV_036",
-      "id": "strategy_evidence:goldman_sachs:EV_036",
+      "evidence_id": "EV_011",
+      "id": "strategy_evidence:goldman_sachs:EV_011",
       "node_type": "StrategyEvidence",
       "organization": "Goldman Sachs",
       "publication_date": null,
-      "source_type": "other",
-      "source_url": "https://www.goldmansachs.com/investor-relations/financials/proxy-statements/2024/2024-proxy-statement-pdf.pdf",
-      "statement": "Goldman Sachs said its strategic priorities include running world-class durable businesses."
+      "source_type": "investor_presentation",
+      "source_url": "https://www.goldmansachs.com/investor-relations/presentations/2024/gs-presentation-at-barclays-22nd-annual-global-financial-services-conference",
+      "statement": "Goldman Sachs identified AWM fundraising as a forward-looking topic in David Solomon's September 9, 2024 investor presentation materials."
+    },
+    {
+      "evidence_id": "EV_018",
+      "id": "strategy_evidence:goldman_sachs:EV_018",
+      "node_type": "StrategyEvidence",
+      "organization": "Goldman Sachs",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/current/pdfs/2024-q3-results.pdf?os=wtmbZEgMu5Hw",
+      "statement": "Goldman Sachs reported Asset & Wealth Management revenue of $3.75 billion in third quarter 2024, up 16% year over year."
     }
   ]
 }

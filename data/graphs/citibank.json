@@ -19918,79 +19918,79 @@
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Citibank",
       "provider": "openai",
       "question": "Generate a company intelligence report for Citibank.",
       "source": "org:citibank",
-      "target": "strategic_theme:citibank:technology_modernization_in_transaction_services_and_securities_services"
+      "target": "strategic_theme:citibank:organizational_simplification_and_operating_model_redesign"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Citibank",
       "provider": "openai",
       "question": "Generate a company intelligence report for Citibank.",
       "source": "org:citibank",
-      "target": "strategic_theme:citibank:risk_control_and_infrastructure_modernization"
+      "target": "strategic_theme:citibank:regulatory_remediation_and_control_strengthening"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Citibank",
       "provider": "openai",
       "question": "Generate a company intelligence report for Citibank.",
       "source": "org:citibank",
-      "target": "strategic_theme:citibank:capital_efficiency_and_optimization"
+      "target": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Citibank",
       "provider": "openai",
       "question": "Generate a company intelligence report for Citibank.",
       "source": "org:citibank",
-      "target": "strategic_theme:citibank:wealth_platform_and_expense_rationalization"
+      "target": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Citibank",
       "provider": "openai",
       "question": "Generate a company intelligence report for Citibank.",
       "source": "org:citibank",
-      "target": "strategic_theme:citibank:business_line_growth_in_services_uspb_markets_and_banking"
+      "target": "strategic_theme:citibank:cost_optimization_through_workforce_and_platform_rationalization"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Citibank",
       "provider": "openai",
       "question": "Generate a company intelligence report for Citibank.",
       "source": "org:citibank",
-      "target": "strategic_theme:citibank:expense_discipline_and_operating_leverage"
+      "target": "strategic_theme:citibank:profitability_improvement_toward_2026_target"
     },
     {
       "derivation_type": "persisted_source",
@@ -175844,191 +175844,281 @@
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:technology_modernization_in_transaction_services_and_securities_services",
-      "target": "strategy_evidence:citibank:EV_001"
+      "source": "strategic_theme:citibank:organizational_simplification_and_operating_model_redesign",
+      "target": "strategy_evidence:citibank:EV_002"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:technology_modernization_in_transaction_services_and_securities_services",
-      "target": "strategy_evidence:citibank:EV_011"
+      "source": "strategic_theme:citibank:organizational_simplification_and_operating_model_redesign",
+      "target": "strategy_evidence:citibank:EV_003"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:technology_modernization_in_transaction_services_and_securities_services",
-      "target": "strategy_evidence:citibank:EV_012"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:technology_modernization_in_transaction_services_and_securities_services",
-      "target": "strategy_evidence:citibank:EV_013"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:technology_modernization_in_transaction_services_and_securities_services",
-      "target": "strategy_evidence:citibank:EV_014"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:risk_control_and_infrastructure_modernization",
-      "target": "strategy_evidence:citibank:EV_007"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:risk_control_and_infrastructure_modernization",
-      "target": "strategy_evidence:citibank:EV_027"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:capital_efficiency_and_optimization",
-      "target": "strategy_evidence:citibank:EV_010"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:capital_efficiency_and_optimization",
-      "target": "strategy_evidence:citibank:EV_021"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:capital_efficiency_and_optimization",
-      "target": "strategy_evidence:citibank:EV_022"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:wealth_platform_and_expense_rationalization",
-      "target": "strategy_evidence:citibank:EV_025"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:wealth_platform_and_expense_rationalization",
-      "target": "strategy_evidence:citibank:EV_026"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:wealth_platform_and_expense_rationalization",
-      "target": "strategy_evidence:citibank:EV_016"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:business_line_growth_in_services_uspb_markets_and_banking",
-      "target": "strategy_evidence:citibank:EV_019"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:business_line_growth_in_services_uspb_markets_and_banking",
-      "target": "strategy_evidence:citibank:EV_020"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Citibank",
-      "source": "strategic_theme:citibank:business_line_growth_in_services_uspb_markets_and_banking",
+      "source": "strategic_theme:citibank:organizational_simplification_and_operating_model_redesign",
       "target": "strategy_evidence:citibank:EV_004"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:business_line_growth_in_services_uspb_markets_and_banking",
+      "source": "strategic_theme:citibank:organizational_simplification_and_operating_model_redesign",
+      "target": "strategy_evidence:citibank:EV_009"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:organizational_simplification_and_operating_model_redesign",
+      "target": "strategy_evidence:citibank:EV_036"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:regulatory_remediation_and_control_strengthening",
       "target": "strategy_evidence:citibank:EV_005"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:expense_discipline_and_operating_leverage",
-      "target": "strategy_evidence:citibank:EV_005"
+      "source": "strategic_theme:citibank:regulatory_remediation_and_control_strengthening",
+      "target": "strategy_evidence:citibank:EV_016"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:expense_discipline_and_operating_leverage",
+      "source": "strategic_theme:citibank:regulatory_remediation_and_control_strengthening",
+      "target": "strategy_evidence:citibank:EV_035"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:regulatory_remediation_and_control_strengthening",
+      "target": "strategy_evidence:citibank:EV_034"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses",
       "target": "strategy_evidence:citibank:EV_006"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:expense_discipline_and_operating_leverage",
-      "target": "strategy_evidence:citibank:EV_023"
+      "source": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses",
+      "target": "strategy_evidence:citibank:EV_007"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:56:40.978280+00:00",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Citibank",
-      "source": "strategic_theme:citibank:expense_discipline_and_operating_leverage",
+      "source": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses",
+      "target": "strategy_evidence:citibank:EV_010"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses",
+      "target": "strategy_evidence:citibank:EV_020"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses",
+      "target": "strategy_evidence:citibank:EV_021"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses",
+      "target": "strategy_evidence:citibank:EV_022"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity",
       "target": "strategy_evidence:citibank:EV_028"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity",
+      "target": "strategy_evidence:citibank:EV_030"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity",
+      "target": "strategy_evidence:citibank:EV_033"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity",
+      "target": "strategy_evidence:citibank:EV_034"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity",
+      "target": "strategy_evidence:citibank:EV_041"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity",
+      "target": "strategy_evidence:citibank:EV_042"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:cost_optimization_through_workforce_and_platform_rationalization",
+      "target": "strategy_evidence:citibank:EV_029"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:cost_optimization_through_workforce_and_platform_rationalization",
+      "target": "strategy_evidence:citibank:EV_037"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:cost_optimization_through_workforce_and_platform_rationalization",
+      "target": "strategy_evidence:citibank:EV_038"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:cost_optimization_through_workforce_and_platform_rationalization",
+      "target": "strategy_evidence:citibank:EV_039"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:cost_optimization_through_workforce_and_platform_rationalization",
+      "target": "strategy_evidence:citibank:EV_040"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:profitability_improvement_toward_2026_target",
+      "target": "strategy_evidence:citibank:EV_015"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:profitability_improvement_toward_2026_target",
+      "target": "strategy_evidence:citibank:EV_018"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:profitability_improvement_toward_2026_target",
+      "target": "strategy_evidence:citibank:EV_019"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:profitability_improvement_toward_2026_target",
+      "target": "strategy_evidence:citibank:EV_024"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T18:46:54.191099+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Citibank",
+      "source": "strategic_theme:citibank:profitability_improvement_toward_2026_target",
+      "target": "strategy_evidence:citibank:EV_031"
     }
   ],
   "graph": {
@@ -196714,214 +196804,36 @@
       "strength": 1.0
     },
     {
-      "business_unit": "TTS and Securities Services",
+      "business_unit": null,
       "confidence": 0.75,
-      "direction": "increase_investment",
-      "hypothesis": "Citi appears to be prioritizing continued investment in technology and platform modernization in TTS and Securities Services to improve client experience and operating efficiency.",
-      "id": "strategic_theme:citibank:technology_modernization_in_transaction_services_and_securities_services",
-      "label": "technology modernization in transaction services and securities services",
+      "direction": "transform",
+      "hypothesis": "Citi appears to be continuing a broad simplification and operating-model redesign effort, with One Citi and fewer management layers as an ongoing execution priority over the next two years.",
+      "id": "strategic_theme:citibank:organizational_simplification_and_operating_model_redesign",
+      "label": "Organizational simplification and operating model redesign",
       "node_type": "StrategicTheme",
       "organization": "Citibank",
-      "time_horizon": "2024",
-      "value": "technology modernization in transaction services and securities services"
+      "time_horizon": "2025-2026",
+      "value": "Organizational simplification and operating model redesign"
     },
     {
-      "evidence_id": "EV_001",
-      "id": "strategy_evidence:citibank:EV_001",
+      "evidence_id": "EV_002",
+      "id": "strategy_evidence:citibank:EV_002",
       "node_type": "StrategyEvidence",
       "organization": "Citibank",
       "publication_date": null,
       "source_type": "earnings_release",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-earnings-presentation.pdf",
-      "statement": "Citi said it continued investing in technology, digital capabilities, and platform modernization in TTS and Securities Services."
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q12025/2025psqtr1rslt.pdf",
+      "statement": "Citi says it is delivering on Investor Day priorities and highlights simplification, culture and talent, transformation, and enhancing business performance as its 2025-2026 priorities."
     },
     {
-      "evidence_id": "EV_011",
-      "id": "strategy_evidence:citibank:EV_011",
+      "evidence_id": "EV_003",
+      "id": "strategy_evidence:citibank:EV_003",
       "node_type": "StrategyEvidence",
       "organization": "Citibank",
       "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/4q24-fixed-income-investor-presentation.pdf",
-      "statement": "Citi said Citi Payments Express expanded to 18 countries."
-    },
-    {
-      "evidence_id": "EV_012",
-      "id": "strategy_evidence:citibank:EV_012",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/4q24-fixed-income-investor-presentation.pdf",
-      "statement": "Citi said 90% of TTS clients migrated to a new CitiDirect user experience."
-    },
-    {
-      "evidence_id": "EV_013",
-      "id": "strategy_evidence:citibank:EV_013",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/4q24-fixed-income-investor-presentation.pdf",
-      "statement": "Citi said it revamped its Citi Developer Portal with API, file, and connectivity options."
-    },
-    {
-      "evidence_id": "EV_014",
-      "id": "strategy_evidence:citibank:EV_014",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/4q24-fixed-income-investor-presentation.pdf",
-      "statement": "Citi said custody technology modernization drove 98% settlement efficiency."
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.5,
-      "direction": "transform",
-      "hypothesis": "Citi appears to be prioritizing transformation work on risk and control capabilities alongside infrastructure and data architecture modernization to strengthen resilience and operating foundations.",
-      "id": "strategic_theme:citibank:risk_control_and_infrastructure_modernization",
-      "label": "risk, control, and infrastructure modernization",
-      "node_type": "StrategicTheme",
-      "organization": "Citibank",
-      "time_horizon": "2024",
-      "value": "risk, control, and infrastructure modernization"
-    },
-    {
-      "evidence_id": "EV_007",
-      "id": "strategy_evidence:citibank:EV_007",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/831001/000120677425000136/citi4405286_ars.pdf",
-      "statement": "Citi said higher transformation-related expenses and other investments in risk and control initiatives affected 2024 results."
-    },
-    {
-      "evidence_id": "EV_027",
-      "id": "strategy_evidence:citibank:EV_027",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.citigroup.com/global/news/perspectives/2024/remarks-by-ceo-jane-fraser-at-citi-s-2024-annual-stockholders-meeting",
-      "statement": "Citi said Transformation is its number one priority to strengthen risk and controls and modernize infrastructure and data architecture."
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.75,
-      "direction": "optimize",
-      "hypothesis": "Citi appears to be focused on improving capital optimization and RWA productivity over time to make better use of balance-sheet capacity and increase efficiency.",
-      "id": "strategic_theme:citibank:capital_efficiency_and_optimization",
-      "label": "capital efficiency and optimization",
-      "node_type": "StrategicTheme",
-      "organization": "Citibank",
-      "time_horizon": "over time",
-      "value": "capital efficiency and optimization"
-    },
-    {
-      "evidence_id": "EV_010",
-      "id": "strategy_evidence:citibank:EV_010",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.citigroup.com/global/investors/events-and-presentations/services-investor-day",
-      "statement": "Citi referenced capital actions alongside transformation, simplification, investment, and expense actions."
-    },
-    {
-      "evidence_id": "EV_021",
-      "id": "strategy_evidence:citibank:EV_021",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": "2024-06-18",
-      "source_type": "earnings_call",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/services-investor-day/financial-update-transcript.pdf",
-      "statement": "Management identified capital optimization and efficiency as a top priority."
-    },
-    {
-      "evidence_id": "EV_022",
-      "id": "strategy_evidence:citibank:EV_022",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": "2024-06-18",
-      "source_type": "earnings_call",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/services-investor-day/financial-update-transcript.pdf",
-      "statement": "Management expected improvements in capital levels and RWA productivity over time."
-    },
-    {
-      "business_unit": "Wealth",
-      "confidence": 0.75,
-      "direction": "optimize",
-      "hypothesis": "Citi appears to be balancing Wealth platform and capability upgrades with expense-base rationalization to improve the business while tightening cost discipline.",
-      "id": "strategic_theme:citibank:wealth_platform_and_expense_rationalization",
-      "label": "wealth platform and expense rationalization",
-      "node_type": "StrategicTheme",
-      "organization": "Citibank",
-      "time_horizon": "2024",
-      "value": "wealth platform and expense rationalization"
-    },
-    {
-      "evidence_id": "EV_025",
-      "id": "strategy_evidence:citibank:EV_025",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.citigroup.com/global/news/perspectives/2024/remarks-by-ceo-jane-fraser-at-citi-s-2024-annual-stockholders-meeting",
-      "statement": "Citi's Wealth leadership focused on rationalizing the expense base."
-    },
-    {
-      "evidence_id": "EV_026",
-      "id": "strategy_evidence:citibank:EV_026",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.citigroup.com/global/news/perspectives/2024/remarks-by-ceo-jane-fraser-at-citi-s-2024-annual-stockholders-meeting",
-      "statement": "Citi's Wealth leadership aimed to improve platforms and capabilities."
-    },
-    {
-      "evidence_id": "EV_016",
-      "id": "strategy_evidence:citibank:EV_016",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "earnings_call",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-Earnings-Transcript.pdf",
-      "statement": "Management described 2024 as a turning point for Wealth."
-    },
-    {
-      "business_unit": "Services / USPB / Markets and Banking",
-      "confidence": 0.75,
-      "direction": "grow",
-      "hypothesis": "Citi appears to be pursuing selective growth in Services, USPB, and Markets and Banking as contributors to overall revenue expansion.",
-      "id": "strategic_theme:citibank:business_line_growth_in_services_uspb_markets_and_banking",
-      "label": "business-line growth in services, uspb, markets, and banking",
-      "node_type": "StrategicTheme",
-      "organization": "Citibank",
-      "time_horizon": "2024",
-      "value": "business-line growth in services, uspb, markets, and banking"
-    },
-    {
-      "evidence_id": "EV_019",
-      "id": "strategy_evidence:citibank:EV_019",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "earnings_call",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/services-investor-day-full-transcript.pdf",
-      "statement": "Citi said Services delivered strong revenue growth."
-    },
-    {
-      "evidence_id": "EV_020",
-      "id": "strategy_evidence:citibank:EV_020",
-      "node_type": "StrategyEvidence",
-      "organization": "Citibank",
-      "publication_date": null,
-      "source_type": "earnings_call",
-      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/services-investor-day-full-transcript.pdf",
-      "statement": "Citi said USPB delivered strong revenue growth."
+      "source_type": "earnings_release",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/2025psqtr2rslt.pdf",
+      "statement": "Citi says one of its main 2025-2026 priorities is to simplify the organization and management structure."
     },
     {
       "evidence_id": "EV_004",
@@ -196929,9 +196841,41 @@
       "node_type": "StrategyEvidence",
       "organization": "Citibank",
       "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements/2025/annual-report/letter-to-shareholders",
-      "statement": "Citi referenced revenue gains in Markets and Banking."
+      "source_type": "earnings_release",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/2025psqtr2rslt.pdf",
+      "statement": "Citi says it aims to deliver One Citi as part of its 2025-2026 priorities."
+    },
+    {
+      "evidence_id": "EV_009",
+      "id": "strategy_evidence:citibank:EV_009",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "earnings_release",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-earnings-presentation.pdf",
+      "statement": "Citi says organizational simplification is one of its 2025-2026 priorities."
+    },
+    {
+      "evidence_id": "EV_036",
+      "id": "strategy_evidence:citibank:EV_036",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "company_strategy_page",
+      "source_url": "https://www.citigroup.com/global/about-us/strategy/delivering-our-full-potential",
+      "statement": "Citi says the leaders of its five interconnected businesses now report directly to the CEO and sit on the Executive Management Team."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.75,
+      "direction": "transform",
+      "hypothesis": "Citi appears to still prioritize regulatory remediation and control strengthening, indicating continued work on risk, compliance, and operational resilience infrastructure.",
+      "id": "strategic_theme:citibank:regulatory_remediation_and_control_strengthening",
+      "label": "Regulatory remediation and control strengthening",
+      "node_type": "StrategicTheme",
+      "organization": "Citibank",
+      "time_horizon": null,
+      "value": "Regulatory remediation and control strengthening"
     },
     {
       "evidence_id": "EV_005",
@@ -196939,21 +196883,51 @@
       "node_type": "StrategyEvidence",
       "organization": "Citibank",
       "publication_date": null,
+      "source_type": "earnings_release",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/2025psqtr2rslt.pdf",
+      "statement": "Citi says regulatory remediation is one of its main priorities for 2025-2026."
+    },
+    {
+      "evidence_id": "EV_016",
+      "id": "strategy_evidence:citibank:EV_016",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
       "source_type": "annual_report",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/831001/000120677425000136/citi4405286_ars.pdf",
-      "statement": "Citi said it achieved positive operating leverage in 2024."
+      "source_url": "https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements/2026/annual-report/letter-to-shareholders",
+      "statement": "Citi says it is focusing on operational resilience."
+    },
+    {
+      "evidence_id": "EV_035",
+      "id": "strategy_evidence:citibank:EV_035",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/perspectives/2024/remarks-by-ceo-jane-fraser-at-citi-s-2024-annual-stockholders-meeting",
+      "statement": "Citi says it is continuing to fix regulatory reporting and data remediation issues."
+    },
+    {
+      "evidence_id": "EV_034",
+      "id": "strategy_evidence:citibank:EV_034",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/perspectives/2024/remarks-by-ceo-jane-fraser-at-citi-s-2024-annual-stockholders-meeting",
+      "statement": "Citi says the Transformation is strengthening risk and controls, modernizing infrastructure and data architecture, and making processes faster through automation."
     },
     {
       "business_unit": null,
-      "confidence": 0.5,
-      "direction": "optimize",
-      "hypothesis": "Citi appears to be emphasizing disciplined expense management and operating leverage to convert revenue gains into improved efficiency.",
-      "id": "strategic_theme:citibank:expense_discipline_and_operating_leverage",
-      "label": "expense discipline and operating leverage",
+      "confidence": 0.75,
+      "direction": "grow",
+      "hypothesis": "Citi appears to be using its simplified structure to pursue growth and share gains in core institutional and wealth franchises, especially Commercial Banking, Services, and Wealth.",
+      "id": "strategic_theme:citibank:core_franchise_growth_in_institutional_and_wealth_businesses",
+      "label": "Core franchise growth in institutional and wealth businesses",
       "node_type": "StrategicTheme",
       "organization": "Citibank",
-      "time_horizon": "2024",
-      "value": "expense discipline and operating leverage"
+      "time_horizon": "2025-2026",
+      "value": "Core franchise growth in institutional and wealth businesses"
     },
     {
       "evidence_id": "EV_006",
@@ -196961,19 +196935,71 @@
       "node_type": "StrategyEvidence",
       "organization": "Citibank",
       "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/831001/000120677425000136/citi4405286_ars.pdf",
-      "statement": "Citi attributed 2024 results in part to disciplined expense management."
+      "source_type": "earnings_release",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/2025psqtr2rslt.pdf",
+      "statement": "Citi says it is targeting share gains in Services, Banking, Markets, and U.S. Personal Banking."
     },
     {
-      "evidence_id": "EV_023",
-      "id": "strategy_evidence:citibank:EV_023",
+      "evidence_id": "EV_007",
+      "id": "strategy_evidence:citibank:EV_007",
       "node_type": "StrategyEvidence",
       "organization": "Citibank",
       "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements/2024/annual-report/letter-to-shareholders",
-      "statement": "Citi eliminated more than 60 internal management committees."
+      "source_type": "earnings_release",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/2025psqtr2rslt.pdf",
+      "statement": "Citi says it intends to grow Commercial Banking."
+    },
+    {
+      "evidence_id": "EV_010",
+      "id": "strategy_evidence:citibank:EV_010",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "earnings_release",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-earnings-presentation.pdf",
+      "statement": "Citi says scaling Wealth is one of its 2025-2026 priorities."
+    },
+    {
+      "evidence_id": "EV_020",
+      "id": "strategy_evidence:citibank:EV_020",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/citi-2024-annual-report.pdf",
+      "statement": "Citi reports record revenues for Services in 2024 and says Services benefited from new mandates and fee growth."
+    },
+    {
+      "evidence_id": "EV_021",
+      "id": "strategy_evidence:citibank:EV_021",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/citi-2024-annual-report.pdf",
+      "statement": "Citi reports record revenues for Wealth in 2024."
+    },
+    {
+      "evidence_id": "EV_022",
+      "id": "strategy_evidence:citibank:EV_022",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/citi-2024-annual-report.pdf",
+      "statement": "Citi says Banking revenue rose 32% in 2024, driven by gains across ECM, DCM, and M&A."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.75,
+      "direction": "increase_investment",
+      "hypothesis": "Citi appears to be increasing investment in technology modernization, cloud infrastructure, and AI to support a faster, more automated operating model.",
+      "id": "strategic_theme:citibank:technology_modernization_and_ai_enabled_productivity",
+      "label": "Technology modernization and AI-enabled productivity",
+      "node_type": "StrategicTheme",
+      "organization": "Citibank",
+      "time_horizon": null,
+      "value": "Technology modernization and AI-enabled productivity"
     },
     {
       "evidence_id": "EV_028",
@@ -196981,9 +197007,173 @@
       "node_type": "StrategyEvidence",
       "organization": "Citibank",
       "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements/2025/annual-report/letter-to-shareholders",
+      "statement": "Citi emphasizes modernization of infrastructure and AI adoption."
+    },
+    {
+      "evidence_id": "EV_030",
+      "id": "strategy_evidence:citibank:EV_030",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "earnings_call",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-Earnings-Transcript.pdf",
+      "statement": "Citi says expenses rose 1% because of continued investment in technology and platform modernization, partially offset by productivity savings."
+    },
+    {
+      "evidence_id": "EV_033",
+      "id": "strategy_evidence:citibank:EV_033",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
       "source_type": "company_announcement",
       "source_url": "https://www.citigroup.com/global/news/perspectives/2024/remarks-by-ceo-jane-fraser-at-citi-s-2024-annual-stockholders-meeting",
-      "statement": "Citi said it retired 6% of legacy platforms in 2023 and continued the trend into the first quarter of 2024."
+      "statement": "Citi says continued investment in Transformation is its number one priority."
+    },
+    {
+      "evidence_id": "EV_041",
+      "id": "strategy_evidence:citibank:EV_041",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/press-release/2024/print/citi-and-google-cloud-announce-strategic-agreement",
+      "statement": "Citi announced a multi-year agreement with Google Cloud to modernize its technology infrastructure using cloud technology."
+    },
+    {
+      "evidence_id": "EV_042",
+      "id": "strategy_evidence:citibank:EV_042",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/press-release/2024/print/citi-and-google-cloud-announce-strategic-agreement",
+      "statement": "Citi says the Google Cloud collaboration will support its digital strategy with artificial intelligence."
+    },
+    {
+      "business_unit": "Technology",
+      "confidence": 0.85,
+      "direction": "optimize",
+      "hypothesis": "Citi appears to be optimizing its technology footprint by reducing workforce, contractor reliance, and software complexity as part of broader simplification and cost discipline.",
+      "id": "strategic_theme:citibank:cost_optimization_through_workforce_and_platform_rationalization",
+      "label": "Cost optimization through workforce and platform rationalization",
+      "node_type": "StrategicTheme",
+      "organization": "Citibank",
+      "time_horizon": "by start of Q4 2025",
+      "value": "Cost optimization through workforce and platform rationalization"
+    },
+    {
+      "evidence_id": "EV_029",
+      "id": "strategy_evidence:citibank:EV_029",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "earnings_call",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/Earnings/Q42024/4Q24-Earnings-Transcript.pdf",
+      "statement": "Citi says expense reduction was driven by savings from organizational simplification and stranded cost reduction, along with lower restructuring and repositioning charges."
+    },
+    {
+      "evidence_id": "EV_037",
+      "id": "strategy_evidence:citibank:EV_037",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": "2025-06-05",
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/press-release/2025/citi-realigns-technology-workforce-china-global-simplification",
+      "statement": "Citi says it will reduce its technology employee workforce in its China Citi Solution Centers in Shanghai and Dalian by about 3,500."
+    },
+    {
+      "evidence_id": "EV_038",
+      "id": "strategy_evidence:citibank:EV_038",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": "2025-06-05",
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/press-release/2025/citi-realigns-technology-workforce-china-global-simplification",
+      "statement": "Citi says the China technology workforce changes are designed to streamline operations and simplify organizational structure."
+    },
+    {
+      "evidence_id": "EV_039",
+      "id": "strategy_evidence:citibank:EV_039",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": "2025-06-05",
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/press-release/2025/citi-realigns-technology-workforce-china-global-simplification",
+      "statement": "Citi says the China technology workforce changes are designed to reduce reliance on third-party contractors."
+    },
+    {
+      "evidence_id": "EV_040",
+      "id": "strategy_evidence:citibank:EV_040",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": "2025-06-05",
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/press-release/2025/citi-realigns-technology-workforce-china-global-simplification",
+      "statement": "Citi says the China technology workforce changes are designed to shrink the software portfolio."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.6,
+      "direction": "grow",
+      "hypothesis": "Citi appears to be focused on improving business performance to reach its 2026 RoTCE target, with transformation progress and operating improvements supporting that objective.",
+      "id": "strategic_theme:citibank:profitability_improvement_toward_2026_target",
+      "label": "Profitability improvement toward 2026 target",
+      "node_type": "StrategicTheme",
+      "organization": "Citibank",
+      "time_horizon": "2026",
+      "value": "Profitability improvement toward 2026 target"
+    },
+    {
+      "evidence_id": "EV_015",
+      "id": "strategy_evidence:citibank:EV_015",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements/2026/annual-report/letter-to-shareholders",
+      "statement": "Citi says more than 80% of Transformation programs are at or near target state."
+    },
+    {
+      "evidence_id": "EV_018",
+      "id": "strategy_evidence:citibank:EV_018",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements/2026/annual-report/letter-to-shareholders",
+      "statement": "Citi says it is on track for its 2026 RoTCE target of 10-11%."
+    },
+    {
+      "evidence_id": "EV_019",
+      "id": "strategy_evidence:citibank:EV_019",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/rcs/citigpa/storage/public/citi-2024-annual-report.pdf",
+      "statement": "Citi says it is focused on improving business performance and executing the Transformation."
+    },
+    {
+      "evidence_id": "EV_024",
+      "id": "strategy_evidence:citibank:EV_024",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements/2025/annual-report/letter-to-shareholders",
+      "statement": "Citi says it is focused on two priorities: improving business performance and executing the Transformation."
+    },
+    {
+      "evidence_id": "EV_031",
+      "id": "strategy_evidence:citibank:EV_031",
+      "node_type": "StrategyEvidence",
+      "organization": "Citibank",
+      "publication_date": "2025-04-29",
+      "source_type": "company_announcement",
+      "source_url": "https://www.citigroup.com/global/news/perspectives/2025/remarks-ceo-jane-fraser-citi-2025-annual-stockholders-meeting",
+      "statement": "Citi says its focus is on improving business performance and executing the Transformation."
     }
   ]
 }

@@ -1,4 +1,4 @@
-"""Domain models for bank strategy intelligence."""
+"""Domain models for account growth intelligence."""
 
 from backend.app.domain.organization import OrganizationIdentity, organization_key
 

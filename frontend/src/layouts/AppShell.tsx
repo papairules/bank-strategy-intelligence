@@ -5,14 +5,14 @@ import { OrganizationProvider } from "../context/OrganizationContext";
 import { OrganizationPicker } from "./OrganizationPicker";
 
 const navigation = [
-  { label: "Overview", path: "/", mark: "OV", group: "Workspace" },
-  { label: "Hiring Intelligence", path: "/hiring", mark: "HI", group: "Intelligence" },
+  { label: "Workspace", path: "/", mark: "WS", group: "Workspace" },
+  // { label: "Hiring Intelligence", path: "/hiring", mark: "HI", group: "Intelligence" },
   // { label: "Technology Intelligence", path: "/technology", mark: "TI", group: "Intelligence" },
-  { label: "Strategic Signals", path: "/signals", mark: "SS", group: "Intelligence" },
+  // { label: "Strategic Signals", path: "/signals", mark: "SS", group: "Intelligence" },
   // { label: "Evidence Explorer", path: "/evidence", mark: "EV", group: "Evidence" },
   // { label: "Ask Evidence", path: "/evidence#ask-evidence", mark: "AE", group: "Governed AI" },
   // { label: "Ask Strategy", path: "/signals#ask-strategy", mark: "AS", group: "Governed AI" },
-  { label: "Company Report", path: "/report", mark: "CR", group: "Governed AI" },
+  // { label: "Company Report", path: "/report", mark: "CR", group: "Governed AI" },
 ];
 
 export function AppShell() {
@@ -21,7 +21,7 @@ export function AppShell() {
   const navigate = useNavigate();
   const current = navigation.find((item) => item.path === `${location.pathname}${location.hash}`)?.label
     ?? navigation.find((item) => !item.path.includes("#") && item.path === location.pathname)?.label
-    ?? "Overview";
+    ?? "Workspace";
   const groups = Array.from(new Set(navigation.map((item) => item.group)));
 
   const setOrganization = (next: Organization) => {
@@ -43,8 +43,8 @@ export function AppShell() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <span className="brand__mark">BSI</span>
-          <div><strong>Bank Strategy</strong><span>Intelligence</span></div>
+          <span className="brand__mark">AGI</span>
+          <div><strong>Account Growth</strong><span>Intelligence</span></div>
         </div>
         <nav>
           {groups.map((group) => <div className="nav-group" key={group}><div className="nav-label">{group}</div>{navigation.filter((item) => item.group === group).map((item) => (

@@ -27407,66 +27407,53 @@
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Wells Fargo",
       "provider": "openai",
-      "question": "What are Wells Fargo's major strategic priorities over the next 12 months?",
+      "question": "Generate a company intelligence report for Wells Fargo.",
       "source": "org:wells_fargo",
-      "target": "strategic_theme:wells_fargo:risk_and_control_infrastructure"
+      "target": "strategic_theme:wells_fargo:efficiency_and_expense_discipline"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Wells Fargo",
       "provider": "openai",
-      "question": "What are Wells Fargo's major strategic priorities over the next 12 months?",
+      "question": "Generate a company intelligence report for Wells Fargo.",
       "source": "org:wells_fargo",
-      "target": "strategic_theme:wells_fargo:technology_and_digital_modernization"
+      "target": "strategic_theme:wells_fargo:digital_and_operations_modernization"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Wells Fargo",
       "provider": "openai",
-      "question": "What are Wells Fargo's major strategic priorities over the next 12 months?",
+      "question": "Generate a company intelligence report for Wells Fargo.",
       "source": "org:wells_fargo",
-      "target": "strategic_theme:wells_fargo:consumer_banking_growth"
+      "target": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Wells Fargo",
       "provider": "openai",
-      "question": "What are Wells Fargo's major strategic priorities over the next 12 months?",
+      "question": "Generate a company intelligence report for Wells Fargo.",
       "source": "org:wells_fargo",
-      "target": "strategic_theme:wells_fargo:commercial_and_wealth_productivity"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Wells Fargo",
-      "provider": "openai",
-      "question": "What are Wells Fargo's major strategic priorities over the next 12 months?",
-      "source": "org:wells_fargo",
-      "target": "strategic_theme:wells_fargo:operational_efficiency_and_expense_discipline"
+      "target": "strategic_theme:wells_fargo:core_business_and_fee_based_growth"
     },
     {
       "derivation_type": "persisted_source",
@@ -287792,155 +287779,344 @@
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:risk_and_control_infrastructure",
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
       "target": "strategy_evidence:wells_fargo:EV_001"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:risk_and_control_infrastructure",
-      "target": "strategy_evidence:wells_fargo:EV_028"
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_024"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:technology_and_digital_modernization",
-      "target": "strategy_evidence:wells_fargo:EV_002"
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_031"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:technology_and_digital_modernization",
-      "target": "strategy_evidence:wells_fargo:EV_003"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:technology_and_digital_modernization",
-      "target": "strategy_evidence:wells_fargo:EV_004"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:technology_and_digital_modernization",
-      "target": "strategy_evidence:wells_fargo:EV_005"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:technology_and_digital_modernization",
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
       "target": "strategy_evidence:wells_fargo:EV_032"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:consumer_banking_growth",
-      "target": "strategy_evidence:wells_fargo:EV_007"
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_033"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:consumer_banking_growth",
-      "target": "strategy_evidence:wells_fargo:EV_008"
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_034"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:consumer_banking_growth",
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_036"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_041"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_042"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "target": "strategy_evidence:wells_fargo:EV_038"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_003"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_004"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_005"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_006"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_028"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_029"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_030"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_039"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "target": "strategy_evidence:wells_fargo:EV_026"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:digital_and_operations_modernization",
       "target": "strategy_evidence:wells_fargo:EV_009"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:consumer_banking_growth",
-      "target": "strategy_evidence:wells_fargo:EV_010"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:commercial_and_wealth_productivity",
-      "target": "strategy_evidence:wells_fargo:EV_011"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:commercial_and_wealth_productivity",
-      "target": "strategy_evidence:wells_fargo:EV_012"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:commercial_and_wealth_productivity",
-      "target": "strategy_evidence:wells_fargo:EV_013"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:operational_efficiency_and_expense_discipline",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
       "target": "strategy_evidence:wells_fargo:EV_017"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:operational_efficiency_and_expense_discipline",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_018"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_021"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_043"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_044"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_048"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_049"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_027"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "target": "strategy_evidence:wells_fargo:EV_008"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_002"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_010"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_011"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_012"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_013"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_015"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_016"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Wells Fargo",
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
       "target": "strategy_evidence:wells_fargo:EV_022"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T17:31:14.140202+00:00",
+      "generated_at": "2026-08-24T20:07:29.414956+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:operational_efficiency_and_expense_discipline",
-      "target": "strategy_evidence:wells_fargo:EV_029"
+      "source": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "target": "strategy_evidence:wells_fargo:EV_045"
     }
   ],
   "graph": {
@@ -287950,7 +288126,7 @@
     "hiring_signals_used": 4,
     "jobs_read": 1610,
     "organization": "Wells Fargo",
-    "strategic_themes_used": 5
+    "strategic_themes_used": 4
   },
   "multigraph": true,
   "nodes": [
@@ -324277,56 +324453,126 @@
     {
       "business_unit": null,
       "confidence": 0.75,
-      "direction": "increase_investment",
-      "hypothesis": "Wells Fargo is likely to continue prioritizing risk and control infrastructure as a core near-term enterprise focus, with explicit management direction to strengthen systems and controls.",
-      "id": "strategic_theme:wells_fargo:risk_and_control_infrastructure",
-      "label": "risk and control infrastructure",
+      "direction": "optimize",
+      "hypothesis": "Wells Fargo is maintaining a firmwide cost-optimization priority, with management actions focused on reducing the expense base through efficiency initiatives, headcount and third-party spend reductions, and real-estate optimization.",
+      "id": "strategic_theme:wells_fargo:efficiency_and_expense_discipline",
+      "label": "efficiency and expense discipline",
       "node_type": "StrategicTheme",
       "organization": "Wells Fargo",
-      "time_horizon": "next 12 months",
-      "value": "risk and control infrastructure"
+      "time_horizon": "2024 to 2025",
+      "value": "efficiency and expense discipline"
     },
     {
       "evidence_id": "EV_001",
       "id": "strategy_evidence:wells_fargo:EV_001",
       "node_type": "StrategyEvidence",
       "organization": "Wells Fargo",
-      "publication_date": null,
+      "publication_date": "2025-01-15",
       "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to strengthen its risk and control infrastructure in 2026."
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/earnings/fourth-quarter-2024-earnings.pdf?os=wtmb5utKCxk5refapp%3Futm_sourcesyndication",
+      "statement": "Wells Fargo said expenses declined from a year ago and attributed the improvement to its efficiency efforts."
     },
     {
-      "evidence_id": "EV_028",
-      "id": "strategy_evidence:wells_fargo:EV_028",
+      "evidence_id": "EV_024",
+      "id": "strategy_evidence:wells_fargo:EV_024",
       "node_type": "StrategyEvidence",
       "organization": "Wells Fargo",
       "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000045/wfc-20250128.htm",
-      "statement": "Wells Fargo said its number-one priority remained strengthening its risk and control infrastructure."
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2024-annual-report.pdf",
+      "statement": "Wells Fargo said expense management remained disciplined and expenses declined 2% year over year."
+    },
+    {
+      "evidence_id": "EV_031",
+      "id": "strategy_evidence:wells_fargo:EV_031",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000090/wfc-20250317.htm",
+      "statement": "Wells Fargo said it has approximately $12 billion in gross expense saves over the past four years."
+    },
+    {
+      "evidence_id": "EV_032",
+      "id": "strategy_evidence:wells_fargo:EV_032",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000090/wfc-20250317.htm",
+      "statement": "Wells Fargo said lower noninterest expenses in 2024 reflected its efficiency initiatives."
+    },
+    {
+      "evidence_id": "EV_033",
+      "id": "strategy_evidence:wells_fargo:EV_033",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000092/wfc2024annualreport.pdf",
+      "statement": "Wells Fargo said expense management remained disciplined."
+    },
+    {
+      "evidence_id": "EV_034",
+      "id": "strategy_evidence:wells_fargo:EV_034",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000092/wfc2024annualreport.pdf",
+      "statement": "Wells Fargo said expenses declined 2% year over year."
+    },
+    {
+      "evidence_id": "EV_036",
+      "id": "strategy_evidence:wells_fargo:EV_036",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/0000072971/000007297125000092/wfc2024annualreport.pdf",
+      "statement": "Wells Fargo reduced overall headcount."
+    },
+    {
+      "evidence_id": "EV_041",
+      "id": "strategy_evidence:wells_fargo:EV_041",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-proxy-statement.pdf",
+      "statement": "Wells Fargo said it reduced third-party spend."
+    },
+    {
+      "evidence_id": "EV_042",
+      "id": "strategy_evidence:wells_fargo:EV_042",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-proxy-statement.pdf",
+      "statement": "Wells Fargo said it optimized real estate with 7% lower non-branch property square footage."
+    },
+    {
+      "evidence_id": "EV_038",
+      "id": "strategy_evidence:wells_fargo:EV_038",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-proxy-statement.pdf",
+      "statement": "Wells Fargo said it generated approximately $2.8 billion in gross expense efficiency savings in 2024."
     },
     {
       "business_unit": null,
       "confidence": 0.75,
       "direction": "increase_investment",
-      "hypothesis": "Wells Fargo appears to be continuing broad technology modernization over the next 12 months, including cloud, data, cybersecurity, and generative AI investments.",
-      "id": "strategic_theme:wells_fargo:technology_and_digital_modernization",
-      "label": "technology and digital modernization",
+      "hypothesis": "Wells Fargo is increasing investment in digital, cloud, automation, and process modernization as a multi-year operating model refresh intended to improve productivity and support future growth.",
+      "id": "strategic_theme:wells_fargo:digital_and_operations_modernization",
+      "label": "digital and operations modernization",
       "node_type": "StrategicTheme",
       "organization": "Wells Fargo",
-      "time_horizon": "next 12 months",
-      "value": "technology and digital modernization"
-    },
-    {
-      "evidence_id": "EV_002",
-      "id": "strategy_evidence:wells_fargo:EV_002",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to expand cybersecurity monitoring and tools in 2026."
+      "time_horizon": "2025 to 2026",
+      "value": "digital and operations modernization"
     },
     {
       "evidence_id": "EV_003",
@@ -324335,8 +324581,8 @@
       "organization": "Wells Fargo",
       "publication_date": null,
       "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to continue migrating to new data centers and public/private cloud in 2026."
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000007/ex993-wellsfargo4q24pres.htm",
+      "statement": "Wells Fargo identified modernization as part of its 2025 investment areas."
     },
     {
       "evidence_id": "EV_004",
@@ -324345,8 +324591,8 @@
       "organization": "Wells Fargo",
       "publication_date": null,
       "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to scale generative AI in 2026."
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000007/ex993-wellsfargo4q24pres.htm",
+      "statement": "Wells Fargo identified digital as part of its 2025 investment areas."
     },
     {
       "evidence_id": "EV_005",
@@ -324355,50 +324601,68 @@
       "organization": "Wells Fargo",
       "publication_date": null,
       "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to invest in data platforms in 2026."
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000007/ex993-wellsfargo4q24pres.htm",
+      "statement": "Wells Fargo identified cloud as part of its 2025 investment areas."
     },
     {
-      "evidence_id": "EV_032",
-      "id": "strategy_evidence:wells_fargo:EV_032",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000061/wfc-20260127.htm",
-      "statement": "Wells Fargo plans to continue strategic investments in technology, products, and talent."
-    },
-    {
-      "business_unit": "Consumer Banking",
-      "confidence": 0.55,
-      "direction": "grow",
-      "hypothesis": "Wells Fargo appears to be focused on growing selected consumer banking businesses over the next 12 months, especially digital offerings, Premier and Business Banking, credit cards, and auto lending.",
-      "id": "strategic_theme:wells_fargo:consumer_banking_growth",
-      "label": "consumer banking growth",
-      "node_type": "StrategicTheme",
-      "organization": "Wells Fargo",
-      "time_horizon": "next 12 months",
-      "value": "consumer banking growth"
-    },
-    {
-      "evidence_id": "EV_007",
-      "id": "strategy_evidence:wells_fargo:EV_007",
+      "evidence_id": "EV_006",
+      "id": "strategy_evidence:wells_fargo:EV_006",
       "node_type": "StrategyEvidence",
       "organization": "Wells Fargo",
       "publication_date": null,
       "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to grow digital offerings across its businesses."
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000007/ex993-wellsfargo4q24pres.htm",
+      "statement": "Wells Fargo identified automation as part of its 2025 investment areas."
     },
     {
-      "evidence_id": "EV_008",
-      "id": "strategy_evidence:wells_fargo:EV_008",
+      "evidence_id": "EV_028",
+      "id": "strategy_evidence:wells_fargo:EV_028",
       "node_type": "StrategyEvidence",
       "organization": "Wells Fargo",
       "publication_date": null,
-      "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to grow Premier and Business Banking in 2026."
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000090/wfc-20250317.htm",
+      "statement": "Wells Fargo continued investing in cloud migration and data platforms."
+    },
+    {
+      "evidence_id": "EV_029",
+      "id": "strategy_evidence:wells_fargo:EV_029",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000090/wfc-20250317.htm",
+      "statement": "Wells Fargo continued investing in mobile."
+    },
+    {
+      "evidence_id": "EV_030",
+      "id": "strategy_evidence:wells_fargo:EV_030",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000090/wfc-20250317.htm",
+      "statement": "Wells Fargo continued investing in Fargo AI."
+    },
+    {
+      "evidence_id": "EV_039",
+      "id": "strategy_evidence:wells_fargo:EV_039",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-proxy-statement.pdf",
+      "statement": "Wells Fargo said it continued process simplification, automation and technology modernization."
+    },
+    {
+      "evidence_id": "EV_026",
+      "id": "strategy_evidence:wells_fargo:EV_026",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2024-annual-report.pdf",
+      "statement": "Wells Fargo said it continued investing in infrastructure and the future."
     },
     {
       "evidence_id": "EV_009",
@@ -324408,7 +324672,131 @@
       "publication_date": null,
       "source_type": "earnings_release",
       "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to grow its credit card business in 2026."
+      "statement": "Wells Fargo listed digital offerings among its 2026 investment priorities."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.85,
+      "direction": "transform",
+      "hypothesis": "Wells Fargo is continuing an enterprise-wide control and remediation agenda, with ongoing investment in risk and control capabilities and continued progress on consent orders and supervisory constraints.",
+      "id": "strategic_theme:wells_fargo:risk_controls_and_regulatory_remediation",
+      "label": "risk, controls, and regulatory remediation",
+      "node_type": "StrategicTheme",
+      "organization": "Wells Fargo",
+      "time_horizon": "2024 to 2026",
+      "value": "risk, controls, and regulatory remediation"
+    },
+    {
+      "evidence_id": "EV_017",
+      "id": "strategy_evidence:wells_fargo:EV_017",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "earnings_release",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000101/wfc1qer04-11x25ex991xrelea.htm",
+      "statement": "Wells Fargo said five consent orders were closed in the quarter and eleven had been closed since 2019."
+    },
+    {
+      "evidence_id": "EV_018",
+      "id": "strategy_evidence:wells_fargo:EV_018",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "earnings_release",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000101/wfc1qer04-11x25ex991xrelea.htm",
+      "statement": "Wells Fargo said it was continuing to invest in risk and control capabilities."
+    },
+    {
+      "evidence_id": "EV_021",
+      "id": "strategy_evidence:wells_fargo:EV_021",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-annual-report.pdf",
+      "statement": "Wells Fargo said the Federal Reserve lifted the asset cap in June 2025."
+    },
+    {
+      "evidence_id": "EV_043",
+      "id": "strategy_evidence:wells_fargo:EV_043",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/sec-filings/2024/exhibit-13.pdf",
+      "statement": "Wells Fargo noted a September 12, 2024 OCC formal agreement requiring enhanced AML and sanctions risk management practices."
+    },
+    {
+      "evidence_id": "EV_044",
+      "id": "strategy_evidence:wells_fargo:EV_044",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/sec-filings/2024/exhibit-13.pdf",
+      "statement": "Wells Fargo said the OCC terminated the 2016 sales-practices consent order on February 13, 2025."
+    },
+    {
+      "evidence_id": "EV_048",
+      "id": "strategy_evidence:wells_fargo:EV_048",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": "2025-06-03",
+      "source_type": "company_announcement",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000154/exhibit991-newsreleasexjun.htm",
+      "statement": "Wells Fargo said the Federal Reserve determined it had met all conditions to remove the asset cap from the 2018 consent order."
+    },
+    {
+      "evidence_id": "EV_049",
+      "id": "strategy_evidence:wells_fargo:EV_049",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": "2025-06-03",
+      "source_type": "company_announcement",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000154/exhibit991-newsreleasexjun.htm",
+      "statement": "Wells Fargo framed the asset-cap decision as recognition of its transformation and control improvements."
+    },
+    {
+      "evidence_id": "EV_027",
+      "id": "strategy_evidence:wells_fargo:EV_027",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2024-annual-report.pdf",
+      "statement": "Wells Fargo said it made significant progress on risk and control work."
+    },
+    {
+      "evidence_id": "EV_008",
+      "id": "strategy_evidence:wells_fargo:EV_008",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "earnings_release",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
+      "statement": "Wells Fargo listed firmwide controls among its 2026 investment priorities."
+    },
+    {
+      "business_unit": null,
+      "confidence": 0.85,
+      "direction": "grow",
+      "hypothesis": "Wells Fargo is positioning to grow core franchises and fee-generating businesses, including consumer, business banking, commercial payments, investment banking, and wealth-related offerings.",
+      "id": "strategic_theme:wells_fargo:core_business_and_fee_based_growth",
+      "label": "core business and fee-based growth",
+      "node_type": "StrategicTheme",
+      "organization": "Wells Fargo",
+      "time_horizon": "2025 to 2026",
+      "value": "core business and fee-based growth"
+    },
+    {
+      "evidence_id": "EV_002",
+      "id": "strategy_evidence:wells_fargo:EV_002",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": "2025-01-15",
+      "source_type": "earnings_release",
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/earnings/fourth-quarter-2024-earnings.pdf?os=wtmb5utKCxk5refapp%3Futm_sourcesyndication",
+      "statement": "Wells Fargo said it was continuing to invest in Premier and customer/franchise growth."
     },
     {
       "evidence_id": "EV_010",
@@ -324418,19 +324806,7 @@
       "publication_date": null,
       "source_type": "earnings_release",
       "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to grow auto lending in 2026."
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.55,
-      "direction": "transform",
-      "hypothesis": "Wells Fargo appears to be transforming parts of Commercial Banking and Wealth Management to improve platform capabilities and productivity, with some related risk-analytics work in Wealth.",
-      "id": "strategic_theme:wells_fargo:commercial_and_wealth_productivity",
-      "label": "commercial and wealth productivity",
-      "node_type": "StrategicTheme",
-      "organization": "Wells Fargo",
-      "time_horizon": "next 12 months",
-      "value": "commercial and wealth productivity"
+      "statement": "Wells Fargo listed business banking among its 2026 investment priorities."
     },
     {
       "evidence_id": "EV_011",
@@ -324440,7 +324816,7 @@
       "publication_date": null,
       "source_type": "earnings_release",
       "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans to modernize its Commercial Banking platform in 2026."
+      "statement": "Wells Fargo listed commercial payments among its 2026 investment priorities."
     },
     {
       "evidence_id": "EV_012",
@@ -324450,7 +324826,7 @@
       "publication_date": null,
       "source_type": "earnings_release",
       "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans productivity improvements in Wealth Management in 2026."
+      "statement": "Wells Fargo listed investment banking among its 2026 investment priorities."
     },
     {
       "evidence_id": "EV_013",
@@ -324460,29 +324836,27 @@
       "publication_date": null,
       "source_type": "earnings_release",
       "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo plans risk-analytics improvements in Wealth Management in 2026."
+      "statement": "Wells Fargo said its wealth section includes growth in advisor productivity."
     },
     {
-      "business_unit": null,
-      "confidence": 0.5,
-      "direction": "optimize",
-      "hypothesis": "Wells Fargo likely remains focused on operational efficiency and expense discipline as an execution priority, supported by ongoing efficiency initiatives and the operational excellence pillar.",
-      "id": "strategic_theme:wells_fargo:operational_efficiency_and_expense_discipline",
-      "label": "operational efficiency and expense discipline",
-      "node_type": "StrategicTheme",
-      "organization": "Wells Fargo",
-      "time_horizon": "next 12 months",
-      "value": "operational efficiency and expense discipline"
-    },
-    {
-      "evidence_id": "EV_017",
-      "id": "strategy_evidence:wells_fargo:EV_017",
+      "evidence_id": "EV_015",
+      "id": "strategy_evidence:wells_fargo:EV_015",
       "node_type": "StrategyEvidence",
       "organization": "Wells Fargo",
       "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2026-proxy-statement.pdf",
-      "statement": "Wells Fargo identifies Operational Excellence as one of its five strategic pillars."
+      "source_type": "earnings_release",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
+      "statement": "Wells Fargo said its wealth section includes cross-border payments."
+    },
+    {
+      "evidence_id": "EV_016",
+      "id": "strategy_evidence:wells_fargo:EV_016",
+      "node_type": "StrategyEvidence",
+      "organization": "Wells Fargo",
+      "publication_date": null,
+      "source_type": "earnings_release",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
+      "statement": "Wells Fargo said its wealth section includes RIA solutions."
     },
     {
       "evidence_id": "EV_022",
@@ -324491,18 +324865,18 @@
       "organization": "Wells Fargo",
       "publication_date": null,
       "source_type": "annual_report",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000202/wfc2025annualreport-arsfil.pdf",
-      "statement": "Wells Fargo says it has improved operational efficiency as part of its multi-year transformation."
+      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-annual-report.pdf",
+      "statement": "Wells Fargo said it achieved stronger growth in its core businesses."
     },
     {
-      "evidence_id": "EV_029",
-      "id": "strategy_evidence:wells_fargo:EV_029",
+      "evidence_id": "EV_045",
+      "id": "strategy_evidence:wells_fargo:EV_045",
       "node_type": "StrategyEvidence",
       "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000045/wfc-20250128.htm",
-      "statement": "Wells Fargo said it was focusing on efficiency."
+      "publication_date": "2025-07-15",
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000170/wfc2qer07-15x25ex991xrelea.htm",
+      "statement": "Wells Fargo reported second-quarter 2025 net income of $5.5 billion."
     }
   ]
 }

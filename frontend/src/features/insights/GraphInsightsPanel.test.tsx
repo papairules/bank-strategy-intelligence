@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GraphInsightsPanel } from "./GraphInsightsPanel";
 
@@ -22,22 +22,28 @@ const snapshot = {
   strategic_themes_used: 2,
   top_capabilities: [{ name: "Risk and Compliance", job_count: 361 }],
   top_technologies: [{ name: "Java", job_count: 128 }],
+  top_locations: [{ name: "Charlotte, NC", job_count: 210 }],
   strategic_themes: [
     { name: "Cloud modernization", direction: "increase_investment", confidence: 0.65, time_horizon: "12 months", business_unit: null, evidence_count: 2 },
   ],
 };
 
 describe("GraphInsightsPanel", () => {
-  it("renders strategic themes, top capabilities, and top technologies", async () => {
+  it("renders strategic themes, geographic concentration, top capabilities, and top technologies in that order", async () => {
     vi.stubGlobal("fetch", vi.fn(() => ok(snapshot)));
 
     render(<GraphInsightsPanel organization="BNY" />);
 
     expect(await screen.findByText("Cloud modernization")).toBeInTheDocument();
     expect(screen.getByText("Increase Investment")).toBeInTheDocument();
+    expect(screen.getByText("Charlotte, NC")).toBeInTheDocument();
     expect(screen.getByText("Risk and Compliance")).toBeInTheDocument();
     expect(screen.getByText("Java")).toBeInTheDocument();
     expect(screen.getByText("2 evidence records")).toBeInTheDocument();
+
+    const grid = document.querySelector<HTMLElement>(".graph-insights__grid")!;
+    const headings = within(grid).getAllByRole("heading", { level: 3 }).map((item) => item.textContent);
+    expect(headings).toEqual(["Geographic concentration", "Top capabilities", "Top technologies"]);
   });
 
   it("shows an empty-state message when no strategic themes are cached", async () => {
