@@ -27404,32 +27404,6 @@
       "target": "hiring_signal:75449e2b-93ac-5b8c-b09d-d939a84da5b5"
     },
     {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Wells Fargo",
-      "provider": "openai",
-      "question": "Summarize Wells Fargo AI investment by line of business using the most recent 10-K and 10-Q disclosures, ranked by strength of evidence.",
-      "source": "org:wells_fargo",
-      "target": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation"
-    },
-    {
-      "agent_version": "strategy-langgraph-v1",
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "HAS_STRATEGIC_THEME",
-      "model": "gpt-5.4-mini",
-      "organization": "Wells Fargo",
-      "provider": "openai",
-      "question": "Summarize Wells Fargo AI investment by line of business using the most recent 10-K and 10-Q disclosures, ranked by strength of evidence.",
-      "source": "org:wells_fargo",
-      "target": "strategic_theme:wells_fargo:data_platform_and_cloud_modernization_to_support_ai"
-    },
-    {
       "derivation_type": "persisted_source",
       "edge_type": "SUPPORTED_BY",
       "enrichment_confidence": null,
@@ -287749,96 +287723,6 @@
       "signal_strength": 1.0,
       "source": "hiring_signal:75449e2b-93ac-5b8c-b09d-d939a84da5b5",
       "target": "evidence:ff98a623-6a07-524c-b591-63adc1048662"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation",
-      "target": "strategy_evidence:wells_fargo:EV_001"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation",
-      "target": "strategy_evidence:wells_fargo:EV_002"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation",
-      "target": "strategy_evidence:wells_fargo:EV_003"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation",
-      "target": "strategy_evidence:wells_fargo:EV_004"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation",
-      "target": "strategy_evidence:wells_fargo:EV_005"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation",
-      "target": "strategy_evidence:wells_fargo:EV_007"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:data_platform_and_cloud_modernization_to_support_ai",
-      "target": "strategy_evidence:wells_fargo:EV_001"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:data_platform_and_cloud_modernization_to_support_ai",
-      "target": "strategy_evidence:wells_fargo:EV_006"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:data_platform_and_cloud_modernization_to_support_ai",
-      "target": "strategy_evidence:wells_fargo:EV_008"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-25T17:55:17.056286+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Wells Fargo",
-      "source": "strategic_theme:wells_fargo:data_platform_and_cloud_modernization_to_support_ai",
-      "target": "strategy_evidence:wells_fargo:EV_009"
     }
   ],
   "graph": {
@@ -287848,7 +287732,7 @@
     "hiring_signals_used": 4,
     "jobs_read": 1610,
     "organization": "Wells Fargo",
-    "strategic_themes_used": 2
+    "strategic_themes_used": 0
   },
   "multigraph": true,
   "nodes": [
@@ -324171,120 +324055,6 @@
       "signal_id": "75449e2b-93ac-5b8c-b09d-d939a84da5b5",
       "signal_type": "geographic_hiring_concentration",
       "strength": 1.0
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.85,
-      "direction": "increase_investment",
-      "hypothesis": "Wells Fargo appears to be increasing enterprise AI investment and moving it into operating-model changes, with broad employee deployment, training, and use cases in call centers, help desks, underwriting analysis, and engineering productivity indicating a near-term priority to scale automation and client-service improvements.",
-      "id": "strategic_theme:wells_fargo:enterprise_genai_and_ai_operating_model_transformation",
-      "label": "Enterprise GenAI and AI operating-model transformation",
-      "node_type": "StrategicTheme",
-      "organization": "Wells Fargo",
-      "time_horizon": "2025-2026",
-      "value": "Enterprise GenAI and AI operating-model transformation"
-    },
-    {
-      "evidence_id": "EV_001",
-      "id": "strategy_evidence:wells_fargo:EV_001",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": "2026-01-14",
-      "source_type": "earnings_release",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000009/ex993-wellsfargo4q25pres.htm",
-      "statement": "Wells Fargo said it will scale investment in generative AI to drive more automation and improve client service, and will also invest in data platforms to better leverage AI."
-    },
-    {
-      "evidence_id": "EV_002",
-      "id": "strategy_evidence:wells_fargo:EV_002",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-annual-report.pdf",
-      "statement": "Wells Fargo said its 2025 annual report section on using GenAI inside Wells Fargo describes broad employee access to Copilot Chat and M365 Copilot, an internal GenAI platform, and agentic AI deployments in call centers, help desks, and commercial underwriting analysis."
-    },
-    {
-      "evidence_id": "EV_003",
-      "id": "strategy_evidence:wells_fargo:EV_003",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://www.wellsfargo.com/assets/pdf/about/investor-relations/annual-reports/2025-annual-report.pdf",
-      "statement": "Wells Fargo said GenAI deployed with engineers has increased code written by 35%."
-    },
-    {
-      "evidence_id": "EV_004",
-      "id": "strategy_evidence:wells_fargo:EV_004",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://newsroom.wf.com/news-releases/news-details/2025/Wells-Fargo-Names-Saul-Van-Beurden-to-Lead-Artificial-Intelligence-Kleber-Santos-to-Expand-Responsibilities-and-Serve-as-Co-CEO-of-Consumer-Banking-and-Lending-with-Van-Beurden/default.aspx",
-      "statement": "Wells Fargo said it is building the technical foundation for broader AI adoption and that business leaders will need to rethink operating models using generative and agentic AI solutions."
-    },
-    {
-      "evidence_id": "EV_005",
-      "id": "strategy_evidence:wells_fargo:EV_005",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://newsroom.wf.com/news-releases/news-details/2025/Wells-Fargo-Names-Saul-Van-Beurden-to-Lead-Artificial-Intelligence-Kleber-Santos-to-Expand-Responsibilities-and-Serve-as-Co-CEO-of-Consumer-Banking-and-Lending-with-Van-Beurden/default.aspx",
-      "statement": "Wells Fargo said more than 90,000 employees have been trained and AI tools have been deployed to over 180,000 desktops."
-    },
-    {
-      "evidence_id": "EV_007",
-      "id": "strategy_evidence:wells_fargo:EV_007",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": "2025-01-14",
-      "source_type": "company_announcement",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000007/ex993-wellsfargo4q24pres.htm",
-      "statement": "Wells Fargo\u2019s 2025 investment priorities included continued use of generative AI for automation and improved client service."
-    },
-    {
-      "business_unit": null,
-      "confidence": 0.85,
-      "direction": "increase_investment",
-      "hypothesis": "Wells Fargo appears to be investing in data platforms, cloud migration, and core technology modernization as enabling infrastructure for broader AI adoption, automation, and digital and operational initiatives rather than as a standalone end goal.",
-      "id": "strategic_theme:wells_fargo:data_platform_and_cloud_modernization_to_support_ai",
-      "label": "Data platform and cloud modernization to support AI",
-      "node_type": "StrategicTheme",
-      "organization": "Wells Fargo",
-      "time_horizon": "2024-2026",
-      "value": "Data platform and cloud modernization to support AI"
-    },
-    {
-      "evidence_id": "EV_006",
-      "id": "strategy_evidence:wells_fargo:EV_006",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": null,
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000090/wfc-20250317.htm",
-      "statement": "Wells Fargo said its 2024 annual report highlights cloud migration, new data centers, and data platforms as part of its technology and innovation work across consumer and commercial businesses."
-    },
-    {
-      "evidence_id": "EV_008",
-      "id": "strategy_evidence:wells_fargo:EV_008",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": "2025-01-14",
-      "source_type": "company_announcement",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000007/ex993-wellsfargo4q24pres.htm",
-      "statement": "Wells Fargo\u2019s 2025 investment priorities included investment in data platforms to drive more insights and better support digital and operational initiatives."
-    },
-    {
-      "evidence_id": "EV_009",
-      "id": "strategy_evidence:wells_fargo:EV_009",
-      "node_type": "StrategyEvidence",
-      "organization": "Wells Fargo",
-      "publication_date": "2025-01-14",
-      "source_type": "company_announcement",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000007/ex993-wellsfargo4q24pres.htm",
-      "statement": "Wells Fargo\u2019s 2025 investment priorities referenced modernization of core banking, call center, payment, and auto loan servicing systems, plus cloud migration and cybersecurity tools."
     }
   ]
 }
