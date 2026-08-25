@@ -40,6 +40,7 @@ class HiringSettings(BaseSettings):
     hiring_agent_max_jobs: int | None = Field(default=None, gt=0)
     hiring_agent_workers: int = Field(default=6, ge=1, le=20)
     supervisor_agent_enabled: bool = False
+    supervisor_report_cache_ttl_hours: float = Field(default=24.0, ge=0)
     report_qa_enabled: bool = False
     openai_api_key: str | None = Field(default=None, repr=False)
     openai_model: str = "gpt-5.4-mini"

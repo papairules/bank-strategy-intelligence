@@ -83,7 +83,7 @@ def supervisor_response(company="Wells Fargo"):
         mode="report",
         executive_summary="Evidence suggests a modernization focus.",
         evidence_assessment=EvidenceAssessment(sufficient=True, overall_confidence=.6),
-        horizons=[],
+        opportunities=[],
         limitations=[],
         answer="Evidence suggests a modernization focus.",
     )

@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from backend.app.application.agents.supervisor_agent import (
-    IntelligenceOutlookRow,
+    LOBOpportunityRow,
     ReportFinding,
     ReportQAError,
     ReportQAErrorCode,
@@ -27,7 +27,7 @@ class FakeResponses:
         if self.output == "schema_instance":
             return SimpleNamespace(output_parsed=kwargs["text_format"](
                 answer="Grounded answer.",
-                supporting_reference_ids=["outlook:1"],
+                supporting_reference_ids=["lob:1"],
                 evidence_sufficient=True,
                 limitations=[],
             ))
@@ -44,19 +44,15 @@ def context():
         organization="Wells Fargo",
         total_hiring_jobs=1610,
         executive_summary="Evidence indicates modernization.",
-        intelligence_outlook_rows=[
-            IntelligenceOutlookRow(
-                opportunity_theme="Operating-model modernization",
-                supervisor_priority="Modernization",
+        lob_opportunities=[
+            LOBOpportunityRow(
+                line_of_business="Commercial Banking",
+                emerging_ai_theme="Operating-model modernization",
+                likely_use_cases=["Credit memo generation"],
+                signal_strength="High",
                 relevant_hiring_jobs=1203,
-                supporting_evidence_count=2,
-                supporting_job_ids=["WF-JOB-1"],
-                supporting_evidence_ids=["EV-1"],
-                strategy_evidence_ids=["STRATEGY-1"],
-                hiring_evidence_ids=["EV-1"],
-                horizon_90="Validate the modernization roadmap.",
-                confidence=.8,
-                score=80,
+                narrative="Validate the modernization roadmap.",
+                supporting_reference_ids=["STRATEGY-1"],
             )
         ],
         strategic_priorities=[
@@ -95,7 +91,7 @@ def service(output):
 def test_answer_uses_compact_existing_report_context_and_preserves_references():
     qa, client = service({
         "answer": "Prioritize validating the modernization roadmap in the next 90 days.",
-        "supporting_reference_ids": ["outlook:1", "STRATEGY-1"],
+        "supporting_reference_ids": ["lob:1", "STRATEGY-1"],
         "evidence_sufficient": True,
         "limitations": ["This is an evidence-backed inference."],
     })
@@ -109,11 +105,11 @@ def test_answer_uses_compact_existing_report_context_and_preserves_references():
     assert call["model"] == "test-model"
     assert "tools" not in call
     reference_schema = call["text_format"].model_json_schema()["properties"]["supporting_reference_ids"]["items"]
-    assert set(reference_schema["enum"]) == {"outlook:1", "STRATEGY-1", "EV-1"}
+    assert set(reference_schema["enum"]) == {"lob:1", "STRATEGY-1", "EV-1"}
     payload = json.loads(call["input"])
-    assert payload["report"]["intelligence_outlook_rows"][0]["horizon_90"] == "Validate the modernization roadmap."
-    assert payload["report"]["intelligence_outlook_rows"][0]["relevant_hiring_jobs"] == 1203
-    assert "supporting_job_ids" not in payload["report"]["intelligence_outlook_rows"][0]
+    assert payload["report"]["lob_opportunities"][0]["narrative"] == "Validate the modernization roadmap."
+    assert payload["report"]["lob_opportunities"][0]["relevant_hiring_jobs"] == 1203
+    assert "supporting_reference_ids" not in payload["report"]["lob_opportunities"][0]
 
 
 def test_insufficient_evidence_is_allowed_without_references():
@@ -136,7 +132,7 @@ def test_insufficient_evidence_is_allowed_without_references():
 def test_top_opportunity_and_hiring_questions_use_existing_outlook_counts(question):
     qa, client = service({
         "answer": "The report supports operating-model modernization.",
-        "supporting_reference_ids": ["outlook:1"],
+        "supporting_reference_ids": ["lob:1"],
         "evidence_sufficient": True,
         "limitations": [],
     })
@@ -144,7 +140,7 @@ def test_top_opportunity_and_hiring_questions_use_existing_outlook_counts(questi
 
     assert result.supporting_references[0].hiring_job_count == 1203
     payload = json.loads(client.responses.calls[0]["input"])
-    assert payload["report"]["intelligence_outlook_rows"][0]["score"] == 80
+    assert payload["report"]["lob_opportunities"][0]["signal_strength"] == "High"
 
 
 def test_cross_company_question_is_rejected_before_provider_call():
@@ -180,4 +176,4 @@ def test_constrained_provider_model_instance_is_deserialized():
     qa, _ = service("schema_instance")
     result = qa.answer(request())
     assert result.evidence_sufficient is True
-    assert result.supporting_references[0].reference_id == "outlook:1"
+    assert result.supporting_references[0].reference_id == "lob:1"

@@ -15,18 +15,18 @@ references.push(
   { reference_id: "kg:technology:python", domain: "hiring_kg", evidence_ids: ["KG_1"], job_ids: ["job-1"], source_url: null },
 );
 
-function outlookRow(overrides = {}) { return {
-  opportunity_theme: "AI Enablement & Modernization", supervisor_priority: "Highest", opportunity_titles: ["AI Enablement & Modernization"], relevant_hiring_jobs: 1203,
-  supporting_evidence_count: 6, supporting_job_ids: ["job-1"], supporting_evidence_ids: ["evidence-1"], strategy_evidence_ids: ["strategy-1"], hiring_evidence_ids: ["hiring-1"], hiring_signal_ids: [], kg_concept_references: [],
-  horizon_30: "No action needed", horizon_60: null, horizon_90: "Validate the modernization roadmap", horizon_180: "Mobilize delivery", horizon_360: "Scale the operating model", confidence: .8, score: 80, limitations: [], ...overrides,
+function lobRow(overrides = {}) { return {
+  line_of_business: "Commercial Banking", emerging_ai_theme: "Agentic underwriting", likely_use_cases: ["Credit memo generation", "Covenant analysis"],
+  signal_strength: "Very High", relevant_hiring_jobs: 1203, narrative: "Wells Fargo's recent 10-Q highlights continued investment in commercial underwriting automation, and the hiring profile shows a matching concentration of underwriting-adjacent roles.",
+  supporting_reference_ids: ["source-8"], ...overrides,
 }; }
 
-function response(rows = [outlookRow(), outlookRow({ opportunity_theme: "Capital normalization", supervisor_priority: "Capital", relevant_hiring_jobs: null, horizon_90: "Assess regulatory readiness", horizon_180: null, horizon_360: null })]) { return {
+function response(lobRows = [lobRow(), lobRow({ line_of_business: "Wealth and Investment Management", emerging_ai_theme: "Advisor copilot", likely_use_cases: ["Meeting prep"], signal_strength: "Medium", relevant_hiring_jobs: null })]) { return {
   organization: "Goldman Sachs", strategy_signal_count: 2, hiring_signal_count: 3,
   coverage: { total_jobs: 847, enriched_jobs: 0, enrichment_coverage_percentage: 0, kg_enriched_job_count: 0, limitations: [] },
   report: {
-    organization: "Goldman Sachs", total_hiring_jobs: 847, executive_summary: "Evidence suggests focused modernization.", strategic_priorities: [], hiring_intelligence: [], cross_domain_alignment: [{ title: "Alignment", narrative: "Strategy and hiring align.", supporting_reference_ids: ["source-8"] }], business_areas_to_watch: [], opportunity_horizons: [],
-    intelligence_outlook_rows: rows, evidence_traceability: references, limitations: ["Hiring concentration is not proof of strategic investment."],
+    organization: "Goldman Sachs", total_hiring_jobs: 847, executive_summary: "Evidence suggests focused modernization.", strategic_priorities: [], hiring_intelligence: [], cross_domain_alignment: [{ title: "Alignment", narrative: "Strategy and hiring align.", supporting_reference_ids: ["source-8"] }], business_areas_to_watch: [],
+    lob_opportunities: lobRows, evidence_traceability: references, limitations: ["Hiring concentration is not proof of strategic investment."],
   }, provider: "openai", model: "test-model",
 }; }
 
@@ -52,39 +52,54 @@ function setup(payload = response(), qaPayload: object = qaResponse, qaStatus = 
 beforeEach(() => window.sessionStorage.clear());
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
-it("renders the API-backed multi-row outlook with exactly seven columns", async () => {
+it("renders the API-backed LOB opportunity table with five columns and an expandable narrative", async () => {
   const fetch = setup();
-  expect(fetch).not.toHaveBeenCalled();
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   expect(await screen.findByText("Evidence suggests focused modernization.")).toBeInTheDocument();
   expect(JSON.parse(String(fetch.mock.calls[0][1]?.body))).toEqual({ organization: "Goldman Sachs" });
   expect(screen.getByText("Goldman Sachs", { selector: ".report-company-summary strong" })).toBeInTheDocument();
   expect(screen.getByText(/847 Total Hiring Jobs/)).toBeInTheDocument();
 
-  const outlook = screen.getByText("Intelligence Outlook").closest("section")!;
+  const outlook = screen.getByText("AI Opportunity by Line of Business").closest("section")!;
   const headings = within(outlook).getAllByRole("columnheader");
-  expect(headings.map((item) => item.textContent)).toEqual(["Opportunity", "Relevant Hiring Jobs", "30 Days", "60 Days", "90 Days", "180 Days", "360 Days"]);
-  expect(within(outlook).queryByRole("columnheader", { name: "Company" })).not.toBeInTheDocument();
-  expect(within(outlook).getByText("AI Enablement & Modernization")).toBeInTheDocument();
-  expect(within(outlook).queryByText("Highest")).not.toBeInTheDocument();
-  expect(within(outlook).getByText("Capital normalization")).toBeInTheDocument();
+  expect(headings.map((item) => item.textContent)).toEqual(["Line of Business", "Emerging AI Theme", "Likely High-Value Use Cases", "Signal Strength", "Relevant Hiring Jobs"]);
+  expect(within(outlook).getByText("Commercial Banking")).toBeInTheDocument();
+  expect(within(outlook).getByText("Wealth and Investment Management")).toBeInTheDocument();
+  expect(within(outlook).getByText("Agentic underwriting")).toBeInTheDocument();
+  expect(within(outlook).getByText("Credit memo generation, Covenant analysis")).toBeInTheDocument();
+  expect(within(outlook).getByText("Very High")).toBeInTheDocument();
   expect(within(outlook).getByText("1,203")).toBeInTheDocument();
   expect(within(outlook).getByText("—")).toBeInTheDocument();
-  expect(within(outlook).getByText("Validate the modernization roadmap")).toBeInTheDocument();
-  expect(within(outlook).getAllByText("No action recommended").length).toBeGreaterThan(0);
-  expect(within(outlook).queryByText("No action needed")).not.toBeInTheDocument();
+
+  expect(within(outlook).queryByText(/recent 10-Q highlights/)).not.toBeInTheDocument();
+  await userEvent.click(within(outlook).getByText("Commercial Banking"));
+  expect(within(outlook).getByText(/recent 10-Q highlights/)).toBeInTheDocument();
+  await userEvent.click(within(outlook).getByText("Commercial Banking"));
+  expect(within(outlook).queryByText(/recent 10-Q highlights/)).not.toBeInTheDocument();
+
+  // No separate ranked summary table -- the primary table is already ordered by signal strength.
+  expect(screen.queryByText("Consolidated View")).not.toBeInTheDocument();
 });
 
-it("shows the outlook empty state without restoring the company-level row", async () => {
+it("regenerates the report with a refined focus question on demand", async () => {
+  const fetch = setup();
+  await screen.findByText("Evidence suggests focused modernization.");
+  expect(fetch).toHaveBeenCalledTimes(1);
+
+  await userEvent.type(screen.getByLabelText(/Refine report focus/), "Where should we focus first?");
+  await userEvent.click(screen.getByRole("button", { name: "Regenerate with this focus" }));
+  await screen.findByText("Evidence suggests focused modernization.");
+
+  expect(fetch).toHaveBeenCalledTimes(2);
+  expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toEqual({ organization: "Goldman Sachs", question: "Where should we focus first?" });
+});
+
+it("shows the LOB opportunity empty state", async () => {
   setup(response([]));
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
-  expect(await screen.findByText("No supported intelligence outlook is available for this report.")).toBeInTheDocument();
-  expect(screen.queryByRole("columnheader", { name: "Company" })).not.toBeInTheDocument();
+  expect(await screen.findByText("No supported AI opportunities are available for this report.")).toBeInTheDocument();
 });
 
 it("keeps report sources collapsed, deduplicates exact URLs, and preserves distinct same-domain documents", async () => {
   setup();
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   const details = (await screen.findByText("9 report sources")).closest("details")!;
   expect(details).not.toHaveAttribute("open");
   await userEvent.click(within(details).getByText("9 report sources"));
@@ -100,7 +115,6 @@ it("keeps report sources collapsed, deduplicates exact URLs, and preserves disti
 
 it("keeps methodology limitations available but collapsed by default", async () => {
   setup();
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   const details = (await screen.findByText("Methodology & Limitations")).closest("details")!;
   expect(details).not.toHaveAttribute("open");
   expect(within(details).getByText("Hiring concentration is not proof of strategic investment.")).toBeInTheDocument();
@@ -120,8 +134,6 @@ it("groups grounded report Q&A references without changing the answer or request
     { reference_id: "kg-internal-1", reference_type: "kg_evidence", label: "kg:technology:python", source_url: null, hiring_job_count: null },
   ] };
   const fetch = setup(response(), qaWithReferences);
-  expect(screen.queryByText("Ask about this report")).not.toBeInTheDocument();
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   expect(await screen.findByText("Ask about this report")).toBeInTheDocument();
 
   await userEvent.type(screen.getByLabelText("Ask a follow-up question about this report"), "Where do strategy and hiring align?");
@@ -154,7 +166,7 @@ it("groups grounded report Q&A references without changing the answer or request
   const request = JSON.parse(String(fetch.mock.calls[1][1]?.body));
   expect(request.organization).toBe("Goldman Sachs");
   expect(request.report.total_hiring_jobs).toBe(847);
-  expect(request.report.intelligence_outlook_rows[0].relevant_hiring_jobs).toBe(1203);
+  expect(request.report.lob_opportunities[0].relevant_hiring_jobs).toBe(1203);
   expect(request.report.evidence_traceability.some((item: { reference_id: string }) => item.reference_id === "source-8")).toBe(true);
   expect(request.report).not.toHaveProperty("hiring_intelligence");
   expect(fetch).toHaveBeenCalledTimes(2);
@@ -162,7 +174,6 @@ it("groups grounded report Q&A references without changing the answer or request
 
 it("submits suggested questions and displays insufficient evidence", async () => {
   setup(response(), { ...qaResponse, answer: "The current report does not contain enough evidence.", evidence_sufficient: false, supporting_references: [] });
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   await userEvent.click(await screen.findByRole("button", { name: "What should we prioritize in the next 90 days?" }));
   expect(await screen.findByText("The current report does not contain enough evidence.")).toBeInTheDocument();
   expect(screen.getByText("The current report does not contain enough evidence for a fully supported answer.")).toBeInTheDocument();
@@ -171,7 +182,6 @@ it("submits suggested questions and displays insufficient evidence", async () =>
 
 it("renders a safe report Q&A API error", async () => {
   setup(response(), { detail: { code: "provider_unavailable", message: "Report Q&A is temporarily unavailable." } }, 503);
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   await userEvent.type(await screen.findByLabelText("Ask a follow-up question about this report"), "What are the top opportunities?");
   await userEvent.click(screen.getByRole("button", { name: "Ask" }));
   expect(await screen.findByRole("alert")).toHaveTextContent("Report Q&A is temporarily unavailable.");
@@ -187,7 +197,6 @@ it("shows the report Q&A loading state", async () => {
   });
   vi.stubGlobal("fetch", fetch);
   render(<MemoryRouter><OrganizationProvider value={{ organization: "Goldman Sachs", setOrganization: vi.fn() }}><CompanyReportPage /></OrganizationProvider></MemoryRouter>);
-  await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
   await userEvent.type(await screen.findByLabelText("Ask a follow-up question about this report"), "Where should we focus first?");
   await userEvent.click(screen.getByRole("button", { name: "Ask" }));
   expect(screen.getByRole("status")).toHaveTextContent("Reviewing report evidence");

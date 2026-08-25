@@ -90,7 +90,6 @@ class IntegrationSupervisorTests(unittest.TestCase):
             recommended_sales_action="Schedule discovery with technology leaders.",
             consulting_fit=0.8,
             revenue_potential="medium",
-            suggested_horizon_days=60,
         )
         value = {
             "executive_summary": "Cloud modernization is a supported priority.",
@@ -101,11 +100,10 @@ class IntegrationSupervisorTests(unittest.TestCase):
         value.update(overrides)
         return SynthesisDraft(**value)
 
-    def test_report_has_all_horizons_and_evidence_backed_opportunity(self):
+    def test_report_has_an_evidence_backed_opportunity(self):
         result = run_supervisor(self.request(), client=FakeClient(self.draft()))
-        self.assertEqual([x.horizon_days for x in result.horizons], [30, 60, 90, 180, 360])
-        self.assertEqual(len(result.horizons[1].opportunities), 1)
-        self.assertEqual(result.horizons[1].opportunities[0].supporting_evidence_ids, ["STRAT_1", "HIRE_1"])
+        self.assertEqual(len(result.opportunities), 1)
+        self.assertEqual(result.opportunities[0].supporting_evidence_ids, ["STRAT_1", "HIRE_1"])
 
     def test_nested_company_contamination_is_rejected(self):
         request = self.request(strategy_output={"company": "Barclays", "evidence": [
@@ -128,6 +126,14 @@ class IntegrationSupervisorTests(unittest.TestCase):
         self.assertEqual(len(accepted), 1)
         self.assertIn("duplicate", rejected[0])
 
+    def test_filing_sourced_evidence_is_classified_as_filing(self):
+        filing = self.evidence("STRAT_FILING", source_type="quarterly_report")
+        news = self.evidence("STRAT_NEWS", source_type="news")
+        extracted = extract_evidence({"evidence": [filing, news]}, "strategy")
+        by_id = {item.evidence_id: item for item in extracted}
+        self.assertEqual(by_id["STRAT_FILING"].evidence_type, "filing")
+        self.assertNotEqual(by_id["STRAT_NEWS"].evidence_type, "filing")
+
     def test_invented_evidence_removes_priority_and_opportunity(self):
         bad_priority = ClientPriority(
             priority="Unsupported",
@@ -149,7 +155,7 @@ class IntegrationSupervisorTests(unittest.TestCase):
             client=FakeClient(self.draft(priorities=[bad_priority], opportunities=[bad_opportunity])),
         )
         self.assertFalse(result.client_priorities)
-        self.assertFalse(any(section.opportunities for section in result.horizons))
+        self.assertFalse(result.opportunities)
         self.assertTrue(result.limitations)
 
     def test_qa_mode_does_not_return_opportunities(self):
@@ -158,12 +164,12 @@ class IntegrationSupervisorTests(unittest.TestCase):
             client=FakeClient(self.draft()),
         )
         self.assertEqual(result.mode, "qa")
-        self.assertFalse(any(section.opportunities for section in result.horizons))
+        self.assertFalse(result.opportunities)
 
     def test_empty_outputs_do_not_call_model(self):
         result = run_supervisor(self.request(strategy_output={}, hiring_output={}))
         self.assertFalse(result.evidence_assessment.sufficient)
-        self.assertEqual(len(result.horizons), 5)
+        self.assertEqual(result.opportunities, [])
 
 
 if __name__ == "__main__":

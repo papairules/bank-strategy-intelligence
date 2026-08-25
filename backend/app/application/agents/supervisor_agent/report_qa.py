@@ -6,7 +6,7 @@ from typing import Literal
 from openai import OpenAI
 from pydantic import BaseModel, ConfigDict, Field, create_model, model_validator
 
-from .outlook import IntelligenceOutlookRow
+from .outlook import LOBOpportunityRow
 from .report import ReportFinding, ReportSupportReference
 from .runtime import validate_report_question_scope
 
@@ -27,7 +27,7 @@ class ReportQuestionContext(BaseModel):
     organization: str = Field(min_length=1, max_length=200)
     total_hiring_jobs: int = Field(ge=0)
     executive_summary: str = Field(max_length=10_000)
-    intelligence_outlook_rows: list[IntelligenceOutlookRow] = Field(max_length=5)
+    lob_opportunities: list[LOBOpportunityRow] = Field(default_factory=list, max_length=20)
     strategic_priorities: list[ReportFinding] = Field(default_factory=list, max_length=10)
     cross_domain_alignment: list[ReportFinding] = Field(default_factory=list, max_length=10)
     evidence_traceability: list[ReportSupportReference] = Field(default_factory=list, max_length=100)
@@ -127,9 +127,9 @@ class ReportQAService:
             "report": {
                 "total_hiring_jobs": request.report.total_hiring_jobs,
                 "executive_summary": request.report.executive_summary,
-                "intelligence_outlook_rows": [
-                    row.model_dump(mode="json", exclude={"supporting_job_ids"})
-                    for row in request.report.intelligence_outlook_rows
+                "lob_opportunities": [
+                    row.model_dump(mode="json", exclude={"supporting_reference_ids"})
+                    for row in request.report.lob_opportunities
                 ],
                 "strategic_priorities": [item.model_dump(mode="json") for item in request.report.strategic_priorities],
                 "cross_domain_alignment": [item.model_dump(mode="json") for item in request.report.cross_domain_alignment],
@@ -191,12 +191,12 @@ class ReportQAService:
 
 def _available_references(context: ReportQuestionContext) -> dict[str, ReportQuestionReference]:
     values: dict[str, ReportQuestionReference] = {}
-    for index, row in enumerate(context.intelligence_outlook_rows, start=1):
-        reference_id = f"outlook:{index}"
+    for index, row in enumerate(context.lob_opportunities, start=1):
+        reference_id = f"lob:{index}"
         values[reference_id] = ReportQuestionReference(
             reference_id=reference_id,
             reference_type="opportunity",
-            label=row.opportunity_theme,
+            label=f"{row.line_of_business}: {row.emerging_ai_theme}",
             hiring_job_count=row.relevant_hiring_jobs,
         )
     for item in context.evidence_traceability:

@@ -6,7 +6,8 @@ from backend.app.application.evidence import UnifiedEvidenceService
 from backend.app.application.agents.evidence_agent import EvidenceAgentService
 from backend.app.application.agents.hiring_agent import HiringAgentAppService
 from backend.app.application.agents.strategy_agent.cache import StrategyAgentBoundary
-from backend.app.application.agents.supervisor_agent import ReportQAService, SupervisorAppService
+from backend.app.application.agents.supervisor_agent import ReportQAService
+from backend.app.application.agents.supervisor_agent.report_cache import SupervisorReportBoundary
 from backend.app.application.hiring import HiringAnalyticsService, HiringSignalService
 from backend.app.application.hiring import HiringDashboardService, HiringReadService
 from backend.app.application.hiring.kg import GraphInsightsService
@@ -58,7 +59,7 @@ def get_hiring_agent_service() -> HiringAgentAppService:
 
 
 @lru_cache
-def get_supervisor_app_service() -> SupervisorAppService:
+def get_supervisor_app_service() -> SupervisorReportBoundary:
     return create_supervisor_app_service()
 
 

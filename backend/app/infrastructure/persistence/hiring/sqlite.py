@@ -6,7 +6,10 @@ from pathlib import Path
 from types import TracebackType
 from uuid import UUID
 
+from pydantic import ValidationError
+
 from backend.app.application.agents.strategy_agent.models import StrategyAgentResult
+from backend.app.application.agents.supervisor_agent.runtime import SupervisorReportResult
 from backend.app.application.hiring.observability import CollectionRun
 from backend.app.application.hiring.enrichment import HiringEnrichmentResult
 from backend.app.application.hiring.persistence import PersistenceError
@@ -130,6 +133,20 @@ CREATE TABLE IF NOT EXISTS strategy_research_cache (
 
 CREATE INDEX IF NOT EXISTS idx_strategy_research_cache_generated_at
     ON strategy_research_cache(organization, generated_at DESC);
+
+CREATE TABLE IF NOT EXISTS supervisor_report_cache (
+    organization TEXT NOT NULL,
+    question_key TEXT NOT NULL,
+    time_horizon TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    model TEXT NOT NULL,
+    generated_at TEXT NOT NULL,
+    result_json TEXT NOT NULL,
+    PRIMARY KEY (organization, question_key, time_horizon, provider, model)
+);
+
+CREATE INDEX IF NOT EXISTS idx_supervisor_report_cache_generated_at
+    ON supervisor_report_cache(organization, generated_at DESC);
 """
 
 
@@ -895,6 +912,79 @@ class SQLiteStrategyResearchCacheRepository:
                     provider,
                     model,
                     agent_version,
+                    generated_at,
+                    result.model_dump_json(),
+                ),
+            )
+            connection.commit()
+
+
+class SQLiteSupervisorReportCacheRepository:
+    """Persists generated Company Reports so repeated (organization, question,
+    time_horizon) requests can be served without re-running Strategy Agent
+    research, the knowledge graph rebuild, hiring signal regeneration, and
+    Supervisor synthesis. Keyed by provider/model too, so a model upgrade
+    naturally invalidates stale cached reports."""
+
+    def __init__(self, database: SQLiteDatabase) -> None:
+        self._database = database
+
+    def get(
+        self,
+        *,
+        organization: str,
+        question_key: str,
+        time_horizon: str,
+        provider: str,
+        model: str,
+    ) -> tuple[SupervisorReportResult, str] | None:
+        with self._database.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT generated_at, result_json FROM supervisor_report_cache
+                WHERE organization = ? AND question_key = ? AND time_horizon = ?
+                  AND provider = ? AND model = ?
+                """,
+                (organization, question_key, time_horizon, provider, model),
+            ).fetchone()
+        if row is None:
+            return None
+        try:
+            return SupervisorReportResult.model_validate_json(row["result_json"]), row["generated_at"]
+        except ValidationError:
+            # A cached report from a prior, incompatible report schema -- treat as a miss
+            # rather than surface a validation error on an otherwise-successful request.
+            return None
+
+    def save(
+        self,
+        *,
+        organization: str,
+        question_key: str,
+        time_horizon: str,
+        provider: str,
+        model: str,
+        generated_at: str,
+        result: SupervisorReportResult,
+    ) -> None:
+        with self._database.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO supervisor_report_cache (
+                    organization, question_key, time_horizon, provider, model,
+                    generated_at, result_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(organization, question_key, time_horizon, provider, model)
+                DO UPDATE SET
+                    generated_at = excluded.generated_at,
+                    result_json = excluded.result_json
+                """,
+                (
+                    organization,
+                    question_key,
+                    time_horizon,
+                    provider,
+                    model,
                     generated_at,
                     result.model_dump_json(),
                 ),

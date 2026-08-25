@@ -12872,27 +12872,27 @@
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-24T18:18:32.397680+00:00",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Goldman Sachs",
       "provider": "openai",
       "question": "Generate a company intelligence report for Goldman Sachs.",
       "source": "org:goldman_sachs",
-      "target": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery"
+      "target": "strategic_theme:goldman_sachs:ai_enabled_operating_model_and_productivity_scaling"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-24T18:18:32.397680+00:00",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Goldman Sachs",
       "provider": "openai",
       "question": "Generate a company intelligence report for Goldman Sachs.",
       "source": "org:goldman_sachs",
-      "target": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion"
+      "target": "strategic_theme:goldman_sachs:operational_simplification_within_global_banking_markets"
     },
     {
       "derivation_type": "persisted_source",
@@ -105852,38 +105852,56 @@
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-24T18:18:32.397680+00:00",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery",
-      "target": "strategy_evidence:goldman_sachs:EV_012"
+      "source": "strategic_theme:goldman_sachs:ai_enabled_operating_model_and_productivity_scaling",
+      "target": "strategy_evidence:goldman_sachs:EV_001"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-24T18:18:32.397680+00:00",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery",
-      "target": "strategy_evidence:goldman_sachs:EV_016"
+      "source": "strategic_theme:goldman_sachs:ai_enabled_operating_model_and_productivity_scaling",
+      "target": "strategy_evidence:goldman_sachs:EV_007"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-24T18:18:32.397680+00:00",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion",
-      "target": "strategy_evidence:goldman_sachs:EV_011"
+      "source": "strategic_theme:goldman_sachs:ai_enabled_operating_model_and_productivity_scaling",
+      "target": "strategy_evidence:goldman_sachs:EV_008"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-24T18:18:32.397680+00:00",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Goldman Sachs",
-      "source": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion",
-      "target": "strategy_evidence:goldman_sachs:EV_018"
+      "source": "strategic_theme:goldman_sachs:operational_simplification_within_global_banking_markets",
+      "target": "strategy_evidence:goldman_sachs:EV_006"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Goldman Sachs",
+      "source": "strategic_theme:goldman_sachs:operational_simplification_within_global_banking_markets",
+      "target": "strategy_evidence:goldman_sachs:EV_013"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-25T18:24:01.070347+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Goldman Sachs",
+      "source": "strategic_theme:goldman_sachs:operational_simplification_within_global_banking_markets",
+      "target": "strategy_evidence:goldman_sachs:EV_014"
     }
   ],
   "graph": {
@@ -118822,68 +118840,88 @@
       "strength": 0.3974
     },
     {
+      "business_unit": null,
+      "confidence": 0.6,
+      "direction": "transform",
+      "hypothesis": "Goldman Sachs is using AI as part of a broader operating-model transformation under One Goldman Sachs 3.0, likely to improve productivity, efficiency, resilience, scalability, and risk management.",
+      "id": "strategic_theme:goldman_sachs:ai_enabled_operating_model_and_productivity_scaling",
+      "label": "AI-enabled operating model and productivity scaling",
+      "node_type": "StrategicTheme",
+      "organization": "Goldman Sachs",
+      "time_horizon": "2025",
+      "value": "AI-enabled operating model and productivity scaling"
+    },
+    {
+      "evidence_id": "EV_001",
+      "id": "strategy_evidence:goldman_sachs:EV_001",
+      "node_type": "StrategyEvidence",
+      "organization": "Goldman Sachs",
+      "publication_date": "2026-03-20",
+      "source_type": "annual_report",
+      "source_url": "https://www.goldmansachs.com/investor-relations/financials/current/annual-reports/2025-annual-report",
+      "statement": "In 2025 Goldman Sachs launched 'One Goldman Sachs 3.0,' described as a new operating model propelled by AI."
+    },
+    {
+      "evidence_id": "EV_007",
+      "id": "strategy_evidence:goldman_sachs:EV_007",
+      "node_type": "StrategyEvidence",
+      "organization": "Goldman Sachs",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/886982/000119312526116310/d106738dars.pdf",
+      "statement": "In 2025 Goldman Sachs announced 'One Goldman Sachs 3.0,' described as a new operating model propelled by AI."
+    },
+    {
+      "evidence_id": "EV_008",
+      "id": "strategy_evidence:goldman_sachs:EV_008",
+      "node_type": "StrategyEvidence",
+      "organization": "Goldman Sachs",
+      "publication_date": null,
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/886982/000119312526116310/d106738dars.pdf",
+      "statement": "Goldman Sachs said One Goldman Sachs 3.0 prioritized driving productivity and efficiency, improving profitability, strengthening resilience and capacity to scale, and bolstering risk management."
+    },
+    {
       "business_unit": "Global Banking & Markets",
       "confidence": 0.5,
-      "direction": "grow",
-      "hypothesis": "Goldman Sachs appears to be prioritizing growth in investment banking, supported by forward-looking backlog discussion and improving fee performance in debt and equity underwriting.",
-      "id": "strategic_theme:goldman_sachs:investment_banking_franchise_recovery",
-      "label": "Investment banking franchise recovery",
+      "direction": "transform",
+      "hypothesis": "Goldman Sachs appears to be simplifying and integrating selected Global Banking & Markets activities through the Capital Solutions Group and its segment structure, likely to improve coordination across financing, origination, structuring, and risk management.",
+      "id": "strategic_theme:goldman_sachs:operational_simplification_within_global_banking_markets",
+      "label": "Operational simplification within Global Banking & Markets",
       "node_type": "StrategicTheme",
       "organization": "Goldman Sachs",
-      "time_horizon": "Forward-looking / Q3 2024 to 2025",
-      "value": "Investment banking franchise recovery"
+      "time_horizon": "2025-2026",
+      "value": "Operational simplification within Global Banking & Markets"
     },
     {
-      "evidence_id": "EV_012",
-      "id": "strategy_evidence:goldman_sachs:EV_012",
+      "evidence_id": "EV_006",
+      "id": "strategy_evidence:goldman_sachs:EV_006",
       "node_type": "StrategyEvidence",
       "organization": "Goldman Sachs",
       "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.goldmansachs.com/investor-relations/presentations/2024/gs-presentation-at-barclays-22nd-annual-global-financial-services-conference",
-      "statement": "Goldman Sachs identified investment banking backlog as a forward-looking topic in David Solomon's September 9, 2024 investor presentation materials."
+      "source_type": "annual_report",
+      "source_url": "https://www.goldmansachs.com/investor-relations/financials/current/annual-reports/2024-annual-report",
+      "statement": "Goldman Sachs mentioned the 2025 formation of the Capital Solutions Group, combining financing, origination, structuring and risk management solution activities."
     },
     {
-      "evidence_id": "EV_016",
-      "id": "strategy_evidence:goldman_sachs:EV_016",
+      "evidence_id": "EV_013",
+      "id": "strategy_evidence:goldman_sachs:EV_013",
       "node_type": "StrategyEvidence",
       "organization": "Goldman Sachs",
       "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/current/pdfs/2024-q3-results.pdf?os=wtmbZEgMu5Hw",
-      "statement": "Goldman Sachs said investment banking fees were up 20% in third quarter 2024, driven by stronger debt underwriting and equity underwriting."
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/886982/000088698226000004/gs-20260107.htm",
+      "statement": "A January 2026 8-K said Goldman Sachs will continue to operate and report results in three business segments."
     },
     {
-      "business_unit": "Asset & Wealth Management",
-      "confidence": 0.5,
-      "direction": "grow",
-      "hypothesis": "Goldman Sachs appears to be positioning Asset & Wealth Management for continued growth, supported by forward-looking fundraising emphasis and revenue improvement in the segment.",
-      "id": "strategic_theme:goldman_sachs:asset_and_wealth_management_expansion",
-      "label": "Asset and wealth management expansion",
-      "node_type": "StrategicTheme",
-      "organization": "Goldman Sachs",
-      "time_horizon": "Forward-looking / Q3 2024 to 2025",
-      "value": "Asset and wealth management expansion"
-    },
-    {
-      "evidence_id": "EV_011",
-      "id": "strategy_evidence:goldman_sachs:EV_011",
+      "evidence_id": "EV_014",
+      "id": "strategy_evidence:goldman_sachs:EV_014",
       "node_type": "StrategyEvidence",
       "organization": "Goldman Sachs",
       "publication_date": null,
-      "source_type": "investor_presentation",
-      "source_url": "https://www.goldmansachs.com/investor-relations/presentations/2024/gs-presentation-at-barclays-22nd-annual-global-financial-services-conference",
-      "statement": "Goldman Sachs identified AWM fundraising as a forward-looking topic in David Solomon's September 9, 2024 investor presentation materials."
-    },
-    {
-      "evidence_id": "EV_018",
-      "id": "strategy_evidence:goldman_sachs:EV_018",
-      "node_type": "StrategyEvidence",
-      "organization": "Goldman Sachs",
-      "publication_date": null,
-      "source_type": "company_announcement",
-      "source_url": "https://www.goldmansachs.com/pressroom/press-releases/current/pdfs/2024-q3-results.pdf?os=wtmbZEgMu5Hw",
-      "statement": "Goldman Sachs reported Asset & Wealth Management revenue of $3.75 billion in third quarter 2024, up 16% year over year."
+      "source_type": "sec_filing",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/886982/000088698225000005/gs-20241231.htm",
+      "statement": "Goldman Sachs' 2024 Form 10-K states the firm manages and reports its activities in three business segments: Global Banking & Markets, Asset & Wealth Management, and Platform Solutions."
     }
   ]
 }

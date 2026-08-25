@@ -25,26 +25,14 @@ export interface ReportReference {
   source_url?: string | null;
 }
 
-export interface IntelligenceOutlookRow {
-  opportunity_theme: string;
-  supervisor_priority: string;
-  opportunity_titles: string[];
+export interface LOBOpportunityRow {
+  line_of_business: string;
+  emerging_ai_theme: string;
+  likely_use_cases: string[];
+  signal_strength: string;
   relevant_hiring_jobs?: number | null;
-  supporting_evidence_count: number;
-  supporting_job_ids: string[];
-  supporting_evidence_ids: string[];
-  strategy_evidence_ids: string[];
-  hiring_evidence_ids: string[];
-  hiring_signal_ids: string[];
-  kg_concept_references: string[];
-  horizon_30?: string | null;
-  horizon_60?: string | null;
-  horizon_90?: string | null;
-  horizon_180?: string | null;
-  horizon_360?: string | null;
-  confidence: number;
-  score: number;
-  limitations: string[];
+  narrative: string;
+  supporting_reference_ids: string[];
 }
 
 export interface SupervisorReportAnswer {
@@ -66,12 +54,7 @@ export interface SupervisorReportAnswer {
     hiring_intelligence: ReportFinding[];
     cross_domain_alignment: ReportFinding[];
     business_areas_to_watch: ReportFinding[];
-    opportunity_horizons: {
-      horizon_days: number;
-      meaning: string;
-      opportunity_titles: string[];
-    }[];
-    intelligence_outlook_rows: IntelligenceOutlookRow[];
+    lob_opportunities: LOBOpportunityRow[];
     evidence_traceability: ReportReference[];
     limitations: string[];
   };
@@ -86,7 +69,7 @@ export interface ReportQuestionRequest {
     organization: string;
     total_hiring_jobs: number;
     executive_summary: string;
-    intelligence_outlook_rows: IntelligenceOutlookRow[];
+    lob_opportunities: LOBOpportunityRow[];
     strategic_priorities: ReportFinding[];
     cross_domain_alignment: ReportFinding[];
     evidence_traceability: ReportReference[];

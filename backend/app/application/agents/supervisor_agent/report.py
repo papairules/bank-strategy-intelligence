@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 from .supervisor import SupervisorResponse
-from .outlook import DeterministicIntelligenceOutlookMapper, IntelligenceOutlookRow
+from .outlook import LOBOpportunityMapper, LOBOpportunityRow
 
 
 class ReportSupportReference(BaseModel):
@@ -22,14 +22,6 @@ class ReportFinding(BaseModel):
     supporting_reference_ids: list[str] = Field(default_factory=list)
 
 
-class ReportHorizon(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    horizon_days: int
-    meaning: str
-    opportunity_titles: list[str] = Field(default_factory=list)
-
-
 class CompanyIntelligenceReport(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -42,15 +34,17 @@ class CompanyIntelligenceReport(BaseModel):
     hiring_intelligence: list[ReportFinding] = Field(default_factory=list)
     cross_domain_alignment: list[ReportFinding] = Field(default_factory=list)
     business_areas_to_watch: list[ReportFinding] = Field(default_factory=list)
-    opportunity_horizons: list[ReportHorizon] = Field(default_factory=list)
-    intelligence_outlook_rows: list[IntelligenceOutlookRow] = Field(default_factory=list)
+    lob_opportunities: list[LOBOpportunityRow] = Field(default_factory=list)
     evidence_traceability: list[ReportSupportReference] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
 
 
 class DeterministicReportGenerator:
-    def __init__(self, outlook_mapper: DeterministicIntelligenceOutlookMapper | None = None) -> None:
-        self._outlook_mapper = outlook_mapper or DeterministicIntelligenceOutlookMapper()
+    def __init__(
+        self,
+        lob_mapper: LOBOpportunityMapper | None = None,
+    ) -> None:
+        self._lob_mapper = lob_mapper or LOBOpportunityMapper()
 
     def generate(self, normalized, supervisor: SupervisorResponse) -> CompanyIntelligenceReport:
         references = self._references(normalized, supervisor)
@@ -81,14 +75,6 @@ class DeterministicReportGenerator:
             )
             for value in normalized.hiring.kg_summary.observed_business_units
         ]
-        horizons = [
-            ReportHorizon(
-                horizon_days=item.horizon_days,
-                meaning=item.meaning,
-                opportunity_titles=[value.title for value in item.opportunities],
-            )
-            for item in supervisor.horizons
-        ]
         return CompanyIntelligenceReport(
             organization=normalized.organization,
             total_hiring_jobs=normalized.hiring.coverage.total_jobs,
@@ -98,8 +84,7 @@ class DeterministicReportGenerator:
             hiring_intelligence=hiring,
             cross_domain_alignment=alignment,
             business_areas_to_watch=business_areas,
-            opportunity_horizons=horizons,
-            intelligence_outlook_rows=self._outlook_mapper.map(normalized, supervisor),
+            lob_opportunities=self._lob_mapper.map(normalized, supervisor),
             evidence_traceability=references,
             limitations=list(
                 dict.fromkeys(

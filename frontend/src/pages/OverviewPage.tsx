@@ -8,8 +8,7 @@ export function OverviewPage() {
 
   return <div className="page overview-page">
     <section className="executive-header">
-      <div><span className="eyebrow">Executive intelligence workspace</span><h1>Account Growth Intelligence</h1><p>Observed hiring evidence, deterministic intelligence, and governed interpretation for <strong>{organization}</strong>.</p></div>
-      <div className="executive-header__scope"><span>Evidence scope</span><strong>Public hiring records</strong><small>Observed evidence—not enterprise-wide disclosure</small></div>
+      <div><span className="eyebrow">Executive intelligence workspace</span><h1>Account Growth Intelligence</h1></div>
     </section>
 
     <div className="intelligence-divider"><span>Hiring intelligence</span></div>

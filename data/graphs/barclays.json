@@ -1957,40 +1957,40 @@
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Barclays",
       "provider": "openai",
       "question": "Generate a company intelligence report for Barclays.",
       "source": "org:barclays",
-      "target": "strategic_theme:barclays:capital_reallocation_toward_higher_return_uk_and_wealth_businesses"
+      "target": "strategic_theme:barclays:technology_modernization_and_productivity_improvement"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Barclays",
       "provider": "openai",
       "question": "Generate a company intelligence report for Barclays.",
       "source": "org:barclays",
-      "target": "strategic_theme:barclays:portfolio_simplification_through_non_core_asset_exits"
+      "target": "strategic_theme:barclays:organic_technology_investment_expansion"
     },
     {
       "agent_version": "strategy-langgraph-v1",
       "derivation_type": "cached_strategy_research",
       "edge_type": "HAS_STRATEGIC_THEME",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "HAS_STRATEGIC_THEME",
       "model": "gpt-5.4-mini",
       "organization": "Barclays",
       "provider": "openai",
       "question": "Generate a company intelligence report for Barclays.",
       "source": "org:barclays",
-      "target": "strategic_theme:barclays:optimizing_operating_model_and_organizational_structure"
+      "target": "strategic_theme:barclays:operating_model_simplification"
     },
     {
       "derivation_type": "persisted_source",
@@ -17794,74 +17794,83 @@
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Barclays",
-      "source": "strategic_theme:barclays:capital_reallocation_toward_higher_return_uk_and_wealth_businesses",
-      "target": "strategy_evidence:barclays:EV_011"
+      "source": "strategic_theme:barclays:technology_modernization_and_productivity_improvement",
+      "target": "strategy_evidence:barclays:EV_002"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Barclays",
-      "source": "strategic_theme:barclays:capital_reallocation_toward_higher_return_uk_and_wealth_businesses",
-      "target": "strategy_evidence:barclays:EV_012"
+      "source": "strategic_theme:barclays:technology_modernization_and_productivity_improvement",
+      "target": "strategy_evidence:barclays:EV_004"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Barclays",
-      "source": "strategic_theme:barclays:capital_reallocation_toward_higher_return_uk_and_wealth_businesses",
+      "source": "strategic_theme:barclays:technology_modernization_and_productivity_improvement",
+      "target": "strategy_evidence:barclays:EV_006"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Barclays",
+      "source": "strategic_theme:barclays:technology_modernization_and_productivity_improvement",
+      "target": "strategy_evidence:barclays:EV_019"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Barclays",
+      "source": "strategic_theme:barclays:technology_modernization_and_productivity_improvement",
+      "target": "strategy_evidence:barclays:EV_020"
+    },
+    {
+      "derivation_type": "cached_strategy_research",
+      "edge_type": "SUPPORTED_BY",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
+      "key": "SUPPORTED_BY",
+      "organization": "Barclays",
+      "source": "strategic_theme:barclays:organic_technology_investment_expansion",
       "target": "strategy_evidence:barclays:EV_005"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Barclays",
-      "source": "strategic_theme:barclays:portfolio_simplification_through_non_core_asset_exits",
-      "target": "strategy_evidence:barclays:EV_003"
+      "source": "strategic_theme:barclays:organic_technology_investment_expansion",
+      "target": "strategy_evidence:barclays:EV_015"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Barclays",
-      "source": "strategic_theme:barclays:portfolio_simplification_through_non_core_asset_exits",
-      "target": "strategy_evidence:barclays:EV_014"
+      "source": "strategic_theme:barclays:operating_model_simplification",
+      "target": "strategy_evidence:barclays:EV_010"
     },
     {
       "derivation_type": "cached_strategy_research",
       "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
+      "generated_at": "2026-08-25T18:34:21.832175+00:00",
       "key": "SUPPORTED_BY",
       "organization": "Barclays",
-      "source": "strategic_theme:barclays:optimizing_operating_model_and_organizational_structure",
-      "target": "strategy_evidence:barclays:EV_007"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Barclays",
-      "source": "strategic_theme:barclays:optimizing_operating_model_and_organizational_structure",
-      "target": "strategy_evidence:barclays:EV_013"
-    },
-    {
-      "derivation_type": "cached_strategy_research",
-      "edge_type": "SUPPORTED_BY",
-      "generated_at": "2026-08-23T18:04:10.652838+00:00",
-      "key": "SUPPORTED_BY",
-      "organization": "Barclays",
-      "source": "strategic_theme:barclays:optimizing_operating_model_and_organizational_structure",
-      "target": "strategy_evidence:barclays:EV_014"
+      "source": "strategic_theme:barclays:operating_model_simplification",
+      "target": "strategy_evidence:barclays:EV_019"
     }
   ],
   "graph": {
@@ -20245,110 +20254,120 @@
       "strength": 1.0
     },
     {
-      "business_unit": "Group",
-      "confidence": 0.75,
-      "direction": "reallocate",
-      "hypothesis": "Barclays appears to be reallocating capital toward Barclays UK, the UK Corporate Bank, and Private Banking & Wealth Management while reducing the relative capital intensity of the Investment Bank, indicating a deliberate shift toward businesses management likely views as higher-return and more stable.",
-      "id": "strategic_theme:barclays:capital_reallocation_toward_higher_return_uk_and_wealth_businesses",
-      "label": "Capital reallocation toward higher-return UK and wealth businesses",
+      "business_unit": "Barclays PLC",
+      "confidence": 0.85,
+      "direction": "transform",
+      "hypothesis": "Barclays is pursuing a broad technology modernization program centered on cloud, data platforms, digitised processes, and AI to improve efficiency, resilience, and productivity across the group.",
+      "id": "strategic_theme:barclays:technology_modernization_and_productivity_improvement",
+      "label": "Technology modernization and productivity improvement",
       "node_type": "StrategicTheme",
       "organization": "Barclays",
-      "time_horizon": "By 2026",
-      "value": "Capital reallocation toward higher-return UK and wealth businesses"
+      "time_horizon": null,
+      "value": "Technology modernization and productivity improvement"
     },
     {
-      "evidence_id": "EV_011",
-      "id": "strategy_evidence:barclays:EV_011",
+      "evidence_id": "EV_002",
+      "id": "strategy_evidence:barclays:EV_002",
       "node_type": "StrategyEvidence",
       "organization": "Barclays",
       "publication_date": null,
-      "source_type": "earnings_call",
-      "source_url": "https://www.roic.ai/quote/BCS/transcripts/2024-year/4-quarter",
-      "statement": "Barclays plans to allocate \u00a330bn of additional RWAs to Barclays UK, the UK Corporate Bank, and Private Banking & Wealth Management."
+      "source_type": "annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/312069/000031206926000004/bcs-20251231.htm",
+      "statement": "The 2025 annual report says Barclays is pursuing technology transformation and digitised processes to improve organisational capabilities, efficiency, and productivity."
     },
     {
-      "evidence_id": "EV_012",
-      "id": "strategy_evidence:barclays:EV_012",
+      "evidence_id": "EV_004",
+      "id": "strategy_evidence:barclays:EV_004",
       "node_type": "StrategyEvidence",
       "organization": "Barclays",
-      "publication_date": null,
+      "publication_date": "2026-02-13",
       "source_type": "earnings_call",
-      "source_url": "https://www.roic.ai/quote/BCS/transcripts/2024-year/4-quarter",
-      "statement": "Barclays expects investment banking RWAs to fall to about 50% of the group by 2026 from 56%."
+      "source_url": "https://www.roic.ai/quote/BCLYF/transcripts/2025-year/4-quarter",
+      "statement": "Management said the transformation is built on cloud computing, data platforms and AI adoption."
+    },
+    {
+      "evidence_id": "EV_006",
+      "id": "strategy_evidence:barclays:EV_006",
+      "node_type": "StrategyEvidence",
+      "organization": "Barclays",
+      "publication_date": "2026-03-18",
+      "source_type": "earnings_call",
+      "source_url": "https://earningscalls.dev/transcripts/barclays-plc_barc_earnings_call_transcript_2026-03-18",
+      "statement": "The CEO said Barclays is investing in technology, standardizing data and platforms, and using AI as part of a broader modernization effort."
+    },
+    {
+      "evidence_id": "EV_019",
+      "id": "strategy_evidence:barclays:EV_019",
+      "node_type": "StrategyEvidence",
+      "organization": "Barclays",
+      "publication_date": "2026-02-13",
+      "source_type": "other",
+      "source_url": "https://uk.investing.com/news/transcripts/earnings-call-transcript-barclays-q4-2025-eps-beats-revenue-misses-93CH-4498548",
+      "statement": "Transcript summary says Barclays plans to forge operationally efficient businesses primed to support growth."
+    },
+    {
+      "evidence_id": "EV_020",
+      "id": "strategy_evidence:barclays:EV_020",
+      "node_type": "StrategyEvidence",
+      "organization": "Barclays",
+      "publication_date": "2026-02-13",
+      "source_type": "other",
+      "source_url": "https://uk.investing.com/news/transcripts/earnings-call-transcript-barclays-q4-2025-eps-beats-revenue-misses-93CH-4498548",
+      "statement": "Transcript summary says Barclays aims to increase productivity through better operational resilience, reliability, and security."
+    },
+    {
+      "business_unit": "Barclays PLC",
+      "confidence": 0.7,
+      "direction": "increase_investment",
+      "hypothesis": "Barclays appears to be materially increasing organic investment through 2027, suggesting sustained funding for technology and transformation initiatives.",
+      "id": "strategic_theme:barclays:organic_technology_investment_expansion",
+      "label": "Organic technology investment expansion",
+      "node_type": "StrategicTheme",
+      "organization": "Barclays",
+      "time_horizon": "by 2027",
+      "value": "Organic technology investment expansion"
     },
     {
       "evidence_id": "EV_005",
       "id": "strategy_evidence:barclays:EV_005",
       "node_type": "StrategyEvidence",
       "organization": "Barclays",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://cdn.financialreports.eu/financialreports/media/filings/5250/2025/10-K/5250_10-k_2025-02-13_a869198f-0aba-40b8-80c3-5a35c0ab4bd4.pdf",
-      "statement": "Barclays had deployed about \u00a313bn of planned RWA growth into its three highest-returning divisions."
+      "publication_date": "2026-02-13",
+      "source_type": "earnings_call",
+      "source_url": "https://www.roic.ai/quote/BCLYF/transcripts/2025-year/4-quarter",
+      "statement": "Management said Barclays plans to double annual organic investment by 2027."
     },
     {
-      "business_unit": "Group",
-      "confidence": 0.5,
-      "direction": "transform",
-      "hypothesis": "Barclays appears to be continuing a simplification program through selective asset sales, including the German consumer finance business and Italian mortgage book, suggesting management is pruning non-core exposures to streamline the portfolio and improve capital efficiency.",
-      "id": "strategic_theme:barclays:portfolio_simplification_through_non_core_asset_exits",
-      "label": "Portfolio simplification through non-core asset exits",
-      "node_type": "StrategicTheme",
-      "organization": "Barclays",
-      "time_horizon": "FY 2024 to medium term",
-      "value": "Portfolio simplification through non-core asset exits"
-    },
-    {
-      "evidence_id": "EV_003",
-      "id": "strategy_evidence:barclays:EV_003",
-      "node_type": "StrategyEvidence",
-      "organization": "Barclays",
-      "publication_date": null,
-      "source_type": "annual_report",
-      "source_url": "https://cdn.financialreports.eu/financialreports/media/filings/5250/2025/10-K/5250_10-k_2025-02-13_a869198f-0aba-40b8-80c3-5a35c0ab4bd4.pdf",
-      "statement": "Barclays executed strategic actions announced in February 2024, including the sale of its German consumer finance business and Italian mortgage book."
-    },
-    {
-      "evidence_id": "EV_014",
-      "id": "strategy_evidence:barclays:EV_014",
-      "node_type": "StrategyEvidence",
-      "organization": "Barclays",
-      "publication_date": null,
-      "source_type": "other",
-      "source_url": "https://financialreports.eu/filings/barclays-plc/annual-report/2024/1993433/",
-      "statement": "Barclays recognized colleagues driving simplification and risk/control improvements across the organization."
-    },
-    {
-      "business_unit": "Group",
-      "confidence": 0.5,
-      "direction": "optimize",
-      "hypothesis": "Barclays appears to be simplifying its operating model through resegmentation, reporting alignment, and efficiency and risk/control improvements, indicating a broader effort to optimize how the group is run and support profitability.",
-      "id": "strategic_theme:barclays:optimizing_operating_model_and_organizational_structure",
-      "label": "Optimizing operating model and organizational structure",
-      "node_type": "StrategicTheme",
-      "organization": "Barclays",
-      "time_horizon": "FY 2024 to medium term",
-      "value": "Optimizing operating model and organizational structure"
-    },
-    {
-      "evidence_id": "EV_007",
-      "id": "strategy_evidence:barclays:EV_007",
+      "evidence_id": "EV_015",
+      "id": "strategy_evidence:barclays:EV_015",
       "node_type": "StrategyEvidence",
       "organization": "Barclays",
       "publication_date": "2024-02-20",
-      "source_type": "sec_filing",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/312069/000199937124002541/ex99-1.htm",
-      "statement": "Barclays announced a 2024 resegmentation into five operating divisions: Barclays UK, Barclays UK Corporate Bank, Barclays Private Bank and Wealth Management, Barclays Investment Bank, and Barclays US Consumer Bank."
+      "source_type": "news",
+      "source_url": "https://www.investing.com/news/stock-market-news/earnings-call-barclays-outlines-robust-growth-and-distribution-strategy-93CH-3309365",
+      "statement": "Barclays said transformation investment spend would rise 80% to \u00a31.2 billion over three years from \u00a3700 million previously."
     },
     {
-      "evidence_id": "EV_013",
-      "id": "strategy_evidence:barclays:EV_013",
+      "business_unit": "Barclays PLC",
+      "confidence": 0.6,
+      "direction": "transform",
+      "hypothesis": "Barclays appears to be reshaping its operating model into a smaller set of divisions to simplify management, improve focus, and support growth.",
+      "id": "strategic_theme:barclays:operating_model_simplification",
+      "label": "Operating model simplification",
+      "node_type": "StrategicTheme",
+      "organization": "Barclays",
+      "time_horizon": null,
+      "value": "Operating model simplification"
+    },
+    {
+      "evidence_id": "EV_010",
+      "id": "strategy_evidence:barclays:EV_010",
       "node_type": "StrategyEvidence",
       "organization": "Barclays",
       "publication_date": null,
-      "source_type": "other",
-      "source_url": "https://reports.ticker.app/213800LBQA1Y9L22JB70/2025-02-13/NI-000112771.pdf",
-      "statement": "Management framed 2024 as an inflection point and mentioned improving operational efficiency and customer outcomes."
+      "source_type": "company_announcement",
+      "source_url": "https://www.investegate.co.uk/announcement/rns/barclays--barc/new-operating-divisions-and-management/8045519",
+      "statement": "Barclays announced a move to five operating divisions: Barclays UK, Barclays UK Corporate Bank, Barclays Private Bank and Wealth Management, Barclays Investment Bank, and Barclays US Consumer Bank."
     }
   ]
 }

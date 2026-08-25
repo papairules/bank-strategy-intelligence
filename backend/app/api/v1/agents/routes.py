@@ -23,7 +23,6 @@ from backend.app.api.v1.agents.schemas import (
     ReportQuestionApiResponse,
 )
 from backend.app.application.agents.supervisor_agent import (
-    SupervisorAppService,
     SupervisorReportRequest,
     SupervisorRuntimeError,
     SupervisorRuntimeFailureCode,
@@ -31,6 +30,7 @@ from backend.app.application.agents.supervisor_agent import (
     ReportQAErrorCode,
     ReportQAService,
 )
+from backend.app.application.agents.supervisor_agent.report_cache import SupervisorReportBoundary
 from backend.app.application.agents.strategy_agent import (
     StrategyAgentError,
     StrategyAgentFailureCode,
@@ -55,7 +55,7 @@ router = APIRouter(prefix="/agents")
 EvidenceAgent = Annotated[EvidenceAgentService, Depends(get_evidence_agent_service)]
 StrategyAgent = Annotated[StrategyAgentBoundary, Depends(get_strategy_agent_service)]
 HiringAgent = Annotated[HiringAgentAppService, Depends(get_hiring_agent_service)]
-SupervisorAgent = Annotated[SupervisorAppService, Depends(get_supervisor_app_service)]
+SupervisorAgent = Annotated[SupervisorReportBoundary, Depends(get_supervisor_app_service)]
 ReportQAAgent = Annotated[ReportQAService, Depends(get_report_qa_service)]
 
 _FAILURE_STATUS = {

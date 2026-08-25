@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OrganizationProvider } from "../context/OrganizationContext";
 import { OverviewPage } from "./OverviewPage";
-import { analyticsFixture, summaryFixture } from "../test/fixtures";
+import { analyticsFixture } from "../test/fixtures";
 
 function withOrg(children: ReactNode) {
   return <OrganizationProvider value={{ organization: "Wells Fargo", setOrganization: vi.fn() }}><MemoryRouter>{children}</MemoryRouter></OrganizationProvider>;
@@ -26,8 +26,8 @@ const supervisorReportResponse = {
   organization: "Wells Fargo", strategy_signal_count: 0, hiring_signal_count: 0,
   coverage: { total_jobs: 19, enriched_jobs: 19, enrichment_coverage_percentage: 100, kg_enriched_job_count: 0, limitations: [] },
   report: {
-    organization: "Wells Fargo", total_hiring_jobs: 19, executive_summary: "Evidence supports a focused hiring pattern.", strategic_priorities: [], hiring_intelligence: [], cross_domain_alignment: [], business_areas_to_watch: [], opportunity_horizons: [],
-    intelligence_outlook_rows: [], evidence_traceability: [], limitations: [],
+    organization: "Wells Fargo", total_hiring_jobs: 19, executive_summary: "Evidence supports a focused hiring pattern.", strategic_priorities: [], hiring_intelligence: [], cross_domain_alignment: [], business_areas_to_watch: [],
+    lob_opportunities: [], evidence_traceability: [], limitations: [],
   }, provider: "openai", model: "test-model",
 };
 
@@ -35,7 +35,6 @@ function stubOverviewFetch() {
   const fetch = vi.fn((input: RequestInfo | URL, _init?: RequestInit) => {
     const url = String(input);
     if (url.includes("/agents/supervisor/report")) return ok(supervisorReportResponse);
-    if (url.includes("/hiring/") && url.includes("/summary")) return ok({ ...summaryFixture, total_observed_jobs: 19, jobs_with_evidence: 19, evidence_coverage: 100, enriched_job_count: 19, enrichment_coverage: 100, signal_count: 3, observation_start: "2026-08-20", observation_end: "2026-08-21" });
     if (url.includes("/hiring/") && url.includes("/analytics")) return ok(analyticsFixture);
     if (url.includes("/graph-insights/")) return ok(graphInsights);
     return Promise.reject(new Error(`unexpected fetch: ${url}`));
@@ -57,25 +56,25 @@ describe("OverviewPage", () => {
     expect(screen.queryByText("What the current evidence supports")).not.toBeInTheDocument();
     expect(screen.queryByRole("navigation", { name: "Report sections" })).not.toBeInTheDocument();
 
-    expect(await screen.findByText("Observed jobs")).toBeInTheDocument();
     expect(await screen.findByText("Observed hiring cadence")).toBeInTheDocument();
-    expect(screen.getByText("No report request is made until you select Generate Report.")).toBeInTheDocument();
+    expect(screen.queryByText("Observed jobs")).not.toBeInTheDocument();
+    expect(screen.queryByText("Evidence scope")).not.toBeInTheDocument();
+    expect(await screen.findByText("Evidence supports a focused hiring pattern.")).toBeInTheDocument();
     expect(await screen.findByText("Charlotte, NC")).toBeInTheDocument();
     expect(screen.queryByLabelText("Strategic question")).not.toBeInTheDocument();
 
     const dividers = Array.from(document.querySelectorAll(".intelligence-divider span")).map((item) => item.textContent);
     expect(dividers).toEqual(["Hiring intelligence", "Company report", "Knowledge graph insights"]);
 
-    expect(fetch.mock.calls.some(([input]) => String(input).includes("/agents/supervisor/report"))).toBe(false);
+    expect(fetch.mock.calls.some(([input]) => String(input).includes("/agents/supervisor/report"))).toBe(true);
     expect(fetch.mock.calls.some(([input]) => String(input).includes("/agents/strategy/answer"))).toBe(false);
   });
 
   it("generates the company report inline, scoped to the current organization", async () => {
     const fetch = stubOverviewFetch();
     render(withOrg(<OverviewPage />));
-    await screen.findByText("Observed jobs");
-
-    await userEvent.click(screen.getByRole("button", { name: "Generate Report" }));
+    await screen.findByText("Observed hiring cadence");
+    await screen.findByText("Evidence supports a focused hiring pattern.");
 
     const reportCall = fetch.mock.calls.find(([input]) => String(input).includes("/agents/supervisor/report"));
     expect(reportCall).toBeDefined();

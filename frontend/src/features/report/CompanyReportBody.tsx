@@ -1,8 +1,8 @@
-import { FormEvent, useState } from "react";
+import { Fragment, FormEvent, useCallback, useEffect, useState } from "react";
 import { supervisorReportApi } from "../../api/supervisorReport";
 import { ApiError } from "../../api/hiring";
 import { useSessionState } from "../../hooks/useSessionState";
-import type { IntelligenceOutlookRow, ReportQuestionAnswer, ReportQuestionReference, ReportReference, SupervisorReportAnswer } from "../../types/supervisorReport";
+import type { LOBOpportunityRow, ReportQuestionAnswer, ReportQuestionReference, ReportReference, SupervisorReportAnswer } from "../../types/supervisorReport";
 import { titleCase } from "../../utils/format";
 
 export function CompanyReportBody({ organization }: { organization: string }) {
@@ -11,30 +11,44 @@ export function CompanyReportBody({ organization }: { organization: string }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (loading) return;
+  const generate = useCallback(async (focus?: string, signal?: AbortSignal) => {
     setLoading(true); setError(null); setResult(null);
     try {
-      setResult(await supervisorReportApi.generate({
+      const answer = await supervisorReportApi.generate({
         organization,
-        ...(question.trim() ? { question: question.trim() } : {}),
-      }));
+        ...(focus?.trim() ? { question: focus.trim() } : {}),
+      }, signal);
+      setResult(answer);
     } catch (caught) {
+      if (signal?.aborted) return;
       setError(caught instanceof ApiError ? caught.message : "The company report could not be generated.");
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
+  }, [organization, setResult]);
+
+  useEffect(() => {
+    if (result) return;
+    const controller = new AbortController();
+    void generate(undefined, controller.signal);
+    return () => controller.abort();
+    // Auto-load fires once per organization; `generate` intentionally excluded to avoid re-triggering on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [organization]);
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (loading) return;
+    void generate(question);
   };
 
   return <>
     <section className="panel ask-strategy">
       <form className="ask-strategy__form" onSubmit={submit}>
-        <label htmlFor="report-question">Report focus <span>(optional)</span></label>
+        <label htmlFor="report-question">Refine report focus <span>(optional)</span></label>
         <textarea id="report-question" value={question} onChange={(event) => setQuestion(event.target.value)} maxLength={2000} placeholder={`Generate a company intelligence report for ${organization}`} disabled={loading} />
-        <div><span>The selected company remains authoritative.</span><button className="primary-button" disabled={loading}>{loading ? "Generating report…" : "Generate Report"}</button></div>
+        <div><span>The selected company remains authoritative.</span><button className="primary-button" disabled={loading}>{loading ? "Generating report…" : result ? "Regenerate with this focus" : "Generate Report"}</button></div>
       </form>
-      {!result && !error && !loading && <div className="ask-strategy__idle">No report request is made until you select Generate Report.</div>}
       {loading && <div className="ask-strategy__state" role="status"><span className="spinner" /> Combining governed intelligence…</div>}
       {error && <div className="ask-strategy__error" role="alert"><strong>Report unavailable</strong><p>{error}</p></div>}
     </section>
@@ -47,13 +61,42 @@ function Report({ answer }: { answer: SupervisorReportAnswer }) {
     <section><span className="strategy-answer__label">Executive Summary</span><p className="report-executive-summary">{answer.report.executive_summary}</p></section>
     <section>
       <p className="report-company-summary"><strong>{answer.report.organization}</strong><span aria-hidden="true"> · </span>{answer.report.total_hiring_jobs.toLocaleString()} Total Hiring Jobs</p>
-      <span className="strategy-answer__label">Intelligence Outlook</span>
-      {answer.report.intelligence_outlook_rows.length > 0 ? <div className="report-table-scroll"><table className="report-table report-table--outlook"><thead><tr><th>Opportunity</th><th>Relevant Hiring Jobs</th><th>30 Days</th><th>60 Days</th><th>90 Days</th><th>180 Days</th><th>360 Days</th></tr></thead><tbody>{answer.report.intelligence_outlook_rows.map((row) => <OutlookRow key={`${row.supervisor_priority}:${row.opportunity_theme}`} row={row} />)}</tbody></table></div> : <p className="report-empty">No supported intelligence outlook is available for this report.</p>}
+      <span className="strategy-answer__label">AI Opportunity by Line of Business</span>
+      <p className="panel-intro">Emerging AI themes grounded in evidence, ranked by signal strength. Select a row to read the supporting narrative.</p>
+      <LOBOpportunityTable rows={answer.report.lob_opportunities} />
     </section>
     <Sources references={answer.report.evidence_traceability} />
     <details className="report-methodology"><summary>Methodology &amp; Limitations</summary>{answer.report.limitations.length > 0 ? <ul>{answer.report.limitations.map((item) => <li key={item}>{item}</li>)}</ul> : <p>No additional limitations were supplied.</p>}</details>
     <ReportQA report={answer} />
   </article>;
+}
+
+function LOBOpportunityTable({ rows }: { rows: LOBOpportunityRow[] }) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+  if (rows.length === 0) return <p className="report-empty">No supported AI opportunities are available for this report.</p>;
+  return <div className="report-table-scroll">
+    <table className="report-table report-table--lob">
+      <thead><tr><th>Line of Business</th><th>Emerging AI Theme</th><th>Likely High-Value Use Cases</th><th>Signal Strength</th><th>Relevant Hiring Jobs</th></tr></thead>
+      <tbody>{rows.map((row) => {
+        const isExpanded = expanded === row.line_of_business;
+        return <Fragment key={row.line_of_business}>
+          <tr className="report-lob-row" onClick={() => setExpanded(isExpanded ? null : row.line_of_business)} aria-expanded={isExpanded} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setExpanded(isExpanded ? null : row.line_of_business); } }}>
+            <td className="report-lob-name"><strong>{row.line_of_business}</strong></td>
+            <td>{row.emerging_ai_theme}</td>
+            <td>{row.likely_use_cases.join(", ") || "—"}</td>
+            <td><SignalStrengthBadge value={row.signal_strength} /></td>
+            <td className="report-outlook-count">{row.relevant_hiring_jobs == null ? "—" : row.relevant_hiring_jobs.toLocaleString()}</td>
+          </tr>
+          {isExpanded && <tr className="report-lob-narrative-row"><td colSpan={5}><p className="report-lob-narrative">{row.narrative}</p></td></tr>}
+        </Fragment>;
+      })}</tbody>
+    </table>
+  </div>;
+}
+
+function SignalStrengthBadge({ value }: { value: string }) {
+  const tone = value.toLowerCase().replace(/\s+/g, "-");
+  return <span className={`signal-strength signal-strength--${tone}`}>{value}</span>;
 }
 
 const suggestedQuestions = [
@@ -75,9 +118,7 @@ function ReportQA({ report }: { report: SupervisorReportAnswer }) {
     if (!value || loading) return;
     if (suggested) setQuestion(suggested);
     setLoading(true); setError(null); setAnswer(null);
-    const cited = new Set(report.report.intelligence_outlook_rows.flatMap((row) => [
-      ...row.supporting_evidence_ids, ...row.hiring_signal_ids, ...row.kg_concept_references,
-    ]));
+    const cited = new Set(report.report.lob_opportunities.flatMap((row) => row.supporting_reference_ids));
     for (const finding of [
       ...report.report.strategic_priorities,
       ...report.report.cross_domain_alignment,
@@ -95,7 +136,7 @@ function ReportQA({ report }: { report: SupervisorReportAnswer }) {
           organization: report.report.organization,
           total_hiring_jobs: report.report.total_hiring_jobs,
           executive_summary: report.report.executive_summary,
-          intelligence_outlook_rows: report.report.intelligence_outlook_rows,
+          lob_opportunities: report.report.lob_opportunities,
           strategic_priorities: report.report.strategic_priorities.slice(0, 10),
           cross_domain_alignment: report.report.cross_domain_alignment.slice(0, 10),
           evidence_traceability: references,
@@ -127,23 +168,6 @@ function ReportQA({ report }: { report: SupervisorReportAnswer }) {
       {answer.limitations.length > 0 && <small>{answer.limitations.join(" ")}</small>}
     </div>}
   </section>;
-}
-
-function OutlookRow({ row }: { row: IntelligenceOutlookRow }) {
-  return <tr>
-    <td className="report-outlook-theme"><strong>{row.opportunity_theme}</strong></td>
-    <td className="report-outlook-count">{row.relevant_hiring_jobs == null ? "—" : row.relevant_hiring_jobs.toLocaleString()}</td>
-    <HorizonCell value={row.horizon_30} />
-    <HorizonCell value={row.horizon_60} />
-    <HorizonCell value={row.horizon_90} />
-    <HorizonCell value={row.horizon_180} />
-    <HorizonCell value={row.horizon_360} />
-  </tr>;
-}
-
-function HorizonCell({ value }: { value?: string | null }) {
-  const displayValue = value?.trim();
-  return <td>{!displayValue || displayValue === "No action needed" ? "No action recommended" : displayValue}</td>;
 }
 
 function Sources({ references }: { references: ReportReference[] }) {

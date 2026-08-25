@@ -1,9 +1,12 @@
 from collections.abc import Callable
+from datetime import timedelta
 
 from openai import OpenAI
 
 from backend.app.application.agents.supervisor_agent import (
+    CachedSupervisorReportService,
     SupervisorAppService,
+    SupervisorReportBoundary,
     SupervisorRequest,
     SupervisorResponse,
     run_supervisor,
@@ -16,6 +19,7 @@ from backend.app.infrastructure.composition.strategy_agent import create_strateg
 from backend.app.infrastructure.persistence.hiring import (
     SQLiteDatabase,
     SQLiteStrategyResearchCacheRepository,
+    SQLiteSupervisorReportCacheRepository,
 )
 
 
@@ -23,7 +27,7 @@ def create_supervisor_app_service(
     settings: HiringSettings | None = None,
     *,
     client_factory: Callable[[], OpenAI] | None = None,
-) -> SupervisorAppService:
+) -> SupervisorReportBoundary:
     resolved = settings or HiringSettings()
     read_service = create_hiring_read_service(resolved)
     hiring_signals = HiringSignalService(HiringAnalyticsService(read_service))
@@ -42,7 +46,7 @@ def create_supervisor_app_service(
         )
         return run_supervisor(request, client=client, model=resolved.openai_model)
 
-    return SupervisorAppService(
+    inner = SupervisorAppService(
         strategy_service=create_strategy_agent_service(
             resolved, client_factory=client_factory
         ),
@@ -53,4 +57,13 @@ def create_supervisor_app_service(
         enabled=resolved.supervisor_agent_enabled,
         provider="openai",
         model=resolved.openai_model,
+    )
+    if resolved.supervisor_report_cache_ttl_hours <= 0:
+        return inner
+    return CachedSupervisorReportService(
+        inner,
+        SQLiteSupervisorReportCacheRepository(database),
+        provider="openai",
+        model=resolved.openai_model,
+        ttl=timedelta(hours=resolved.supervisor_report_cache_ttl_hours),
     )

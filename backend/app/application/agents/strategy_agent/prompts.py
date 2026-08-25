@@ -16,23 +16,37 @@ Return insufficient evidence through an empty findings list rather than fabricat
 """.strip()
 
 
-RESEARCH_PLANNER_PROMPT = """You plan focused, current company-strategy research.
-Generate 5-8 distinct web queries covering official investor relations, earnings or filings,
-leadership guidance, business-unit growth/investment, transformation, and optimization/reduction.
-Focus on future direction and recent change. Keep every query tightly scoped to the user's
-actual question; do not broaden a topic-specific question into unrelated company priorities.
-Return structured data only."""
+RESEARCH_PLANNER_PROMPT = """You plan focused, current company-strategy research, prioritizing the
+organization's most recent 10-K annual report and 10-Q quarterly filings as primary sources.
+Generate 5-8 distinct web queries. Include at least one query aimed at the organization's own
+disclosed reportable business segments or U.S. lines of business (for example, its 10-K segment
+reporting note or investor presentation segment breakdown), so later evidence can be grouped using
+the organization's own terminology rather than a generic external taxonomy. Prioritize queries that
+surface the organization's 10-K/10-Q disclosures on AI, GenAI, and agentic-AI investment and adoption
+within those disclosed segments, alongside official investor relations, earnings, leadership
+guidance, business-unit growth/investment, transformation, and optimization/reduction more broadly.
+Focus on future direction and recent change. Keep every query tightly scoped to the user's actual
+question; do not broaden a topic-specific question into unrelated company priorities. Return
+structured data only."""
 
 EVIDENCE_EXTRACTION_PROMPT = """Extract atomic, concise facts from the supplied sources.
 Use only supplied source content and metadata. Never invent facts, dates, URLs, business units,
 or source IDs. Keep fact separate from inference. Include only facts relevant to growth,
-investment, transformation, optimization, reduction, or forward guidance. A source can yield
-zero or more facts.
+investment, transformation, optimization, reduction, or forward guidance, prioritizing facts about
+AI, GenAI, or agentic-AI adoption and investment. A source can yield zero or more facts.
 
 Each evidence item should contain one main fact. If a source separately supports technology
 modernization, AI adoption, organizational simplification, cost optimization, capital allocation,
 and balance-sheet productivity, extract separate atomic items rather than combining them.
 Avoid needless fragmentation when the source supports only one inseparable observation.
+
+Set business_unit to the organization's own disclosed reportable business segment or U.S. line of
+business, using the exact or closely paraphrased terminology the source itself uses (for example,
+the segment names from its 10-K segment-reporting note or investor materials), when the source
+identifies one. Derive this name from what the evidence actually discloses -- do not select from a
+generic or externally imposed banking taxonomy, and do not normalize distinct disclosed segments
+into a shared label. Leave business_unit null when the source does not support a specific line of
+business -- never invent one.
 
 Assign the most specific theme supported by the fact. Do not use generic labels such as
 Strategic Priority, Transformation Priorities, Investment, Growth, Guidance, or Company Strategy
@@ -48,6 +62,12 @@ STRATEGY_INFERENCE_PROMPT = """Infer cautious strategic hypotheses using only th
 evidence. Group corroborating facts by strategic or business relationship, not merely because
 facts occur in the same source. Never present a hypothesis as fact, invent a business unit, or
 infer a strong direction from one weak source. Every signal must cite valid evidence IDs.
+
+Set business_unit to the organization's own disclosed line of business the signal relates to, using
+the terminology its supporting evidence actually uses, when that evidence identifies one; leave it
+null otherwise -- never invent one and never substitute a generic label the evidence did not use.
+Prioritize signals about AI, GenAI, or agentic-AI adoption and investment where the evidence supports
+them, without forcing an AI framing onto evidence that does not discuss AI.
 
 Set priority to a concrete theme, never a rank or raw KPI. Raw financial metrics and routine
 corporate actions are supporting facts, not standalone priorities. Use exactly one supported

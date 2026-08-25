@@ -2,10 +2,14 @@ from .report import (
     CompanyIntelligenceReport,
     DeterministicReportGenerator,
     ReportFinding,
-    ReportHorizon,
     ReportSupportReference,
 )
-from .outlook import DeterministicIntelligenceOutlookMapper, IntelligenceOutlookRow
+from .outlook import LOBOpportunityMapper, LOBOpportunityRow
+from .report_cache import (
+    CachedSupervisorReportService,
+    SupervisorReportBoundary,
+    SupervisorReportCacheRepository,
+)
 from .runtime import (
     CompactHiringKGSummary,
     HiringCoverageMetadata,
@@ -43,10 +47,12 @@ __all__ = [
     "NormalizedSupervisorInput",
     "ObservedKGConcept",
     "ObservedHiringSignalSupport",
-    "DeterministicIntelligenceOutlookMapper",
-    "IntelligenceOutlookRow",
+    "LOBOpportunityMapper",
+    "LOBOpportunityRow",
+    "CachedSupervisorReportService",
+    "SupervisorReportBoundary",
+    "SupervisorReportCacheRepository",
     "ReportFinding",
-    "ReportHorizon",
     "ReportSupportReference",
     "ReportQAError",
     "ReportQAErrorCode",
